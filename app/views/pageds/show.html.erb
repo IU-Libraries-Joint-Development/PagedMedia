@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @paged.title %>
+</p>
+
+<p>
+  <strong>Creator:</strong>
+  <%= @paged.creator %>
+</p>
+
+<%= link_to 'Edit', edit_paged_path(@paged) %> |
+<%= link_to 'Back', pageds_path %>
