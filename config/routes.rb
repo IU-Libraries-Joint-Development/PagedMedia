@@ -1,4 +1,6 @@
 PagedMedia::Application.routes.draw do
+  resources :pages
+
   resources :pageds
 
   root :to => "catalog#index"
