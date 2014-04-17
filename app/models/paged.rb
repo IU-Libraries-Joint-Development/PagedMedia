@@ -4,8 +4,9 @@
 
 class Paged < ActiveFedora::Base
 
-  has_metadata 'DC', type: PagedMetadataDublinCore
+  has_metadata 'descMetadata', type: PagedMetadataOaiDc, label: 'PMP PagedObject descriptive metadata'
 
-  has_attributes :title, datastream: 'DC', multiple: false
-  has_attributes :creator, datastream: 'DC', multiple: false
+  has_attributes :title, datastream: 'descMetadata', multiple: false  # TODO update DC.title as well?
+  has_attributes :creator, datastream: 'descMetadata', multiple: false
+
 end
