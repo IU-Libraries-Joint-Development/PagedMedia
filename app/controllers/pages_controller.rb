@@ -27,6 +27,7 @@ class PagesController < ApplicationController
     @page = Page.new(page_params)
 
     respond_to do |format|
+      @page.image_file = params[:image_file] if params.has_key?(:image_file)
       if @page.save
         format.html { redirect_to @page, notice: 'Page was successfully created.' }
         format.json { render action: 'show', status: :created, location: @page }
@@ -41,6 +42,7 @@ class PagesController < ApplicationController
   # PATCH/PUT /pages/1.json
   def update
     respond_to do |format|
+      @page.image_file = params[:image_file] if params.has_key?(:image_file)
       if @page.update(page_params)
         format.html { redirect_to @page, notice: 'Page was successfully updated.' }
         format.json { head :no_content }
@@ -69,6 +71,6 @@ class PagesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def page_params
-      params.require(:page).permit(:logical_number, :physical_number)
+      params.require(:page).permit(:logical_number, :physical_number, :image_file)
     end
 end
