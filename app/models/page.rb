@@ -1,6 +1,9 @@
 # Copyright 2014 Indiana University
 
 class Page < ActiveFedora::Base
+
+  include Hydra::AccessControls::Permissions
+
   has_metadata 'descMetadata', type: PageMetadata
   
   belongs_to :paged, :property=> :is_part_of
