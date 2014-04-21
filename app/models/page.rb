@@ -3,8 +3,14 @@
 # Copyright 2014 Indiana University
 
 class Page < ActiveFedora::Base
+
+  include Hydra::AccessControls::Permissions
+
   has_metadata 'descMetadata', type: PageMetadata
-  has_file_datastream 'pageImage', autocreate: true
+  
+  belongs_to :paged, :property=> :is_part_of
+  
+  has_file_datastream 'pageImage'
   has_file_datastream 'pageOCR'
 
   has_attributes :logical_number, datastream: 'descMetadata',  multiple: false
