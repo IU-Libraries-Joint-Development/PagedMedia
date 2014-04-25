@@ -22,6 +22,9 @@
   <div class='field'>
     <%= f.label 'Page image file:' %><br />
     <%= f.file_field :image_file %>
+    <img alt='<%=  @page.image_datastream.label %>'
+         src='<%=  ActiveFedora.fedora_config.credentials[:url] %>/<%=  @page.image_datastream.url %>'
+         width='128' height='128' />
   </div>
   <div class="actions">
     <%= f.submit %>
