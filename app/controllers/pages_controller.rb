@@ -28,9 +28,14 @@ class PagesController < ApplicationController
 
     respond_to do |format|
       @page.image_file = params[:image_file] if params.has_key?(:image_file)
+      @page.paged_id = params[:paged_id] if params.has_key?(:paged_id)
       if @page.save
-        format.html { redirect_to @page, notice: 'Page was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @page }
+        if @page.paged_id
+          format.html { redirect_to "/pageds/" + @page.paged_id, notice: 'Page was successfully created.'}
+        else        
+          format.html { redirect_to @page, notice: 'Page was successfully created.' }
+          format.json { render action: 'show', status: :created, location: @page }
+        end
       else
         format.html { render action: 'new' }
         format.json { render json: @page.errors, status: :unprocessable_entity }
