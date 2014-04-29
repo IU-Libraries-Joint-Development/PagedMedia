@@ -20,7 +20,14 @@
     <%= f.text_field :physical_number %>
   </div>
   <div class='field'>
-    <%= f.label 'Page image file:' %><br />
+    <% if !@page.new? %>
+      Current image:<br />
+      <img alt='<%=  @page.image_datastream.label %>'
+           src='<%=  ActiveFedora.fedora_config.credentials[:url] %>/<%=  @page.image_datastream.url %>'
+           width='128' height='128' />
+      <!-- FIXME if our Fedora instance is inaccessible then we need another way to do this -->
+    <% end %>
+    <%= f.label 'New page image file:' %>
     <%= f.file_field :image_file %>
   </div>
   <div class="actions">
