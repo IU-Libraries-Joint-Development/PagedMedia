@@ -5,11 +5,17 @@
       <tr>
         <th>Logic Number</th>
         <th>Physical Number</th>
+        <th>Links</th>
       </tr>
       <% paged.pages.each do |page| %>
       <tr>
         <td><%= page.logical_number %></td>
         <td><%= page.physical_number %></td>
+        <td>
+          <%= link_to 'Show', page %> |
+          <%= link_to 'Edit', edit_page_path(page) %> |
+          <%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
       </tr>
       <% end %>
     </table>
