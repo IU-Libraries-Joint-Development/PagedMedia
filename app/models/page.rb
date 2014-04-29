@@ -27,7 +27,10 @@ class Page < ActiveFedora::Base
 
   # Getter for the image
   def image_file
-    datastreams['pageImage'].content
+    @datastreams['pageImage'].content
   end
 
+  def image_datastream
+    @datastreams['pageImage']
+  end
 end
