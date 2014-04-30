@@ -3,12 +3,25 @@
   <div id="pages">
     <table border="1">
       <tr>
-        <th>Logic Number</th>
+        <td></td>
+        <th>Logical Number</th>
         <th>Physical Number</th>
         <th>Links</th>
       </tr>
       <% paged.pages.each do |page| %>
       <tr>
+        <td>
+          <% if page.image_datastream.mimeType %>
+            <%= link_to image_tag(
+                    ActiveFedora.fedora_config.credentials[:url] + "/" + page.image_datastream.url,
+                    alt: page.image_datastream.label,
+                    height: "64",
+                    width: "64"
+                  ),
+                  page
+            %>
+          <% end %>
+        </td>
         <td><%= page.logical_number %></td>
         <td><%= page.physical_number %></td>
         <td>
