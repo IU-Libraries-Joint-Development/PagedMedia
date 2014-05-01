@@ -1,0 +1,18 @@
+<%= form_for :page, url: { action: "create", controller: "pages" } do |f| %>
+  <%= f.hidden_field(:paged_id, value: @paged.id) %>
+  <div class="field">
+    <%= f.label :logical_number %><br>
+    <%= f.text_field :logical_number %>
+  </div>
+  <div class="field">
+    <%= f.label :physical_number %><br>
+    <%= f.text_field :physical_number %>
+  </div>
+  <div class='field'>
+    <%= f.label 'Page image file:' %><br />
+    <%= f.file_field :image_file %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
