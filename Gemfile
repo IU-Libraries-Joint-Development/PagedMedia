@@ -1,12 +1,11 @@
 source 'https://rubygems.org'
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.0.0'
+# A Rails project
+gem 'rails', '~>4.1'
 
 # This is a Hydra head
 
-gem 'blacklight'
-gem 'hydra-head', '~> 6.4.0'
+gem 'hydra', '~> 6.1'
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
