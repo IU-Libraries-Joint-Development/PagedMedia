@@ -17,7 +17,7 @@
 </p>
 
 <% if @page.paged %>
-<p>  
+<p data-no-turbolink>  
   <strong>Page from:</strong>
   <%= link_to @page.paged.title, "/pageds/" + @page.paged.pid %>
 </p>

@@ -1,6 +1,5 @@
 $(function() {
-   $('.show_add_page_form').click(function() {
-     
+   $('.show_add_page_form').click(function() {     
       if($('#add_page_form').css('display') == 'none'){
         $('#add_page_form').slideDown("slow",function(){
           $('#add_page').toggle();
