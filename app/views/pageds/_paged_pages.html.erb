@@ -33,13 +33,14 @@
       <% end %>
     </table>
   </div>
-  <div id="add_page">
-    <%= link_to_function "Add Page", "show_add_page_form()" %>
-  </div>
-  <div id="cancel_add_page" style="display:none">
-    <%= link_to_function "Cancel Page", "show_add_page_form()" %>
-  </div>
-  <div id="add_page_form" style="display:none">    
+  <div id="add_page_form" style="margin-top:10px; display:none; border:solid 1px #000000">    
     <%= render :partial=>'pages/add_page_form', :local => {:paged => @paged} %>
   </div>
+  <div id="add_page">
+    <%= link_to "Add Page", "#", class: "show_add_page_form" %>
+  </div>
+  <div id="cancel_add_page" style="display:none">
+    <%= link_to "Cancel", "#", class: "show_add_page_form" %>
+  </div>
+
 </div>
