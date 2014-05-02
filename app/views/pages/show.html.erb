@@ -16,5 +16,12 @@
   <%= @page.physical_number %>
 </p>
 
+<% if @page.paged %>
+<p>  
+  <strong>Page from:</strong>
+  <%= link_to @page.paged.title, "/pageds/" + @page.paged.pid %>
+</p>
+<% end %>
+
 <%= link_to 'Edit', edit_page_path(@page) %> |
 <%= link_to 'Back', pages_path %>
