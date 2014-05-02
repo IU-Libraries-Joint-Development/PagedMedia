@@ -24,8 +24,10 @@ task :ci do
   #Jettywrapper.unzip
   jetty_params = Jettywrapper.load_config
   error = Jettywrapper.wrap(jetty_params) do
-    sleep(20)  
+    puts "Sleeping for 60 seconds to give Jetty time to start"
+    sleep(60)  
     Rake::Task['spec'].invoke
   end
   raise "test failures: #{error}" if error
 end
+
