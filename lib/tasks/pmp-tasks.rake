@@ -21,11 +21,8 @@ desc 'Run specs on travis'
 task :ci do
   ENV['RAILS_ENV'] = 'test'
   ENV['TRAVIS'] = '1'
-  #Jettywrapper.unzip
   jetty_params = Jettywrapper.load_config
   error = Jettywrapper.wrap(jetty_params) do
-    puts "Sleeping for 60 seconds to give Jetty time to start"
-    sleep(60)  
     Rake::Task['spec'].invoke
   end
   raise "test failures: #{error}" if error
