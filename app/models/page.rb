@@ -45,8 +45,8 @@ class Page < ActiveFedora::Base
 
   # Getter for the pageOCR file datastream
   def ocr_file
-    datastreams['pageOCR'].content
-   end
+    @datastreams['pageOCR'].content
+  end
 
   def ocr_datastream
     @datastreams['pageOCR']
