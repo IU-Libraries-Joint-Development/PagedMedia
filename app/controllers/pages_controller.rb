@@ -55,9 +55,9 @@ class PagesController < ApplicationController
         format.html do
           if (:paged == session.delete(:came_from))
             if @page.paged_id
-              return_url = pageds_url(@page.paged_id)
+              return_url = paged_url(@page.paged_id)
             else
-              return_url = pageds_url
+              return_url = paged_url
             end
             redirect_to return_url, notice: 'Page was successfully updated.'
           else
