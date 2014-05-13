@@ -30,6 +30,14 @@
     <%= f.label 'New page image file:' %>
     <%= f.file_field :image_file %>
   </div>
+  <div class='field'>
+    <% if !@page.new? %>
+      Current File :
+      <%= link_to @page.ocr_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @page.ocr_datastream.url %>
+    <% end %>
+    <%= f.label 'New OCR file:' %>
+    <%= f.file_field :ocr_file %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>

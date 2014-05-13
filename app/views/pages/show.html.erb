@@ -16,6 +16,12 @@
   <%= @page.physical_number %>
 </p>
 
+<% if @page.ocr_file %>
+<p>  
+  <%= link_to 'OCR file', ActiveFedora.fedora_config.credentials[:url] + '/' + @page.ocr_datastream.url %> 
+</p>
+<% end %>
+
 <% if @page.paged %>
 <p>  
   <strong>Page from:</strong>
