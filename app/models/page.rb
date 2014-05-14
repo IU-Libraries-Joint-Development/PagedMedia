@@ -33,4 +33,24 @@ class Page < ActiveFedora::Base
   def image_datastream
     @datastreams['pageImage']
   end
+
+
+  # Setter for the pageOCR file datastream
+  def ocr_file=(file)
+    ds = @datastreams['pageOCR']
+    ds.content = file
+    ds.mimeType = file.content_type
+    ds.dsLabel = file.original_filename
+  end
+
+  # Getter for the pageOCR file datastream
+  def ocr_file
+    @datastreams['pageOCR'].content
+  end
+
+  def ocr_datastream
+    @datastreams['pageOCR']
+  end
+
+
 end
