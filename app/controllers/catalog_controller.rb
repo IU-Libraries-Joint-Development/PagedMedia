@@ -129,6 +129,13 @@ class CatalogController < ApplicationController
       }
     end
 
+    config.add_search_field('creator') do |field|
+      field.solr_local_paramters = {
+        :qf => '$creator_qf',
+        :pf => '$creator_pf'
+      }
+    end
+=begin
     config.add_search_field('author') do |field|
       field.solr_local_parameters = {
         :qf => '$author_qf',
@@ -146,6 +153,7 @@ class CatalogController < ApplicationController
         :pf => '$subject_pf'
       }
     end
+=end
 
     # "sort results by" select (pulldown)
     # label in pulldown is followed by the name of the SOLR field to sort by and
