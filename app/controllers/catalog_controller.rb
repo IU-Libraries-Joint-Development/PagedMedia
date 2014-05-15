@@ -150,6 +150,7 @@ class CatalogController < ApplicationController
         :pf => '$creator_pf'
       }
     end
+    
 =begin
     config.add_search_field('author') do |field|
       field.solr_local_parameters = {
