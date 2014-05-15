@@ -13,6 +13,21 @@ class CatalogController < ApplicationController
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
 
 
+  # Filter out objects to be excluded from search results based on model type.
+  # @param solr_parameters the current solr parameters
+  # @param user_parameters the current user-subitted parameters
+  def exclude_unwanted_models(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    unwanted_models.each do |model|
+      solr_parameters[:fq] << "#{Solrizer.solr_name("-has_model", :symbol)}:\"info:fedora/afmodel:#{model}\""
+    end
+  end
+
+  # List of unwanted models
+  def unwanted_models
+    return[Page]
+  end
+
   configure_blacklight do |config|
     config.default_solr_params = {
       :qf => 'title_tesim creator_tesim',
