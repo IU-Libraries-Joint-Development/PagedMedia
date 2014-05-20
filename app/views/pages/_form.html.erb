@@ -38,6 +38,18 @@
     <%= f.label 'New OCR file:' %>
     <%= f.file_field :ocr_file %>
   </div>
+  <div class='field'>
+    <% if !@page.new? %>
+      Current XML file:
+      <% if @page.xml_datastream.has_content? %>
+        <%= link_to @page.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @page.xml_datastream.url %>
+      <% else %>
+      none.
+    <% end %>
+    <% end %>
+    <%= f.label 'New XML file:' %>
+    <%= f.file_field :xml_file %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>
