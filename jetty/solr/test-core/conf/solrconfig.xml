@@ -50,12 +50,20 @@
        <str name="author_pf">
        </str>
        <str name="title_qf">
+         title_tesim
        </str>
        <str name="title_pf">
+         title_tesim
        </str>
        <str name="subject_qf">
        </str>
        <str name="subject_pf">
+       </str>
+       <str name="creator_qf">
+         creator_tesim
+       </str>
+       <str name="creator_pf">
+         creator_tesim
        </str>
        
        <str name="fl">
