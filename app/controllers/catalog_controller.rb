@@ -6,15 +6,31 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
   include Hydra::Controller::ControllerBehavior
   # These before_filters apply the hydra access controls
-  before_filter :enforce_show_permissions, :only=>:show
+  #before_filter :enforce_show_permissions, :only=>:show
   # This applies appropriate access controls to all solr queries
-  CatalogController.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  #CatalogController.solr_search_params_logic += [:add_access_controls_to_solr_params]
   # This filters out objects that you want to exclude from search results, like FileAssets
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
 
 
+  # Filter out objects to be excluded from search results based on model type.
+  # @param solr_parameters the current solr parameters
+  # @param user_parameters the current user-subitted parameters
+  def exclude_unwanted_models(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    unwanted_models.each do |model|
+      solr_parameters[:fq] << "#{Solrizer.solr_name("-has_model", :symbol)}:\"info:fedora/afmodel:#{model}\""
+    end
+  end
+
+  # List of unwanted models
+  def unwanted_models
+    return[Page]
+  end
+
   configure_blacklight do |config|
     config.default_solr_params = {
+      :qf => 'title_tesim creator_tesim',
       :qt => 'search',
       :rows => 10
     }
@@ -128,6 +144,14 @@ class CatalogController < ApplicationController
       }
     end
 
+    config.add_search_field('creator') do |field|
+      field.solr_local_paramters = {
+        :qf => '$creator_qf',
+        :pf => '$creator_pf'
+      }
+    end
+    
+=begin
     config.add_search_field('author') do |field|
       field.solr_local_parameters = {
         :qf => '$author_qf',
@@ -145,6 +169,7 @@ class CatalogController < ApplicationController
         :pf => '$subject_pf'
       }
     end
+=end
 
     # "sort results by" select (pulldown)
     # label in pulldown is followed by the name of the SOLR field to sort by and
