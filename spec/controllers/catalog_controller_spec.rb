@@ -40,7 +40,7 @@ require 'spec_helper'
       it "should have index numbers surrounded by span tag with an index_number class" do
         visit root_path
         click_button 'Search'
-        within('#documents'){expect(page).to have_css('span.index_numbers')}
+        within('#documents'){expect(page).to have_css('span.index_number')}
       end
     end
     
