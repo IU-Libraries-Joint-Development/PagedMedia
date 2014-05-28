@@ -51,6 +51,9 @@ end
 gem "bootstrap-sass"
 gem "devise"
 gem "devise-guests", "~> 0.3"
+gem 'omniauth'
+gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
+
 group :development, :test do
   gem "rspec-rails"
   gem "capybara"
