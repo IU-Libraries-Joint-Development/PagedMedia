@@ -36,6 +36,13 @@ require 'spec_helper'
         within('#documents'){expect(page).to have_content @test_paged.title}
       end
     end
+    context "search results" do
+      it "should have index numbers surrounded by span tag with an index_number class" do
+        visit root_path
+        click_button 'Search'
+        within('#documents'){expect(page).to have_css('span.index_numbers')}
+      end
+    end
     
     after(:all) do
       @test_paged.delete
