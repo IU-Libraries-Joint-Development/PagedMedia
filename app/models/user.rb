@@ -17,4 +17,12 @@ class User < ActiveRecord::Base
             def to_s
               email
             end
-          end
+  def self.find_for_iu_cas(auth)
+    where(auth.slice(:provider, :uid)).first_or_create! do |user|
+      user.provider = auth.provider
+      user.uid = auth.uid
+      user.email = [auth.uid,'@indiana.edu'].join
+      user.password = Devise.friendly_token[0,20]
+    end
+  end
+end
