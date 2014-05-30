@@ -5,16 +5,8 @@ describe "Access to signin page" do
     page.should have_content("Sign in with IU CAS")
     set_omniauth()
     click_link "Sign in with IU CAS"
-    page.should have_content("mock user")  # user name
-    page.should have_content("Sign out")
-  end
-
-  it "can handle authentication error" do
-    OmniAuth.config.mock_auth[:iu_cas] = :invalid_credentials
-    visit '/users/sign_in'
-    page.should have_content("Sign in with IU CAS")
-    click_link "Sign in with IU CAS"
-    page.should have_content('Authentication failed.')
+    page.should have_content("1234@indiana.edu")  # user name
+    page.should have_content("Log Out")
   end
 
 end
