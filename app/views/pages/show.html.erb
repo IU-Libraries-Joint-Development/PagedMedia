@@ -22,6 +22,15 @@
 </p>
 <% end %>
 
+<p>
+  XML file:
+  <% if @page.xml_file.has_content? %>
+    <%= link_to 'XML file', ActiveFedora.fedora_config.credentials[:url] + '/' + @page.xml_datastream.url %>
+  <% else %>
+    none.
+  <% end %>
+</p>
+
 <% if @page.paged %>
 <p>  
   <strong>Page from:</strong>

@@ -12,6 +12,7 @@ class Page < ActiveFedora::Base
   
   has_file_datastream 'pageImage'
   has_file_datastream 'pageOCR'
+  has_file_datastream 'pageXML'
 
   has_attributes :logical_number, datastream: 'descMetadata',  multiple: false
   has_attributes :physical_number, datastream: 'descMetadata',  multiple: false
@@ -52,5 +53,21 @@ class Page < ActiveFedora::Base
     @datastreams['pageOCR']
   end
 
+  # Setter for the XML datastream
+  def xml_file=(file)
+    ds = @datastreams['pageXML']
+    ds.content = file
+    ds.mimeType = 'application/xml'
+    ds.dsLabel = file.original_filename
+  end
+
+  # Getter for the XML datastream
+  def xml_file
+    @datastreams['pageXML']
+  end
+
+  def xml_datastream
+    @datastreams['pageXML']
+  end
 
 end
