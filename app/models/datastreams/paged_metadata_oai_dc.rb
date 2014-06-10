@@ -10,6 +10,7 @@ class PagedMetadataOaiDc < ActiveFedora::OmDatastream
       'xmlns:dc' => 'http://purl.org/dc/elements/1.1/')
     t.title(namespace_prefix: 'dc', index_as: :stored_searchable)
     t.creator(namespace_prefix: 'dc', index_as: :stored_searchable)
+    t.type(namespace_prefix: 'dc', index_as: :stored_searchable)
   end
 
   def self.xml_template

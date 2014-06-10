@@ -4,6 +4,8 @@ FactoryGirl.define do
   factory :test_paged, class: Paged do
     title "Test Paged Object"
     creator "Factory Girl"
+    type "generic"
   end
+
 
 end
