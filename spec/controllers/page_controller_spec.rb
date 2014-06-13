@@ -23,6 +23,28 @@ describe PagesController do
   end
 
   describe 'PUT update' do
+    it 'stores a previous-page link' do
+      apage = mock_model(Page, :prev_page= => nil, update: nil)
+      expect(Page).to receive(:find).and_return(apage)
+      expect(apage).to receive(:update).with('prev_page' => 'page:3')
+      put :update, {
+        page: {prev_page: 'page:3'},
+        id: 'page:4'
+      }
+      assert_response :success
+    end
+
+    it 'stores a next-page link' do
+      apage = mock_model(Page, :next_page= => nil, update: nil)
+      expect(Page).to receive(:find).and_return(apage)
+      expect(apage).to receive(:update).with('next_page' => 'page:5')
+      put :update, {
+        page: {next_page: 'page:5'},
+        id: 'page:4'
+      }
+      assert_response :success
+    end
+
     it 'stores a new image datastream'
 
     it 'stores a new OCR datastream'
@@ -38,9 +60,8 @@ describe PagesController do
       expect(Page).to receive(:find).and_return(apage)
       expect(apage).to receive(:update).with('xml_file' => xml_upload)
       put :update, {
-        page: apage,
-        id: '1',
-        xml_file: xml_upload
+        page: {xml_file: xml_upload},
+        id: '1'
       }
       assert_response :success
     end
