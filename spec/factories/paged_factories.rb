@@ -7,5 +7,18 @@ FactoryGirl.define do
     type "generic"
   end
 
+  #Create a newspaper
+  factory :test_newspaper, class: Paged do
+    title "Test Newspaper"
+    creator "Factory Girl"
+    type "newspaper"
+  end
+
+  #Create a score
+  factory :test_score, class: Paged do
+    title "Test Score"
+    creator "Factory Girl"
+    type "score"
+  end
 
 end
