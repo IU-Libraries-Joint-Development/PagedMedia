@@ -8,23 +8,49 @@ require 'spec_helper'
   describe "facet search" do
 
     before(:all) do
-      @test_paged = FactoryGirl.create :test_paged
+      @test_newspaper = FactoryGirl.create :test_newspaper
+      @test_score = FactoryGirl.create :test_score
     end
 
     context "from the main page" do
-      it "should list type links" do
+      before(:each) do
         visit root_path
-	within('#facets'){expect(page).to have_link @test_paged.type}
       end
-      it "should link to type-specific results" do
+      it "should list type links" do
+	within('#facets'){expect(page).to have_link @test_newspaper.type}
+	within('#facets'){expect(page).to have_link @test_score.type}
+      end
+      it "should link to type-specific items" do
+	within('#facets'){click_link(@test_newspaper.type)}
+	within('#documents'){expect(page).to have_content @test_newspaper.title}
+	within('#documents'){expect(page).not_to have_content @test_score.title}
+      end
+    end
+
+    context "from term search" do
+      before(:each) do
         visit root_path
-	click_link(@test_paged.type)
-	within('#documents'){expect(page).to have_content @test_paged.title}
+        click_button 'Search'
+      end
+      it "should filter to type-specific search results" do
+        within('#documents'){expect(page).to have_content @test_newspaper.title}
+        within('#documents'){expect(page).to have_content @test_score.title}
+        within('#facets'){click_link(@test_newspaper.type)}
+        within('#documents'){expect(page).to have_content @test_newspaper.title}
+        within('#documents'){expect(page).not_to have_content @test_score.title}
+      end
+      it "should show unfiltered search results when filter is removed" do
+        pending "link to drop facet filter currently results in a bug"
+        within('#facets'){click_link(@test_newspaper.type)}
+        within('#appliedParams'){click_link "Remove constraint" }
+        within('#documents'){expect(page).to have_content @test_newspaper.title}
+        within('#documents'){expect(page).to have_content @test_score.title}
       end
     end
 
     after(:all) do
-      @test_paged.delete
+      @test_newspaper.delete
+      @test_score.delete
     end
 
   end
