@@ -5,6 +5,7 @@
     <tr>
       <th>Title</th>
       <th>Creator</th>
+      <th>Type</th>
       <th></th>
       <th></th>
       <th></th>
@@ -16,6 +17,7 @@
       <tr>
         <td><%= paged.title %></td>
         <td><%= paged.creator %></td>
+        <td><%= paged.type %></td>
         <td><%= link_to 'Show', paged %></td>
         <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
         <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>

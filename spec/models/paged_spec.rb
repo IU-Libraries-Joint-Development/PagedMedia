@@ -2,9 +2,10 @@ require 'spec_helper'
 
 describe Paged do
   
-  before(:each) do
+  before(:all) do
     # This gives you a test Paged object that can be used in any of the tests
-    @paged = Paged.new
+#    @paged = Paged.new
+    @paged = FactoryGirl.create :test_paged 
   end
   
   it "should have the specified datastreams" do
@@ -15,11 +16,17 @@ describe Paged do
     @paged.datastreams.keys.should include("rightsMetadata")
     @paged.rightsMetadata.should be_kind_of Hydra::Datastream::RightsMetadata
   end
+
+  it "should have the attributes of a Paged object" do
+    expect(@paged.title).not_to be_empty
+    expect(@paged.creator).not_to be_empty
+    expect(@paged.type).not_to be_empty
+  end
   
   it "should have the attributes of a Paged object and support update_attributes" do
     attributes_hash = {
-      "title" => "All the Awesome you can Handle",
-      "creator" => "I. R. Awesome"
+      "title" => "overwrite title",
+      "creator" => "overwrite creator"
     }
     
     # This will attempt to use Fedora and will fail if not available during tests
@@ -30,10 +37,13 @@ describe Paged do
     @paged.creator.should == attributes_hash["creator"]
   end
   
-  it "should be saved to Fedora and indexed to SOLR" do
+  it "should be saved to Fedora" do
     # This will attempt to use Fedora and will fail if not available during tests
     @paged.save.should be_true
-    @paged.update_index.should be_true
+  end
+  
+  after(:all) do
+    @paged.delete
   end
 
   
