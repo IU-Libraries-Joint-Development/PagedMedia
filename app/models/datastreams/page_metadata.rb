@@ -5,9 +5,9 @@ class PageMetadata < ActiveFedora::OmDatastream
   set_terminology do |t|
     t.root(path: 'fields')
     t.logical_number index_as: :stored_searchable
-    t.physical_number index_as: :stored_searchable, type: :integer
+    t.prev_page index_as: :stored_searchable
+    t.next_page index_as: :stored_searchable
     t.text index_as: :stored_searchable
-
   end
 
   def self.xml_template

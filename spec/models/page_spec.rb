@@ -22,7 +22,8 @@ describe Page do
   it { should respond_to(:xml_file) }
 
   it { should respond_to(:logical_number) }
-  it { should respond_to(:physical_number) }
   it { should respond_to(:text) }
+  it { should respond_to(:prev_page) }
+  it { should respond_to(:next_page) }
 
 end

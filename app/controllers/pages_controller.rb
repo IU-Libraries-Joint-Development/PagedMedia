@@ -32,6 +32,7 @@ class PagesController < ApplicationController
     respond_to do |format|
       @page.image_file = params[:image_file] if params.has_key?(:image_file)
       @page.ocr_file = params[:ocr_file] if params.has_key?(:ocr_file)
+      @page.xml_file = params[:xml_file] if params.has_key?(:xml_file)
       @page.paged_id = params[:paged_id] if params.has_key?(:paged_id)
       if @page.save
         if @page.paged_id
@@ -51,8 +52,6 @@ class PagesController < ApplicationController
   # PATCH/PUT /pages/1.json
   def update
     respond_to do |format|
-      @page.image_file = params[:image_file] if params.has_key?(:image_file)
-      @page.ocr_file = params[:ocr_file] if params.has_key?(:ocr_file)
       if @page.update(page_params)
         format.html do
           if (:paged == session.delete(:came_from))
@@ -92,6 +91,7 @@ class PagesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def page_params
-      params.require(:page).permit(:logical_number, :physical_number, :image_file, :paged_id, :ocr_file)
+      params.require(:page).permit(:logical_number, :prev_page, :next_page,
+        :image_file, :paged_id, :ocr_file, :xml_file)
     end
 end

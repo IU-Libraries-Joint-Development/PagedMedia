@@ -15,7 +15,8 @@ class Page < ActiveFedora::Base
   has_file_datastream 'pageXML'
 
   has_attributes :logical_number, datastream: 'descMetadata',  multiple: false
-  has_attributes :physical_number, datastream: 'descMetadata',  multiple: false
+  has_attributes :prev_page, datastream: 'descMetadata', multiple: false
+  has_attributes :next_page, datastream: 'descMetadata', multiple: false
   has_attributes :text,  datastream: 'descMetadata', multiple: false
 
   # Setter for the image

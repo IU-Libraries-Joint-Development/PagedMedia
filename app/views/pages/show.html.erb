@@ -12,8 +12,13 @@
 </p>
 
 <p>
-  <strong>Physical number:</strong>
-  <%= @page.physical_number %>
+  <strong>Previous page:</strong>
+  <%= @page.prev_page %>
+</p>
+
+<p>
+  <strong>Next page:</strong>
+  <%= @page.next_page %>
 </p>
 
 <% if @page.ocr_file %>
@@ -23,9 +28,11 @@
 <% end %>
 
 <p>
-  XML file:
+  <strong>XML file:</strong>
   <% if @page.xml_file.has_content? %>
-    <%= link_to 'XML file', ActiveFedora.fedora_config.credentials[:url] + '/' + @page.xml_datastream.url %>
+    <%= link_to @page.xml_datastream.label,
+                ActiveFedora.fedora_config.credentials[:url] +
+                  '/' + @page.xml_datastream.url %>
   <% else %>
     none.
   <% end %>
