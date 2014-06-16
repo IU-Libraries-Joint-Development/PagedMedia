@@ -16,8 +16,12 @@
     <%= f.text_field :logical_number %>
   </div>
   <div class="field">
-    <%= f.label :physical_number %><br>
-    <%= f.text_field :physical_number %>
+    <%= f.label 'Previous page:' %><br>
+    <%= f.text_field :prev_page %>
+  </div>
+  <div class="field">
+    <%= f.label 'Next page:' %><br>
+    <%= f.text_field :next_page %>
   </div>
   <div class='field'>
     <% if !@page.new? %>

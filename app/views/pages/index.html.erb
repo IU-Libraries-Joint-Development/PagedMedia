@@ -4,7 +4,8 @@
   <thead>
     <tr>
       <th>Logical number</th>
-      <th>Physical number</th>
+      <th>Previous page</th>
+      <th>Next page</th>
       <th></th>
       <th></th>
       <th></th>
@@ -15,7 +16,8 @@
     <% @pages.each do |page| %>
       <tr>
         <td><%= page.logical_number %></td>
-        <td><%= page.physical_number %></td>
+        <td><%= page.prev_page %></td>
+        <td><%= page.next_page %>
         <td><%= link_to 'Show', page %></td>
         <td><%= link_to 'Edit', edit_page_path(page) %></td>
         <td><%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %></td>

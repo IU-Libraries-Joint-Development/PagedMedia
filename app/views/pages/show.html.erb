@@ -12,8 +12,13 @@
 </p>
 
 <p>
-  <strong>Physical number:</strong>
-  <%= @page.physical_number %>
+  <strong>Previous page:</strong>
+  <%= @page.prev_page %>
+</p>
+
+<p>
+  <strong>Next page:</strong>
+  <%= @page.next_page %>
 </p>
 
 <% if @page.ocr_file %>
