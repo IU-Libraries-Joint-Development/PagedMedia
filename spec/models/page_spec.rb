@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Page do
 
-  before(:all)  { @paged = FactoryGirl.create :test_paged }
+  before(:all)  { @paged = FactoryGirl.create :test_paged; @paged.save }
   before(:each) { @page = Page.new }
 
   after(:all) do
@@ -15,6 +15,7 @@ describe Page do
 
   def empty(paged)
     # Clean up Fedora debris
+    paged.reload
     paged.pages.each {|page| page.delete}
     paged.reload # delete fails if in-memory Paged still knows deleted Pages
   end
@@ -42,7 +43,8 @@ describe Page do
   describe 'enforces linkage rules:' do
 
     it 'adds itself to its Paged' do
-      @page.logical_number = '1'
+      empty @paged
+
       @page.paged = @paged
       @page.save
       @paged.reload # paged didn't see page linkage yet
@@ -52,6 +54,8 @@ describe Page do
     end
 
     it 'must have no siblings if it is the only one in this Paged' do
+      empty @paged
+
       @page.paged = @paged
       @page.prev_page = 'too:many'
       expect(@page.save).to be_false
@@ -59,7 +63,20 @@ describe Page do
       empty @paged
     end
 
-    it 'must have one or both siblings if it is not the only one in this Paged'
+    it 'must have one or both siblings if it is not the only one in this Paged' do
+      empty @paged
+
+      @page.prev_page = nil
+      @page.paged = @paged
+      expect(@page.save).to be_true
+      @paged.reload
+
+      page2 = Page.new
+      page2.paged = @paged
+      expect(page2.save).to be_false
+
+      empty @paged
+    end
 
     it 'links itself between its siblings when saved'
 

@@ -19,7 +19,8 @@ class Page < ActiveFedora::Base
   has_attributes :next_page, datastream: 'descMetadata', multiple: false
   has_attributes :text,  datastream: 'descMetadata', multiple: false
 
-  validate :siblings_must_exist
+  validate :validate_siblings_exist
+  validate :validate_has_required_siblings
 
   # Setter for the image
   def image_file=(file)
@@ -73,8 +74,9 @@ class Page < ActiveFedora::Base
     @datastreams['pageXML']
   end
 
+  # If a page declares siblings, ensure that the Paged knows them.
   private
-  def siblings_must_exist
+  def validate_siblings_exist
     if (!paged.nil?) # FIXME should we allow unowned Page?
 
       found = false
@@ -96,6 +98,62 @@ class Page < ActiveFedora::Base
     end
   end
 
-  def before_save
+  # If the Paged is empty, sibling pointers should be nil.
+  # Otherwise each pointer in this Page should point to corresponding sib's
+  # other sib.
+  def validate_has_required_siblings
+    return if paged.nil? # FIXME should we allow unowned Page?
+
+    if (paged.pages.size == 0)
+      errors.add(:prev_page, 'prev_page must be nil') if prev_page
+      errors.add(:next_page, 'next_page must be nil') if next_page
+      return
+    end
+
+    errors[:base] << 'must have one or both siblings if other pages exist' if (prev_page.nil? && next_page.nil?)
+
+    if (prev_page)
+      prev_sib = Page.find(prev_page)
+      errors.add(:next_page, 'Invalid next_page') if prev_sib.next_page != next_page
+    end
+
+    if (next_page)
+      next_sib = Page.find(next_page)
+      errors.add(:prev_page, 'Invalid prev_page') if next_sib.prev_page != prev_page
+    end
   end
+
+  # Link this page into the list
+  def before_save
+#    if (prev_page)
+#      prev_sib = Page.find(prev_page)
+#      prev_sib.next_page = pid
+#      prev_sib.save!
+#    end
+#
+#    if (next_page)
+#      next_sib = Page.find(next_page)
+#      next_sib.next_page = pid
+#      next_sib.save!
+#    end
+  end
+
+  # Unlink this page from the list
+  def before_destroy
+#    if (prev_page)
+#      prev_sib = Page.find(prev_page)
+#    end
+#    if (next_page)
+#      next_sib = Page.find(next_page)
+#    end
+#    if (prev_sib)
+#      prev_sib.next_page = next_sib ? next_sib.pid : nil
+#      prev_sib.save!
+#    end
+#    if (next_sib)
+#      next_sib.prev_page = prev_sib ? prev_sib.pid : nil
+#      next_sib.save!
+#    end
+  end
+
 end
