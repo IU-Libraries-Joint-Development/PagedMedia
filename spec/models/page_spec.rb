@@ -42,9 +42,9 @@ describe Page do
   describe 'enforces linkage rules:' do
 
     it 'adds itself to its Paged' do
-      page = Page.new(logical_number: '1')
-      page.paged = @paged
-      page.save
+      @page.logical_number = '1'
+      @page.paged = @paged
+      @page.save
       @paged.reload # paged didn't see page linkage yet
       expect(@paged.pages.size).to eq 1
 
@@ -52,8 +52,9 @@ describe Page do
     end
 
     it 'must have no siblings if it is the only one in this Paged' do
+      @page.paged = @paged
       @page.prev_page = 'too:many'
-      expect(@page.save).to raise_error(ArgumentError)
+      expect(@page.save).to be_false
 
       empty @paged
     end
