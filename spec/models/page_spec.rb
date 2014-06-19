@@ -107,10 +107,24 @@ describe Page do
     end
 
     it 'unlinks itself and links its siblings when deleted' do
+      empty @paged
+
       page1, page2, page3 = make_a_book
       puts page1.inspect
       puts page2.inspect
       puts page3.inspect
+
+      page2.delete
+
+      page1.reload
+      expect(page1.prev_page).to be_nil
+      expect(page1.next_page).to eql(page3.pid)
+
+      page3.reload
+      expect(page3.prev_page).to eql(page1.pid)
+      expect(page3.next_page).to be_nil
+
+      empty @paged
     end
 
   end

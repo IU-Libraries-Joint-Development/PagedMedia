@@ -21,8 +21,6 @@ class Page < ActiveFedora::Base
 
   validate :validate_has_required_siblings
 
-  before_destroy :unlink_siblings
-
 
   # Setter for the image
   def image_file=(file)
@@ -100,6 +98,7 @@ class Page < ActiveFedora::Base
   # method's internal use.
   def save(opts={})
 
+    puts "Saving #{self.inspect}"
     if (opts.has_key?(:unchecked))
       return super()
     end
@@ -156,20 +155,32 @@ class Page < ActiveFedora::Base
   end
 
   # Unlink this page from the list
-  def unlink_siblings
-    puts "unlink_siblings"
-#    prev_sib = Page.find(prev_page) if (prev_page)
-#    next_sib = Page.find(next_page) if (next_page)
-#
-#    if (prev_sib)
-#      prev_sib.next_page = next_sib ? next_sib.pid : nil
-#      prev_sib.save!
-#    end
-#
-#    if (next_sib)
-#      next_sib.prev_page = prev_sib ? prev_sib.pid : nil
-#      next_sib.save!
-#    end
+  def delete
+    puts "delete #{self.inspect}"
+
+    begin
+      prev_sib = Page.find(prev_page) if (prev_page)
+    rescue ActiveFedora::ObjectNotFoundError => e
+      logger.error("deleting #{pid}, missing prev_page: #{e}")
+    end
+
+    begin
+      next_sib = Page.find(next_page) if (next_page)
+    rescue ActiveFedora::ObjectNotFoundError => e
+      logger.error("deleting #{pid}, missing next_page: #{e}")
+    end
+
+    if (prev_sib)
+      prev_sib.next_page = next_sib ? next_sib.pid : nil
+      prev_sib.save(unchecked: 1)
+    end
+
+    if (next_sib)
+      next_sib.prev_page = prev_sib ? prev_sib.pid : nil
+      next_sib.save(unchecked: 1)
+    end
+
+    super
   end
 
 end
