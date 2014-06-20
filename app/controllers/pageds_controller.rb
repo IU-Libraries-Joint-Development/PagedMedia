@@ -10,6 +10,10 @@ class PagedsController < ApplicationController
   # GET /pageds/1
   # GET /pageds/1.json
   def show
+    @ordered, @error = Paged.order_pages(@paged)
+    if @error
+      flash.now[:error] = "ERROR Ordering Items : #{@error}"
+    end
   end
 
   # GET /pageds/new

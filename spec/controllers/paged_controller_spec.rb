@@ -67,7 +67,7 @@ describe 'For page listing' do
       # Return page 3's prev page
       page3.prev_page = prev_page
       page3.save!
-      expect(page).to have_css('h3.error')
+      expect(page).to have_css('div.alert-error')
     end
   end
 
@@ -88,7 +88,7 @@ describe 'For page listing' do
       # Return page 3's prev page
       page3.next_page = next_page
       page3.save!
-      expect(page).to have_css('h3.error')
+      expect(page).to have_css('div.alert-error')
     end
   end
   
@@ -109,7 +109,7 @@ describe 'For page listing' do
       # Return page 3's prev page
       page3.next_page = next_page
       page3.save!
-      expect(page).to have_css('h3.error')
+      expect(page).to have_css('div.alert-error')
     end
   end
   
@@ -129,14 +129,14 @@ describe 'For page listing' do
       # Return page 3's prev page
       page3.next_page = next_page
       page3.save!
-      expect(page).to have_css('h3.error')
+      expect(page).to have_css('div.alert-error')
     end
   end
   
   after(:all) do  
-    #@test_paged.pages.each do |page|
-    #  page.delete
-    #end
+    @test_paged.pages.each do |page|
+      page.delete
+    end
     @test_paged.delete
   end
 
