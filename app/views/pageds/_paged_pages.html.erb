@@ -1,4 +1,53 @@
 <div id="paged_pages">
+
+<%
+# Get First Page
+@error = false
+@first_page = false
+@page_ids = Array.new
+paged.pages.each do |page|
+  @page_ids << page.pid
+  next if page.prev_page != ''
+  # Check for Multiple first pages
+  if !@first_page
+    @first_page = page
+  else
+    @error = "Multiple First Pages"
+  end
+end
+@ordered_pages = Array.new
+@next_page = @first_page
+@pages = Array.new
+while @next_page do
+  @ordered_pages << @next_page
+  @np_id = @next_page.next_page
+  if @pages.include?(@np_id)
+    # Check for infinite loop
+    @error = "Infinite loop of pages"
+    @next_page = false
+  elsif @np_id != ''
+    if @page_ids.include?(@np_id)
+      @pages << @np_id
+      @next_page = Page.find(@np_id)
+    else
+      # Page not part of Paged object
+      @error = "Page not Found in Listing"
+      @next_page = false
+    end
+  else 
+    @next_page = false
+  end
+end
+# Check if all pages are included
+if @ordered_pages.count < paged.pages.count 
+  @error = "Pages Missing From List"
+end  
+%>
+
+  <% if @error %>
+    <h3 class="error">ERROR - <%= @error %></h3>
+  <% end %>
+  
   <p><strong>Number of pages : </strong><%= paged.pages.size %></p>
   <% session[:came_from] = :paged %>
   <div id="pages">
@@ -6,10 +55,12 @@
       <tr>
         <td></td>
         <th>Logical Number</th>
-        <th>Physical Number</th>
+        <th>Page ID</th>
+        <th>Previous Page</th>
+        <th>Next Page</th>
         <th>Links</th>
       </tr>
-      <% paged.pages.each do |page| %>
+      <% @ordered_pages.each do |page| %>
       <tr>
         <td>
           <% if page.image_datastream.mimeType %>
@@ -23,8 +74,10 @@
             %>
           <% end %>
         </td>
-        <td><%= page.logical_number %></td>
-        <td><%= page.physical_number %></td>
+        <td class='logical_numbers'><%= page.logical_number %></td>
+        <td><%= page.id %></td>
+        <td><%= page.prev_page %></td>
+        <td><%= page.next_page %></td>
         <td>
           <%= link_to 'Show', page %> |
           <%= link_to 'Edit', edit_page_path(page) %> |
