@@ -15,16 +15,17 @@ class Paged < ActiveFedora::Base
   has_attributes :type, datastream: 'descMetadata', multiple: false
 
   def order_pages()    
-    # Method returns array of order pages and false or error message
+    # Method returns order pages and false
+    # Or unordered pages and an error message
     ordered_pages = Array.new
     error = false
-    # Get First Page and all page ids
+    # Get first page and all page ids
     first_page = false
     page_ids = Array.new
     self.pages.each do |page|
       page_ids << page.pid
       next if page.prev_page != ''
-      # Check for Multiple first pages
+      # Check for multiple first pages
       if !first_page
         first_page = page
       else
@@ -58,7 +59,7 @@ class Paged < ActiveFedora::Base
     if !error && ordered_pages.count < self.pages.count
       error = "Pages Missing From List"
     end
-    #return unordered list if error occurs
+    # Return unordered list if error occurs
     return [self.pages, error] if error
     return [ordered_pages, error]
   end
