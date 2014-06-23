@@ -18,7 +18,7 @@ class Paged < ActiveFedora::Base
     # Method returns array of order pages and false or error message
     ordered_pages = Array.new
     error = false
-    # Get First Page
+    # Get First Page and all page ids
     first_page = false
     page_ids = Array.new
     self.pages.each do |page|
@@ -35,13 +35,14 @@ class Paged < ActiveFedora::Base
     pages = Array.new
     while next_page do
       ordered_pages << next_page
-      np_id = next_page.next_page
-      if pages.include?(np_id)
-        # Check for infinite loop
-        error = "Infinite loop of pages"
-        next_page = false
-      elsif np_id != ''
-        if page_ids.include?(np_id)
+      np_id = next_page.next_page      
+      if np_id != ''
+        if pages.include?(np_id)
+          # Check for infinite loop
+          error = "Infinite loop of pages"
+          next_page = false
+        elsif page_ids.include?(np_id)
+          # Find next page
           pages << np_id
           next_page = Page.find(np_id)
         else
@@ -49,14 +50,16 @@ class Paged < ActiveFedora::Base
           error = "Page not Found in Listing"
           next_page = false
         end
-      else 
+      else
         next_page = false
       end
     end
     # Check if all pages are included
-    if ordered_pages.count < self.pages.count 
+    if !error && ordered_pages.count < self.pages.count
       error = "Pages Missing From List"
     end
+    #return unordered list if error occurs
+    return [self.pages, error] if error
     return [ordered_pages, error]
   end
 
