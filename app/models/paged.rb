@@ -14,49 +14,50 @@ class Paged < ActiveFedora::Base
   has_attributes :creator, datastream: 'descMetadata', multiple: false
   has_attributes :type, datastream: 'descMetadata', multiple: false
 
-  def Paged.order_pages(paged)    
+  def order_pages()    
+    # Method returns array of order pages and false or error message
+    ordered_pages = Array.new
+    error = false
     # Get First Page
-    @error = false
-    @first_page = false
-    @page_ids = Array.new
-    paged.pages.each do |page|
-      @page_ids << page.pid
+    first_page = false
+    page_ids = Array.new
+    self.pages.each do |page|
+      page_ids << page.pid
       next if page.prev_page != ''
       # Check for Multiple first pages
-      if !@first_page
-        @first_page = page
+      if !first_page
+        first_page = page
       else
-        @error = "Multiple First Pages"
+        error = "Multiple First Pages"
       end
-    end
-    @ordered_pages = Array.new
-    @next_page = @first_page
-    @pages = Array.new
-    while @next_page do
-      @ordered_pages << @next_page
-      @np_id = @next_page.next_page
-      if @pages.include?(@np_id)
+    end    
+    next_page = first_page
+    pages = Array.new
+    while next_page do
+      ordered_pages << next_page
+      np_id = next_page.next_page
+      if pages.include?(np_id)
         # Check for infinite loop
-        @error = "Infinite loop of pages"
-        @next_page = false
-      elsif @np_id != ''
-        if @page_ids.include?(@np_id)
-          @pages << @np_id
-          @next_page = Page.find(@np_id)
+        error = "Infinite loop of pages"
+        next_page = false
+      elsif np_id != ''
+        if page_ids.include?(np_id)
+          pages << np_id
+          next_page = Page.find(np_id)
         else
           # Page not part of Paged object
-          @errors = "Page not Found in Listing"
-          @next_page = false
+          error = "Page not Found in Listing"
+          next_page = false
         end
       else 
-        @next_page = false
+        next_page = false
       end
     end
     # Check if all pages are included
-    if @ordered_pages.count < paged.pages.count 
-      @error = "Pages Missing From List"
+    if ordered_pages.count < self.pages.count 
+      error = "Pages Missing From List"
     end
-    return [@ordered_pages, @error]
+    return [ordered_pages, error]
   end
 
 end
