@@ -76,18 +76,24 @@ class Page < ActiveFedora::Base
   end
 
 
+
+  # A link is "unset" if it is nil or an empty String
+  def unset(attribute)
+    attribute.nil? || attribute.empty?
+  end
+
   # If the Paged is empty, sibling pointers should be nil, otherwise at least
   # one must be non-nil.
   def validate_has_required_siblings
     return if paged.nil? # FIXME should we allow unowned Page?
 
     if (paged.pages.size == 0)
-      errors.add(:prev_page, 'prev_page must be nil') if prev_page
-      errors.add(:next_page, 'next_page must be nil') if next_page
+      errors.add(:prev_page, 'prev_page must be empty') if !unset(prev_page)
+      errors.add(:next_page, 'next_page must be empty') if !unset(next_page)
       return
     end
 
-    errors[:base] << 'must have one or both siblings if other pages exist' if (prev_page.nil? && next_page.nil?)
+    errors[:base] << 'must have one or both siblings if other pages exist' if (unset(prev_page) && unset(next_page))
   end
 
 
@@ -98,18 +104,22 @@ class Page < ActiveFedora::Base
   # method's internal use.
   def save(opts={})
 
-    puts "Saving #{self.inspect}"
     if (opts.has_key?(:unchecked))
       return super()
     end
 
-    if (prev_page)
+    if (!unset(prev_page))
       found = false
-      paged.pages.each do |a_page|
-        found = true if a_page.pid == prev_page
-      end
-      if !found
-        errors.add(:prev_page, "#{prev_page} not in #{paged.pid}")
+      if (!paged.nil?)
+        paged.pages.each do |a_page|
+          found = true if a_page.pid == prev_page
+        end
+        if !found
+          errors.add(:prev_page, "#{prev_page} not in #{paged.pid}")
+          return false
+        end
+      else
+        errors.add(:prev_page, 'Unowned page cannot have siblings')
         return false
       end
 
@@ -120,13 +130,18 @@ class Page < ActiveFedora::Base
       end
     end
 
-    if (next_page)
+    if (!unset(next_page))
       found = false
-      paged.pages.each do |a_page|
-        found = true if a_page.pid == next_page
-      end
-      if !found
-        errors.add(:next_page, "#{next_page} not in #{paged.pid}")
+      if (!paged.nil?)
+        paged.pages.each do |a_page|
+          found = true if a_page.pid == next_page
+        end
+        if !found
+          errors.add(:next_page, "#{next_page} not in #{paged.pid}")
+          return false
+        end
+      else
+        errors.add(:next_page, 'Unowned page cannot have siblings')
         return false
       end
 
@@ -139,13 +154,13 @@ class Page < ActiveFedora::Base
 
     return false if ! super()
 
-    if (prev_page)
+    if (!unset(prev_page))
       prev_sib = Page.find(prev_page)
       prev_sib.next_page = pid
       prev_sib.save(unchecked: 1)
     end
 
-    if (next_page)
+    if (!unset(next_page))
       next_sib = Page.find(next_page)
       next_sib.prev_page = pid
       next_sib.save(unchecked: 1)
@@ -156,16 +171,14 @@ class Page < ActiveFedora::Base
 
   # Unlink this page from the list
   def delete
-    puts "delete #{self.inspect}"
-
     begin
-      prev_sib = Page.find(prev_page) if (prev_page)
+      prev_sib = Page.find(prev_page) if (!unset(prev_page))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing prev_page: #{e}")
     end
 
     begin
-      next_sib = Page.find(next_page) if (next_page)
+      next_sib = Page.find(next_page) if (!unset(next_page))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing next_page: #{e}")
     end

@@ -9,7 +9,7 @@ describe Page do
     @paged.save
   end
 
-  before(:each) { @page = Page.new }
+  before(:each) { @page = Page.new(prev_page: '', next_page: '') }
 
   after(:all) do
     # Clean up Fedora debris
@@ -72,13 +72,13 @@ describe Page do
     it 'must have one or both siblings if it is not the only one in this Paged' do
       empty @paged
 
-      @page.prev_page = nil
+      @page.prev_page = ''
       @page.logical_number = '1'
       @page.paged = @paged
       expect(@page.save).to be_true
       @paged.save
 
-      page2 = Page.new(logical_number: '2')
+      page2 = Page.new(logical_number: '2', prev_page: '', next_page: '')
       @paged.reload
       page2.paged = @paged
       expect(page2.save).to be_false
@@ -110,19 +110,16 @@ describe Page do
       empty @paged
 
       page1, page2, page3 = make_a_book
-      puts page1.inspect
-      puts page2.inspect
-      puts page3.inspect
 
       page2.delete
 
       page1.reload
-      expect(page1.prev_page).to be_nil
+      expect(page1.prev_page).to be_empty
       expect(page1.next_page).to eql(page3.pid)
 
       page3.reload
       expect(page3.prev_page).to eql(page1.pid)
-      expect(page3.next_page).to be_nil
+      expect(page3.next_page).to be_empty
 
       empty @paged
     end
@@ -132,13 +129,13 @@ describe Page do
   # Populate @paged with three linked pages, and return references to them.
   def make_a_book
     # First page, can have no siblings
-    page1 = Page.new(logical_number: '1')
+    page1 = Page.new(logical_number: '1', prev_page: '', next_page: '')
     page1.paged = @paged
     page1.save!
     @paged.save!
 
     # Second page, must have at least one sibling
-    page3 = Page.new(logical_number: '3')
+    page3 = Page.new(logical_number: '3', next_page: '')
     page1.reload
     page3.prev_page = page1.pid
     @paged.reload
