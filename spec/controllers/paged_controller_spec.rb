@@ -137,6 +137,7 @@ describe 'For page listing' do
     @test_paged.pages.each do |page|
       page.delete
     end
+    @test_paged.reload
     @test_paged.delete
   end
 
