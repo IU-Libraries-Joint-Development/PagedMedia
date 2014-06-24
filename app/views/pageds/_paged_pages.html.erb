@@ -6,7 +6,8 @@
       <tr>
         <td></td>
         <th>Logical Number</th>
-        <th>Physical Number</th>
+        <th>Previous Page</th>
+        <th>Next Page</th>
         <th>Links</th>
       </tr>
       <% paged.pages.each do |page| %>
@@ -24,7 +25,8 @@
           <% end %>
         </td>
         <td><%= page.logical_number %></td>
-        <td><%= page.physical_number %></td>
+        <td><%= page.prev_page %></td>
+        <td><%= page.next_page %></td>
         <td>
           <%= link_to 'Show', page %> |
           <%= link_to 'Edit', edit_page_path(page) %> |
