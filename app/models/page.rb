@@ -130,7 +130,7 @@ class Page < ActiveFedora::Base
       end
 
       prev_sib = Page.find(prev_page)
-      if prev_sib.next_page != next_page
+      if (prev_sib.next_page != next_page) && (prev_sib.next_page != pid)
         errors.add(:next_page, 'invalid')
         return false
       end
@@ -152,7 +152,7 @@ class Page < ActiveFedora::Base
       end
 
       next_sib = Page.find(next_page)
-      if next_sib.prev_page != prev_page
+      if (next_sib.prev_page != prev_page) && (next_sib.prev_page != pid)
         errors.add(:prev_page, 'invalid')
         return false
       end
