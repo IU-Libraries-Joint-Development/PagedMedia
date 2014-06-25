@@ -21,18 +21,25 @@ class Paged < ActiveFedora::Base
     error = false
     # Get first page and all page ids
     first_page = false
+    next_page = false
     page_ids = Array.new
     self.pages.each do |page|
       page_ids << page.pid
-      next if page.prev_page != ''
+      next if page.prev_page != nil && page.prev_page != ''
       # Check for multiple first pages
       if !first_page
         first_page = page
       else
         error = "Multiple First Pages"
+        return [self.pages, error]
       end
+    end
+    if first_page
+      next_page = first_page
+    else
+      error = "No First Page Found"
+      return [self.pages, error]
     end    
-    next_page = first_page
     pages = Array.new
     while next_page do
       ordered_pages << next_page
