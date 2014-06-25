@@ -44,7 +44,7 @@ class Paged < ActiveFedora::Base
     while next_page do
       ordered_pages << next_page
       np_id = next_page.next_page      
-      if np_id != ''
+      if  np_id != nil && np_id != ''
         if pages.include?(np_id)
           # Check for infinite loop
           error = "Infinite loop of pages"
@@ -55,7 +55,7 @@ class Paged < ActiveFedora::Base
           next_page = Page.find(np_id)
         else
           # Page not part of Paged object
-          error = "Page not Found in Listing"
+          error = "Page not Found in Listing - " + np_id.to_s
           next_page = false
         end
       else
