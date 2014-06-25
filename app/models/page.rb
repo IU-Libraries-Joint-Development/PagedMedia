@@ -87,13 +87,19 @@ class Page < ActiveFedora::Base
   def validate_has_required_siblings
     return if paged.nil? # FIXME should we allow unowned Page?
 
+    # No pages yet, so this page can't have siblings
     if (paged.pages.size == 0)
       errors.add(:prev_page, 'prev_page must be empty') if !unset(prev_page)
       errors.add(:next_page, 'next_page must be empty') if !unset(next_page)
       return
     end
 
-    errors[:base] << 'must have one or both siblings if other pages exist' if (unset(prev_page) && unset(next_page))
+    # At least one page already exists.  Must have at least one sibling
+    # unless the one page is this one (we are updating, not creating).
+    if (unset(prev_page) && unset(next_page) &&
+        ((paged.pages.size > 1) || (paged.pages.first.pid != pid)))
+      errors[:base] << 'must have one or both siblings if other pages exist'
+    end
   end
 
 
