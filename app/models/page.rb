@@ -158,7 +158,13 @@ class Page < ActiveFedora::Base
       end
     end
 
-    return false if ! super()
+    begin
+      return false if ! super()
+    rescue RestClient::BadRequest => e
+      errors[:base] << e.message
+      errors[:base] << 'Check for a damaged or invalid file'
+      return false
+    end
 
     if (!unset(prev_page))
       prev_sib = Page.find(prev_page)
