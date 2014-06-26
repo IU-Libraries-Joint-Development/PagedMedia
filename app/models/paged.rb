@@ -37,6 +37,7 @@ class Paged < ActiveFedora::Base
     if first_page
       next_page = first_page
     else
+      # Check for no first page
       error = "No First Page Found"
       return [self.pages, error]
     end    
@@ -54,7 +55,7 @@ class Paged < ActiveFedora::Base
           pages << np_id
           next_page = Page.find(np_id)
         else
-          # Page not part of Paged object
+          # Page not part of paged object
           error = "Page not Found in Listing - " + np_id.to_s
           next_page = false
         end

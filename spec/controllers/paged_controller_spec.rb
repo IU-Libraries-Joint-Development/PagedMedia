@@ -113,30 +113,8 @@ describe 'For page listing' do
     end
   end
   
-  context "when a page to be listed does belong to the paged object" do
-    it "an error message should display" do
-      next_page = ''
-      page3 = ''
-      @test_paged.pages.each {|page|
-        if page.logical_number == "Page 3"
-          page3 = page
-          next_page = page.next_page
-          page.next_page = 'nothing'
-          page.save!
-        end
-      }
-      visit pageds_path + '/' + @test_paged.pid
-      # Return page 3's prev page
-      page3.next_page = next_page
-      page3.save!
-      expect(page).to have_css('div.alert-error')
-    end
-  end
-  
   after(:all) do  
-    @test_paged.pages.each do |page|
-      page.delete
-    end
+    @test_paged.pages.each {|page| page.delete }
     @test_paged.reload
     @test_paged.delete
   end
