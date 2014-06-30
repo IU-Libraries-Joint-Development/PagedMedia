@@ -6,11 +6,12 @@
       <tr>
         <td></td>
         <th>Logical Number</th>
+        <th>Page ID</th>
         <th>Previous Page</th>
         <th>Next Page</th>
         <th>Links</th>
       </tr>
-      <% paged.pages.each do |page| %>
+      <% ordered.each do |page| %>
       <tr>
         <td>
           <% if page.image_datastream.mimeType %>
@@ -24,7 +25,8 @@
             %>
           <% end %>
         </td>
-        <td><%= page.logical_number %></td>
+        <td class='logical_numbers'><%= page.logical_number %></td>
+        <td><%= page.id %></td>
         <td><%= page.prev_page %></td>
         <td><%= page.next_page %></td>
         <td>
