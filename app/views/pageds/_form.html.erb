@@ -24,6 +24,18 @@
     <%= f.text_field :type %>
   </div>
 
+  <div class='field'>
+    <% if !@paged.new? %>
+      Current XML file:
+      <% if @paged.xml_datastream.has_content? %>
+        <%= link_to @paged.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @paged.xml_datastream.url %>
+      <% else %>
+        none.      <% end %>
+    <% end %>
+    <%= f.label 'New XML file:' %>
+    <%= f.file_field :xml_file %>
+  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>
