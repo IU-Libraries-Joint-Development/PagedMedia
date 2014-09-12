@@ -26,7 +26,7 @@
 
   <div class='field'>
     <% if !@paged.new? %>
-      Current XML file:
+      Current paged XML file:
       <% if @paged.xml_datastream.has_content? %>
         <%= link_to @paged.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @paged.xml_datastream.url %>
       <% else %>
