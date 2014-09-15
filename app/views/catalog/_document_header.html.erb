@@ -7,9 +7,16 @@
              <% counter = document_counter_with_offset(document_counter) %>
              <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
            </span>
-         <%= link_to_document document, :label=>document_show_link_field(document), :counter => counter %>
-        </h5>
+          <% if document.document_type == "Paged" %>
+              <a href='pageds/<%= document.id %>'>
+                <%= document['title_tesim'][0] %>
+              </a>
+          <% else %>
+            <%= link_to_document document, :label=>document_show_link_field(document), :counter => counter %>
+          <% end %>
+        </h5>        
 
         <% # bookmark functions for items/docs -%>
         <%= render_index_doc_actions document, :wrapping_class => "documentFunctions span2" %>
       </div>
+      
