@@ -17,13 +17,13 @@ require 'spec_helper'
         visit root_path
       end
       it "should list type links" do
-	within('#facets'){expect(page).to have_link @test_newspaper.type}
-	within('#facets'){expect(page).to have_link @test_score.type}
+      	within('#facets'){expect(page).to have_link @test_newspaper.type}
+      	within('#facets'){expect(page).to have_link @test_score.type}
       end
       it "should link to type-specific items" do
-	within('#facets'){click_link(@test_newspaper.type)}
-	within('#documents'){expect(page).to have_content @test_newspaper.title}
-	within('#documents'){expect(page).not_to have_content @test_score.title}
+      	within('#facets'){click_link(@test_newspaper.type)}
+        within('#documents'){expect(page).to have_content @test_newspaper.title}
+        within('#documents'){expect(page).not_to have_content @test_score.title}
       end
     end
 
@@ -109,4 +109,12 @@ require 'spec_helper'
       @test_paged.delete
     end
 
-end
+  end
+
+  describe 'browse' do
+    it 'links to the list of Pageds when user selects Browse' do
+      visit root_path
+      click_link 'side_nav_browse'
+      expect(page).to have_table('listPageds')
+    end
+  end
