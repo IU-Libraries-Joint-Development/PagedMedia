@@ -13,3 +13,7 @@ $(document).on "click", ".show_add_page_form", ->
       $("#add_page").toggle()
       $("#cancel_add_page").toggle()
       return false
+
+jQuery ->
+  $("#sortable_pages").sortable update: (event, ui) ->
+    $("#reorder_submission").val $("#sortable_pages").sortable("toArray")

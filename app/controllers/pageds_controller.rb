@@ -65,6 +65,54 @@ class PagedsController < ApplicationController
     end
   end
 
+  def reorder
+    unless params[:reorder_submission].nil? || params[:reorder_submission].blank?
+      page_id_list = params[:reorder_submission].to_s.split(',') unless params[:reorder_submission].nil?
+      page_id_list ||= []
+      puts "page_id_list: #{page_id_list.inspect}"
+      #build pages array
+      pages_array = []
+      page_id_list.each do |page_id|
+        puts "page_id: #{page_id}"
+        pages_array << Page.find(page_id)
+        puts "pages_array(#{pages_array.size}): #{pages_array.inspect}"
+      end
+      puts "AFTER BUILD: #{pages_array.inspect}"
+      #reset numbers
+      pages_array.each_with_index do |page, index|
+        puts "position: #{index + 1}, #{page.id}"
+        page.logical_number = (index + 1).to_s
+      end
+      puts "AFTER NUMBERS: #{pages_array.inspect}"
+      #reset previous pages
+      previous_page = nil
+      pages_array.each do |page|
+        page.prev_page = previous_page
+        previous_page = page.id
+      end
+      puts "AFTER PREVIOUS: #{pages_array.inspect}"
+      #reset next pages
+      next_page = nil
+      pages_array.reverse_each do |page|
+        page.next_page = next_page
+        next_page = page.id
+        puts "next_page: #{next_page.inspect}"
+      end
+      puts "AFTER NEXT: #{pages_array.inspect}"
+      flash[:notice] = ""
+      pages_array.each do |page|
+        if page.save(unchecked: 1)
+          flash[:notice] += "#{page.logical_number}: #{page.id} SUCCESS | "
+        else
+          flash[:notice] += "#{page.logical_number}: #{page.id} #{page.errors.messages.to_s} | "
+        end
+      end
+    else
+      flash[:notice] = "No changes to the page order were submitted."
+    end
+    redirect_to action: :show
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_paged
@@ -74,5 +122,9 @@ class PagedsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def paged_params
       params.require(:paged).permit(:title, :creator, :type)
+    end
+
+    def reorder_params
+      params.permit(:reorder_submission)
     end
 end
