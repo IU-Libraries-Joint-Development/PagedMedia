@@ -39,11 +39,6 @@
         <%= topbar_items.join('').html_safe %>
       </div>
       <!-- /Top bar -->
-      <!-- Side bar -->
-      <div style='float: left;'>
-        <%= render partial: 'shared/side_navbar' %>
-      </div>
-      <!-- /Side bar -->
       <div class="row">
         <div class="span12">
           <div id="main-flashes">
@@ -53,7 +48,14 @@
       </div>              
 
       <div class="row">
-        <%= yield %>
+        <!-- Side bar -->
+        <div style='float: left; width: 10em;'>
+          <%= render partial: 'shared/side_navbar' %>
+        </div>
+        <!-- /Side bar -->
+        <div id='content' style='margin-left: 12em;'>
+          <%= yield %>
+        </div>
       </div>   
     </div>
 
