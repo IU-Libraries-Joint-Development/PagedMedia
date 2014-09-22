@@ -1,7 +1,9 @@
 PagedMedia::Application.routes.draw do
   resources :pages
 
-  resources :pageds
+  resources :pageds do
+    patch :reorder, on: :member
+  end
 
   root :to => "catalog#index"
   Blacklight.add_routes(self)
