@@ -10,9 +10,30 @@ class Paged < ActiveFedora::Base
 
   has_many :pages, :property=> :is_part_of
 
+  has_file_datastream 'pagedXML'
+
   has_attributes :title, datastream: 'descMetadata', multiple: false  # TODO update DC.title as well?
   has_attributes :creator, datastream: 'descMetadata', multiple: false
   has_attributes :type, datastream: 'descMetadata', multiple: false
+
+
+  # Setter for the XML datastream
+  def xml_file=(file)
+    ds = @datastreams['pagedXML']
+    ds.content = file
+    ds.mimeType = 'application/xml'
+    ds.dsLabel = file.original_filename
+  end
+
+  # Getter for the XML datastream
+  def xml_file
+    @datastreams['pagedXML']
+  end
+
+  def xml_datastream
+    @datastreams['pagedXML']
+  end
+
 
   def order_pages()    
     # Method returns order pages and false

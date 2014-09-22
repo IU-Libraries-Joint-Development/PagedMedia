@@ -73,6 +73,6 @@ class PagedsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def paged_params
-      params.require(:paged).permit(:title, :creator, :type)
+      params.require(:paged).permit(:title, :creator, :type, :xml_file)
     end
 end

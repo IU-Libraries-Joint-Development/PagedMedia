@@ -119,4 +119,6 @@ describe 'For page listing' do
     @test_paged.delete
   end
 
+it 'stores a new XML datastream'
+
 end

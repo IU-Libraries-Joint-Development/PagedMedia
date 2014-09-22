@@ -15,6 +15,7 @@ describe Paged do
     # Check for rightsMetadata datastream
     @paged.datastreams.keys.should include("rightsMetadata")
     @paged.rightsMetadata.should be_kind_of Hydra::Datastream::RightsMetadata
+    @paged.pagedXML.should be_kind_of ActiveFedora::Datastream
   end
 
   it "should have the attributes of a Paged object" do

@@ -15,6 +15,16 @@
   <%= @paged.type %>
 </p>
 
+<p>
+  <strong>XML file:</strong>
+  <% if @paged.xml_file.has_content? %>
+    <%= link_to @paged.xml_datastream.label,
+                ActiveFedora.fedora_config.credentials[:url] +
+                  '/' + @paged.xml_datastream.url %>
+  <% else %>
+    none.
+  <% end %>
+</p>
 
 <%= link_to 'Edit', edit_paged_path(@paged) %> |
 <%= link_to 'Back', pageds_path %>
@@ -24,7 +34,3 @@
 <div id='pages'>
   <%= render :partial=>'paged_pages', :locals => { :paged => @paged, :ordered => @ordered } %>
 </div>
-
-
-
-
