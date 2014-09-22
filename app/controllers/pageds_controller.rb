@@ -65,6 +65,42 @@ class PagedsController < ApplicationController
     end
   end
 
+  def reorder
+    unless params[:reorder_submission].nil? || params[:reorder_submission].blank?
+      page_ids = params[:reorder_submission].to_s.split(',')
+      page_ids ||= []
+      pages = []
+      page_ids.each do |page_id|
+        pages << Page.find(page_id)
+      end
+      pages.each_with_index do |page, index|
+        page.logical_number = (index + 1).to_s
+      end
+
+      previous_page = nil
+      pages.each do |page|
+        page.prev_page = previous_page
+        previous_page = page.id
+      end
+      next_page = nil
+      pages.reverse_each do |page|
+        page.next_page = next_page
+        next_page = page.id
+      end
+
+      page_errors = ""
+      pages.each do |page|
+        if !page.save(unchecked: 1)
+          page_errors += "#{page.logical_number}. #{page.id} save error: #{page.errors.messages.to_s} | "
+        end
+      end
+      flash[:notice] = page_errors unless page_errors.blank?
+    else
+      flash[:notice] = "No changes to the page order were submitted."
+    end
+    redirect_to action: :show
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_paged
@@ -74,5 +110,9 @@ class PagedsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def paged_params
       params.require(:paged).permit(:title, :creator, :type)
+    end
+
+    def reorder_params
+      params.permit(:reorder_submission)
     end
 end

@@ -1,0 +1,16 @@
+<div id="reorder_pages_container">
+  <p><strong>Reorder pages</strong><p>
+  <div id="reorder_pages">
+    <%= form_for(@paged, url: { action: :reorder }) do |f| %>
+      <ul id="sortable_pages">
+      <% @ordered.each do |page| %>
+        <li id="<%= page.id %>" class="ui-state-default ui-sortable-handle">
+	  <%= page.logical_number %>. <%= page.id %>
+	</li>
+      <% end %>
+      </ul>
+      <input id="reorder_submission" name="reorder_submission" type="hidden" value="">
+      <%= f.submit "Reorder pages" %>
+    <% end %>
+  </div>
+</div>
