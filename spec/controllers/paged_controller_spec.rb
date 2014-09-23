@@ -39,7 +39,7 @@ describe 'For page listing' do
   before(:all) do
     @test_paged = create(:paged_with_pages)
   end
-  
+
   context "when pages are listed" do  
     it "they should be ordered according to prev and next page ids" do      
       visit pageds_path + '/' + @test_paged.pid
@@ -120,5 +120,26 @@ describe 'For page listing' do
   end
 
 it 'stores a new XML datastream'
+
+end
+
+describe 'For page reordering' do
+
+  before(:all) do
+    @test_paged = create(:paged_with_pages)
+  end
+
+  context "when pages are reordered" do  
+    it "should respond to reorder"
+    it "should accept a list of pages that need to have their order reset" 
+    it "should save the logical position of each of the pages from the list"
+    it "should calculate and save previous and next siblings for each page"
+  end
+
+  after(:all) do  
+    @test_paged.pages.each {|page| page.delete }
+    @test_paged.reload
+    @test_paged.delete
+  end
 
 end
