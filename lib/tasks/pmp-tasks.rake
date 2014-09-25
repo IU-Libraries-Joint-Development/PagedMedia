@@ -28,3 +28,25 @@ task :ci do
   raise "test failures: #{error}" if error
 end
 
+desc "Deploy and start the Rails app to testing and integration server"
+task :deploy_test do
+
+  system_with_command_output("rails_control pmp-test-8506 stop")
+
+  Dir.chdir("/srv/rails/") do
+    system_with_command_output("rm /srv/deployments/pmp/pmp-test-8506.tar")
+    system_with_command_output("tar cf /srv/deployments/pmp/pmp-test-8506.tar ./pmp-test-8506")
+  end
+
+  system_with_command_output("rm -rf /srv/rails/pmp-test-8506/*")
+  system("rm ./tmp/*.zip")
+  system_with_command_output("tar cf - . | (cd /srv/rails/pmp-test-8506 ; tar xpBf -)")
+
+  system_with_command_output("rm -rf /srv/rails/pmp-test-8506/.git")
+
+  system_with_command_output("FHOST=poplar.dlib.indiana.edu FPORT=8245 rails r app/script/purge-all.rb")
+  system_with_command_output('curl http://poplar.dlib.indiana.edu:8245/solr/hydra-test/update?commit=true -H "Content-Type: text/xml" --data-binary \'<delete><query>*:*</query></delete>\'')
+  
+  system_with_command_output("rails_control pmp-test-8506 start")
+
+end
