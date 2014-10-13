@@ -9,7 +9,11 @@
            </span>
           <% if document.document_type == "Paged" %>
               <a href='pageds/<%= document.id %>'>
-                <%= document['title_tesim'][0] %>
+	        <% if document['title_tesim'].length > 0 %>
+		  <%= document['title_tesim'][0] %>
+		<% else %>
+		  <%= t :pmp.document.untitled.title %>
+		<% end %>
               </a>
           <% else %>
             <%= link_to_document document, :label=>document_show_link_field(document), :counter => counter %>
