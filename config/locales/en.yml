@@ -21,4 +21,7 @@
 
 en:
   hello: "Hello world"
-  pmp.document.untitled.title: 'Untitled'
+  pmp:
+    document:
+      untitled:
+        title: 'Untitled'
