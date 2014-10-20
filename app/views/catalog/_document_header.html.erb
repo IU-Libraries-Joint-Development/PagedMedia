@@ -9,7 +9,11 @@
            </span>
           <% if document.document_type == "Paged" %>
               <a href='pageds/<%= document.id %>'>
-                <%= document['title_tesim'][0] %>
+	        <% if document.has_key?('title_tesim') %>
+		  <%= document['title_tesim'][0] %>
+		<% else %>
+		  <%= t 'pmp.document.untitled.title' %>
+		<% end %>
               </a>
           <% else %>
             <%= link_to_document document, :label=>document_show_link_field(document), :counter => counter %>
@@ -19,4 +23,3 @@
         <% # bookmark functions for items/docs -%>
         <%= render_index_doc_actions document, :wrapping_class => "documentFunctions span2" %>
       </div>
-      
