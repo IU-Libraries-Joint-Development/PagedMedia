@@ -20,9 +20,9 @@ This generator deploys to a running server environment and makes the following c
     with_banner?("Preparing application for deployment to #{deploy_env}")
     mytime = Time.new.strftime("%Y-%m-%d_%H%M")
 
-    git checkout: "HPT-204_automated_deployment"
-#    git fetch: "origin"
-#    git pull: "origin develop"
+    git checkout: "develop"
+    git fetch: "origin"
+    git pull: "origin develop"
     git checkout: "-b deployment_sprint_#{mytime}"
 
     gem "thin", "1.6.2"
