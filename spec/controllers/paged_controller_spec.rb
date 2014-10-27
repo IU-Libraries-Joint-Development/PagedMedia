@@ -1,8 +1,29 @@
 require 'spec_helper'
 
-=begin
 describe PagedsController do
 
+  before(:all) do
+    @test_paged = create(:paged_with_pages)
+  end
+
+  context '#page' do
+    it 'should return pid and image ds uri given an index integer' do
+      visit pageds_path + '/' + @test_paged.pid + '/1'
+      expect(response).to respond_with_content_type(:json)
+      parsed = JSON.parse(response)
+      expect(parsed[1]['id']).to equal(@test_paged.pages[1].pid)
+    end 
+  end 
+
+  after(:all) do  
+    @test_paged.pages.each {|page| page.delete }
+    @test_paged.reload
+    @test_paged.delete
+  end
+
+end
+
+=begin
   describe 'GET index' do
     it 'lists Pageds'
   end
