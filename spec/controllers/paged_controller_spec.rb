@@ -8,9 +8,8 @@ describe PagedsController do
 
   context '#page' do
     it 'should return pid and image ds uri given an index integer' do
-      visit pageds_path + '/' + @test_paged.pid + '/1'
-      expect(response).to respond_with_content_type(:json)
-      parsed = JSON.parse(response)
+      visit pageds_path + '/' + @test_paged.pid + '/page/1'
+      parsed = JSON.parse(response.to_s)
       expect(parsed[1]['id']).to equal(@test_paged.pages[1].pid)
     end 
   end 

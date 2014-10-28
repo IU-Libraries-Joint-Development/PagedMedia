@@ -4,7 +4,7 @@ PagedMedia::Application.routes.draw do
   resources :pageds do
     patch :reorder, on: :member
     get :page, on: :member
-    get '/page/:index' => 'pageds#page'
+#    get '/page/:index' => 'pageds#page'
   end
 
   root :to => "catalog#index"

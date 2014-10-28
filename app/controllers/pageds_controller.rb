@@ -65,6 +65,18 @@ class PagedsController < ApplicationController
     end
   end
 
+  def page
+    page_id = Paged.find(params[:id]).order_pages[0][params[:index].to_i].pid
+    unless page_id.blank?
+      ds_url = ActiveFedora.fedora_config.credentials[:url] + '/' + Page.find(page_id).image_datastream.url
+    end
+    page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
+    respond_to do |format|
+      format.html { render json: page_rsp, head: :no_content }
+      format.json { render json: page_rsp, head: :no_content}
+    end
+  end
+
   def reorder
     unless params[:reorder_submission].nil? || params[:reorder_submission].blank?
       page_ids = params[:reorder_submission].to_s.split(',')
