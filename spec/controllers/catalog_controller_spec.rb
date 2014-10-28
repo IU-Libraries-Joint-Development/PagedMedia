@@ -40,7 +40,6 @@ require 'spec_helper'
         within('#documents'){expect(page).not_to have_content @test_score.title}
       end
       it "should show unfiltered search results when filter is removed" do
-        pending "link to drop facet filter currently results in a bug"
         within('#facets'){click_link(@test_newspaper.type)}
         within('#appliedParams'){click_link "Remove constraint" }
         within('#documents'){expect(page).to have_content @test_newspaper.title}

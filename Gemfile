@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 gem 'rails', '~>4.1'
 
 # This is a Hydra head
-
 gem 'hydra', '~> 6.1'
 
 # Use sqlite3 as the database for Active Record
