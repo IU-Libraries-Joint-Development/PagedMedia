@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :page]
 
   # GET /pageds
   # GET /pageds.json
@@ -66,10 +66,15 @@ class PagedsController < ApplicationController
   end
 
   def page
-    page_id = Paged.find(params[:id]).order_pages[0][params[:index].to_i].pid
-    unless page_id.blank?
-      ds_url = ActiveFedora.fedora_config.credentials[:url] + '/' + Page.find(page_id).image_datastream.url
+    unless @paged.nil?
+      page = @paged.order_pages[0][params[:index].to_i]
+      page_id = page.pid unless page.nil?
+      unless page_id.blank?
+        ds_url = ActiveFedora.fedora_config.credentials[:url] + '/' + Page.find(page_id).image_datastream.url
+      end
     end
+    # FIXME: need this, for :id?
+    #ds_url ||= ''
     page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
     respond_to do |format|
       format.html { render json: page_rsp, head: :no_content }
