@@ -1,5 +1,14 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy, :page]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :page, :bookreader]
+
+  # FIXME testing for javascript
+  before_filter :allow_cross_domain_access
+  def allow_cross_domain_access
+    headers['Access-Control-Allow-Origin'] = '*'
+    headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
+    headers['Access-Control-Request-Method'] = '*'
+    headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  end
 
   # GET /pageds
   # GET /pageds.json
@@ -73,13 +82,17 @@ class PagedsController < ApplicationController
         ds_url = ActiveFedora.fedora_config.credentials[:url] + '/' + Page.find(page_id).image_datastream.url
       end
     end
-    # FIXME: need this, for :id?
-    #ds_url ||= ''
+    # FIXME: blanks, or nulls, for out-of-range values?
+    ds_url ||= ''
     page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
     respond_to do |format|
       format.html { render json: page_rsp, head: :no_content }
       format.json { render json: page_rsp, head: :no_content}
     end
+  end
+
+  def bookreader
+    render layout: false
   end
 
   def reorder

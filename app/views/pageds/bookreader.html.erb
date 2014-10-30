@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>bookreader demo</title>
+
+    <%= stylesheet_link_tag "BookReader" %>
+    <!-- Custom CSS overrides -->
+    <%= stylesheet_link_tag "BookReaderDemo" %>
+    <script type="text/javascript">
+       var paged_id = '<%= @paged.pid %>';
+       var total_pages = <%= @paged.pages.size %>;
+    </script>
+
+    <script type="text/javascript" src="http://www.archive.org/includes/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="http://www.archive.org/bookreader/jquery-ui-1.8.5.custom.min.js"></script>
+
+    <script type="text/javascript" src="http://www.archive.org/bookreader/dragscrollable.js"></script>
+    <script type="text/javascript" src="http://www.archive.org/bookreader/jquery.colorbox-min.js"></script>
+    <script type="text/javascript" src="http://www.archive.org/bookreader/jquery.ui.ipad.js"></script>
+    <script type="text/javascript" src="http://www.archive.org/bookreader/jquery.bt.min.js"></script>
+
+    <%= javascript_include_tag "BookReader.js" %>
+</head>
+<body style="background-color: ##939598;">
+
+<div id="BookReader">
+    Internet Archive BookReader Demo    <br/>
+    
+    <noscript>
+    <p>
+        The BookReader requires JavaScript to be enabled. Please check that your browser supports JavaScript and that it is enabled in the browser settings.  You can also try one of the <a href="http://www.archive.org/details/goodytwoshoes00newyiala"> other formats of the book</a>.
+    </p>
+    </noscript>
+</div>
+<div id="foo">
+  <%= @paged.pid %>
+</div>
+
+<%= javascript_include_tag "BookReaderJSSimple.js" %>
+
+</body>
+</html>

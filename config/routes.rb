@@ -5,6 +5,7 @@ PagedMedia::Application.routes.draw do
     patch :reorder, on: :member
     get :page, on: :member
 #    get '/page/:index' => 'pageds#page'
+    get :bookreader, on: :member
   end
 
   root :to => "catalog#index"
