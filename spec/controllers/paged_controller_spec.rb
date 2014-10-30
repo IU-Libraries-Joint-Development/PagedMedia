@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 
 describe PagedsController do
 
@@ -8,9 +9,11 @@ describe PagedsController do
 
   context '#page' do
     it 'should return pid and image ds uri given an index integer' do
-      visit pageds_path + '/' + @test_paged.pid + '/page/1'
-      parsed = JSON.parse(response.to_s)
-      expect(parsed[1]['id']).to equal(@test_paged.pages[1].pid)
+      get :page, id: @test_paged.id, index: 1
+      parsed = JSON.parse response.body
+      expect(parsed['id']).to eq @test_paged.pages[1].pid
+      expect(parsed['index']).to eq 1.to_s
+      expect(parsed['ds_url']).to match /#{ERB::Util.url_encode(@test_paged.pages[1].pid)}\/datastreams\/pageImage\/content$/
     end 
   end 
 
