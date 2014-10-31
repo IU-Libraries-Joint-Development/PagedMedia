@@ -12,5 +12,6 @@
 </style>
 
 <ul class='side_navbar'>
-  <%= link_to 'Browse', pageds_path, {id: 'side_nav_browse'} %>
+  <br />
+  <%= button_to 'Browse', pageds_path, :class=> {id: 'side_nav_browse'}, :method=> :get %>
 </ul>
