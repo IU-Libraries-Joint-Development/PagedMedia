@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :page, :bookreader]
 
   # GET /pageds
   # GET /pageds.json
@@ -63,6 +63,27 @@ class PagedsController < ApplicationController
       format.html { redirect_to pageds_url }
       format.json { head :no_content }
     end
+  end
+
+  def page
+    unless @paged.nil?
+      page = @paged.order_pages[0][params[:index].to_i]
+      page_id = page.pid unless page.nil?
+      unless page_id.blank?
+        ds_url = ActiveFedora.fedora_config.credentials[:url] + '/' + Page.find(page_id).image_datastream.url
+      end
+    end
+    # FIXME: blanks, or nulls, for out-of-range values?
+    ds_url ||= ''
+    page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
+    respond_to do |format|
+      format.html { render json: page_rsp, head: :no_content }
+      format.json { render json: page_rsp, head: :no_content}
+    end
+  end
+
+  def bookreader
+    render layout: false
   end
 
   def reorder
