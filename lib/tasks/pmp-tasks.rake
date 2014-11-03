@@ -50,3 +50,8 @@ task :deploy_test do
   system_with_command_output("rails_control pmp-test-8506 start")
 
 end
+
+RSpec::Core::RakeTask.new(:load_paged_fixtures) do |t|
+  ENV['RAILS_ENV'] = 'development'
+  t.pattern = Dir.glob('app/script/load*.rb')
+end
