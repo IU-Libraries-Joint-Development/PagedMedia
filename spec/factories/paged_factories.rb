@@ -1,14 +1,27 @@
+# Example calls:
+#   FactoryGirl.create(:paged)
+#   FactoryGirl.create(:paged, :with_pages)
+#   FactoryGirl.create(;paged, :newspaper)
+#   FactoryGirl.create(:paged, :score, :with_score_pages)
+
 FactoryGirl.define do
   
   #Create a paged object
   factory :paged, class: Paged do
+    type "generic"
     title "Paged Object"
     creator "Factory Girl"
-    type "generic"
-    
-    factory :paged_with_pages do
+    publisher "Generic Publisher"
+    issued Time.now 
+
+    #Create a test paged object
+    factory :test_paged do
+      title "Test Paged Object"
+    end
+
+    # Create paged object with 5 pages
+    trait :with_pages do
       after(:create) do |paged|
-        # Create paged object with 5 pages
         pages = Array.new
         pages[0] = create(:page, paged: paged, logical_number: "Page 1")
         paged.reload
@@ -21,30 +34,9 @@ FactoryGirl.define do
       end
     end
     
-  end
-  
-  #Create a test paged object
-  factory :test_paged, class: Paged do
-    title "Test Paged Object"
-    creator "Factory Girl"
-    type "generic"
-  end
-
-  #Create a newspaper
-  factory :test_newspaper, class: Paged do
-    title "Test Newspaper"
-    creator "Factory Girl"
-    type "newspaper"
-  end
-
-  #Create a score
-  factory :test_score, class: Paged do
-    title "Fontane Di Roma"
-    creator "Ottorino Respighi"
-    type "score"
-    factory :score_with_pages do
+    # Create paged object with sample score pages
+    trait :with_score_pages do
       after(:create) do |paged|
-        # Create a score with 10 pages
         pages = Array.new
         pages[0] = create(:page, paged: paged, logical_number: "Page 1")
         paged.reload
@@ -66,6 +58,18 @@ FactoryGirl.define do
         end
       end
     end
-  end
+    
+    #Create a newspaper
+    trait :newspaper do
+      type "newspaper"
+      title "Test Newspaper"
+    end
 
+    #Create a score
+    trait :score do
+      type "score"
+      title "Test Score"
+    end
+
+  end
 end

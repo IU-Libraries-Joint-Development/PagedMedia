@@ -1,6 +1,11 @@
 <p id="notice"><%= notice %></p>
 
 <p>
+  <strong>Type:</strong>
+  <%= @paged.type %>
+</p>
+
+<p>
   <strong>Title:</strong>
   <%= @paged.title %>
 </p>
@@ -11,8 +16,13 @@
 </p>
 
 <p>
-  <strong>Type:</strong>
-  <%= @paged.type %>
+  <strong>Publisher:</strong>
+  <%= @paged.publisher %>
+</p>
+
+<p>
+  <strong>Date of Publication:</strong>
+  <%= @paged.issued %>
 </p>
 
 <p>

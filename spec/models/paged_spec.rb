@@ -19,9 +19,11 @@ describe Paged do
   end
 
   it "should have the attributes of a Paged object" do
-    expect(@paged.title).not_to be_empty
-    expect(@paged.creator).not_to be_empty
-    expect(@paged.type).not_to be_empty
+    expect(@paged.type).to be_present
+    expect(@paged.title).to be_present
+    expect(@paged.creator).to be_present
+    expect(@paged.publisher).to be_present
+    expect(@paged.issued).to be_present
   end
   
   it "should have the attributes of a Paged object and support update_attributes" do

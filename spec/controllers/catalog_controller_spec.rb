@@ -8,8 +8,8 @@ require 'spec_helper'
   describe "facet search" do
 
     before(:all) do
-      @test_newspaper = FactoryGirl.create :test_newspaper
-      @test_score = FactoryGirl.create :test_score
+      @test_newspaper = FactoryGirl.create :paged, :newspaper
+      @test_score = FactoryGirl.create :paged, :score
     end
 
     context "from the main page" do
@@ -57,7 +57,7 @@ require 'spec_helper'
   describe "term search" do
     
     before(:all) do
-      @test_paged = FactoryGirl.create :test_paged 
+      @test_paged = FactoryGirl.create :paged
     end
       
     context "searching everything" do

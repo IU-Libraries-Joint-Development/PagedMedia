@@ -8,9 +8,11 @@ class PagedMetadataOaiDc < ActiveFedora::OmDatastream
     t.root(path: 'oai_dc:dc',
       'xmlns:oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
       'xmlns:dc' => 'http://purl.org/dc/elements/1.1/')
+    t.type(namespace_prefix: 'dc', index_as: :stored_searchable)
     t.title(namespace_prefix: 'dc', index_as: :stored_searchable)
     t.creator(namespace_prefix: 'dc', index_as: :stored_searchable)
-    t.type(namespace_prefix: 'dc', index_as: :stored_searchable)
+    t.publisher(namespace_prefix: 'dc', index_as: :stored_searchable)
+    t.issued(namespace_prefix: 'dc', index_as: :stored_searchable, type: :date)
   end
 
   def self.xml_template

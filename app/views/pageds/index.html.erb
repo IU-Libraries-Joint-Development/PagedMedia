@@ -3,9 +3,11 @@
 <table id='listPageds'>
   <thead>
     <tr>
+      <th>Type</th>
       <th>Title</th>
       <th>Creator</th>
-      <th>Type</th>
+      <th>Publisher</th>
+      <th>Date of Publication</th>
       <th colspan="4">Actions</th>
     </tr>
   </thead>
@@ -13,9 +15,11 @@
   <tbody>
     <% @pageds.each do |paged| %>
       <tr>
+        <td><%= paged.type %></td>
         <td><%= paged.title %></td>
         <td><%= paged.creator %></td>
-        <td><%= paged.type %></td>
+        <td><%= paged.publisher %></td>
+        <td><%= paged.issued %></td>
         <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up' %></td>
         <td><%= link_to 'Show', paged %></td>
         <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
