@@ -52,5 +52,6 @@ task :deploy_test do
 end
 
 RSpec::Core::RakeTask.new(:load_paged_fixtures) do |t|
+  ENV['RAILS_ENV'] = 'development'
   t.pattern = Dir.glob('app/script/load*.rb')
 end
