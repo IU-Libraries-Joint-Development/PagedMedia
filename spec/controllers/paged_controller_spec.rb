@@ -37,11 +37,11 @@ end
 describe 'For page listing' do
 
   before(:all) do
-    @test_paged = create(:paged_with_pages)
+    @test_paged = create(:paged, :with_pages)
   end
 
   context "when pages are listed" do  
-    it "they should be ordered according to prev and next page ids" do      
+    specify "they should be ordered according to prev and next page ids" do      
       visit pageds_path + '/' + @test_paged.pid
       page.body.index("Page 1").should < page.body.index("Page 2")
       page.body.index("Page 2").should < page.body.index("Page 3")
@@ -51,7 +51,7 @@ describe 'For page listing' do
   end
   
   context "when more than one first page is found" do
-    it "an error message should display" do
+    specify "an error message should display" do
       #Find page 3 and remove prev page
       prev_page = ''
       page3 = ''
@@ -71,8 +71,8 @@ describe 'For page listing' do
     end
   end
 
-  context "when a infinit loop would occur " do
-    it "an error message should display" do
+  context "when a infinite loop would occur " do
+    specify "an error message should display" do
       # Find page 3 and redirect it to itself
       next_page = ''
       page3 = ''
@@ -93,7 +93,7 @@ describe 'For page listing' do
   end
   
   context "when not all the pages are included in listing" do
-    it "an error message should display" do
+    specify "an error message should display" do
       # Find page 3 and remove next page
       next_page = ''
       page3 = ''
@@ -126,7 +126,7 @@ end
 describe 'For page reordering' do
 
   before(:all) do
-    @test_paged = create(:paged_with_pages)
+    @test_paged = create(:paged, :with_pages)
   end
 
   context "when pages are reordered" do  

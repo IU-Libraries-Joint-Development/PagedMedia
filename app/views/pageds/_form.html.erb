@@ -12,6 +12,10 @@
   <% end %>
 
   <div class="field">
+    <%= f.label :type %><br>
+    <%= f.text_field :type %>
+  </div>
+  <div class="field">
     <%= f.label :title %><br>
     <%= f.text_field :title %>
   </div>
@@ -20,9 +24,14 @@
     <%= f.text_field :creator %>
   </div>
   <div class="field">
-    <%= f.label :type %><br>
-    <%= f.text_field :type %>
+    <%= f.label :publisher %><br>
+    <%= f.text_field :publisher %>
   </div>
+  <div class="field">
+    <%= f.label "Date of Publication" %><br>
+    <%= f.date_field :issued %>
+  </div>
+
 
   <div class='field'>
     <% if !@paged.new? %>
@@ -30,7 +39,8 @@
       <% if @paged.xml_datastream.has_content? %>
         <%= link_to @paged.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @paged.xml_datastream.url %>
       <% else %>
-        none.      <% end %>
+        none.
+      <% end %>
     <% end %>
     <%= f.label 'New XML file:' %>
     <%= f.file_field :xml_file %>
