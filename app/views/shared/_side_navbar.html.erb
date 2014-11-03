@@ -7,11 +7,13 @@
     list-style-type: none;
     border: 1px solid;
     margin: 0;
-    padding: 0 2em;
+    padding: 2em;
+    padding-bottom: 1em;
     }
 </style>
 
 <ul class='side_navbar'>
-  <br />
+  <li>
   <%= button_to 'Browse', pageds_path, :class=> {id: 'side_nav_browse'}, :method=> :get %>
+  </li>
 </ul>
