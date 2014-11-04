@@ -113,7 +113,7 @@ require 'spec_helper'
   describe 'browse' do
     it 'links to the list of Pageds when user selects Browse' do
       visit root_path
-      click_link 'side_nav_browse'
+      click_button('Browse')
       expect(page).to have_table('listPageds')
     end
   end
