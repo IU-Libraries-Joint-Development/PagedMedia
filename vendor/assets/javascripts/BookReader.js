@@ -34,6 +34,8 @@ This file is part of BookReader.
 //  - getSpreadIndices()
 // You must also add a numLeafs property before calling init().
 
+var imagesBaseURL = '/assets/';
+
 function BookReader() {
 
     // Mode constants
@@ -86,7 +88,7 @@ function BookReader() {
     // custom implementations.
     // $$$ This is the same directory as the images referenced by relative
     //     path in the CSS.  Would be better to automagically find that path.
-    this.imagesBaseURL = '/bookreader/images/';
+    this.imagesBaseURL = '/assets/';
     
     
     // Zoom levels
@@ -697,7 +699,7 @@ BookReader.prototype.drawLeafsThumbnail = function( seekIndex ) {
                 img = document.createElement("img");
                 var thumbReduce = Math.floor(this.getPageWidth(leaf) / this.thumbWidth);
                 
-                $(img).attr('src', this.imagesBaseURL + 'transparent.png')
+                $(img).attr('src', imagesBaseURL + 'transparent.png')
                     .css({'width': leafWidth+'px', 'height': leafHeight+'px' })
                     .addClass('BRlazyload')
                     // Store the URL of the image that will replace this one
@@ -4595,7 +4597,7 @@ BookReader.prototype._getPageHeight= function(index) {
 // Returns the page URI or transparent image if out of range
 BookReader.prototype._getPageURI = function(index, reduce, rotate) {
     if (index < 0 || index >= this.numLeafs) { // Synthesize page
-        return this.imagesBaseURL + "transparent.png";
+        return imagesBaseURL + "transparent.png";
     }
     
     if ('undefined' == typeof(reduce)) {

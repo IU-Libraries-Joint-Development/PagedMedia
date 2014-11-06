@@ -65,17 +65,28 @@ class PagedsController < ApplicationController
     end
   end
 
-  def page
-    unless @paged.nil?
-      page = @paged.order_pages[0][params[:index].to_i]
-      page_id = page.pid unless page.nil?
-      unless page_id.blank?
-        ds_url = ActiveFedora.fedora_config.credentials[:url] + '/' + Page.find(page_id).image_datastream.url
+  # GET /pageds/1/pages
+  # GET /pageds/1/pages.json
+  def pages
+    page_rsp = {}
+    search = Blacklight.solr.select :params => { :q => params[:id], :fl => "pages_ss" }
+    unless search['response']['numFound'].to_i == 0
+      parsed = JSON.parse(search['response']['docs'][0]['pages_ss'])
+      if params[:index].nil?
+        page_rsp = parsed
+      else
+        unless params[:index].to_i > parsed.count
+          page_id = parsed[params[:index].to_i]['id']
+          ds_url = parsed[params[:index].to_i]['ds_url']
+          ds_url ||= ''
+          page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
+        else
+          page_rsp = {:id => params[:id], :index => params[:index], :error => 'Index out of bounds'}
+        end
       end
+    else
+      page_rsp = {:id => params[:id], :error => 'No pages'}
     end
-    # FIXME: blanks, or nulls, for out-of-range values?
-    ds_url ||= ''
-    page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
     respond_to do |format|
       format.html { render json: page_rsp, head: :no_content }
       format.json { render json: page_rsp, head: :no_content}
@@ -115,6 +126,10 @@ class PagedsController < ApplicationController
           page_errors += "#{page.logical_number}. #{page.id} save error: #{page.errors.messages.to_s} | "
         end
       end
+      if page_errors.blank?
+        @paged = Paged.find(params[:id])
+        @paged.update_index 
+      end  
       flash[:notice] = page_errors unless page_errors.blank?
     else
       flash[:notice] = "No changes to the page order were submitted."

@@ -96,4 +96,21 @@ class Paged < ActiveFedora::Base
     return [ordered_pages, error]
   end
 
+  def page_list
+    pages = []
+    fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
+    self.order_pages[0].each_with_index do |page, index|
+      pages.push({:id => page.pid, :index => index.to_s, :ds_url => fedora_url + page.image_datastream.url})
+    end
+    pages
+  end
+
+  def to_solr(solr_doc={}, opts={})
+    pages = self.page_list
+    super(solr_doc, opts)
+    solr_doc[Solrizer.solr_name('pages', 'ss')] = pages.to_json # single value field as json
+    solr_doc[Solrizer.solr_name('pages', 'ssm')] = pages # multivalue field as ruby hash
+    return solr_doc
+  end
+
 end
