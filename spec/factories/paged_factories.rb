@@ -12,6 +12,7 @@ FactoryGirl.define do
     title "Paged Object"
     creator "Factory Girl"
     publisher "Generic Publisher"
+    publisher_place "Metropolis"
     issued Time.now 
 
     #Create a test paged object

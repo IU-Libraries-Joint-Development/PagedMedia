@@ -130,7 +130,7 @@ class PagedsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def paged_params
-      params.require(:paged).permit(:type, :title, :creator, :publisher, :issued, :xml_file)
+      params.require(:paged).permit(:type, :title, :creator, :publisher, :publisher_place, :issued, :xml_file)
     end
 
     def reorder_params
