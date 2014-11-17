@@ -2,28 +2,17 @@
 #--
 # Copyright 2014 Indiana University
 
-class Page < ActiveFedora::Base
-
-  include Hydra::AccessControls::Permissions
+class Page < Node
 
   has_metadata 'descMetadata', type: PageMetadata
-
-  belongs_to :paged, :property=> :is_part_of
 
   has_file_datastream 'pageImage'
   has_file_datastream 'pageOCR'
   has_file_datastream 'pageXML'
 
   has_attributes :logical_number, datastream: 'descMetadata',  multiple: false
-  has_attributes :prev_page, datastream: 'descMetadata', multiple: false
-  has_attributes :next_page, datastream: 'descMetadata', multiple: false
   has_attributes :text,  datastream: 'descMetadata', multiple: false
   has_attributes :page_struct, datastream: 'descMetadata', multiple: true
-
-  # skip_sibling_validation both skips the custom validation and runs an unchecked save
-  attr_accessor :skip_sibling_validation
-  validate :validate_has_required_siblings, unless: :skip_sibling_validation
-
 
   # Setter for the image
   def image_file=(file)
@@ -80,6 +69,7 @@ class Page < ActiveFedora::Base
   end
 
 
+<<<<<<< HEAD
 
   # A link is "unset" if it is nil or an empty String
   def unset(attribute)
@@ -212,12 +202,13 @@ class Page < ActiveFedora::Base
     super
   end
 
+=======
+>>>>>>> Pull Page sibling logic out, make Page and Paged subclasses of new Node.
   def to_solr(solr_doc={}, opts={})
     super(solr_doc, opts)
-    if (!paged.nil?)
-      solr_doc[Solrizer.solr_name('item_id', 'si')] = paged.pid
+    if (!parent.nil?)
+      solr_doc[Solrizer.solr_name('item_id', 'si')] = parent
     end
     return solr_doc
   end
-
 end

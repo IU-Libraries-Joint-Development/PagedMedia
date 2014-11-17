@@ -1,5 +1,6 @@
 <div id="paged_pages">
   <h3><%= paged.title %></h3>
+  <p><strong>Number of pages : </strong><%= paged.children.size %></p>
   <% session[:came_from] = :paged %>
   <div id="pages">
     <table border="1">

@@ -26,7 +26,7 @@ FactoryGirl.define do
       after(:create) do |paged|
         pages = Array.new
         (0...5).each do |i|
-          pages[i] = create(:page, :unchecked, paged: paged, logical_number: "Page #{i + 1}", prev_page: i.zero? ? nil : pages[i - 1].pid)
+          pages[i] = create(:page, :unchecked, paged: paged, logical_number: "Page #{i + 1}", prev_sib: i.zero? ? nil : pages[i - 1].pid)
         end
 	next_page = nil
 	pages.reverse_each do |page|
@@ -48,8 +48,8 @@ FactoryGirl.define do
         (0...pages.size).each do |i|
           score_page = 'spec/fixtures/scores/bhr9405/bhr9405-1-' + (i + 1).to_s + '.jpg'
           pages[i].pageImage.content = File.open(Rails.root + score_page)
-	  pages[i].skip_sibling_validation = true
-	  pages[i].save!(unchecked: true)
+      	  pages[i].skip_sibling_validation = true
+          pages[i].save!(unchecked: true)
         end
       end
     end
@@ -67,7 +67,7 @@ FactoryGirl.define do
         page_data = file_content["pageds"][0]["pages"]
         pages = Array.new
         (0...page_data.count).each do |i|
-          pages[i] = create(:page, :unchecked, paged: paged, logical_number: page_data[i]["descMetadata"]["logical_number"].to_s, prev_page: i.zero? ? nil : pages[i - 1].pid, text: page_data[i]["descMetadata"]["text"].to_s, page_struct: page_data[i]["descMetadata"]["page_struct"])
+          pages[i] = create(:page, :unchecked, paged: paged, logical_number: page_data[i]["descMetadata"]["logical_number"].to_s, prev_sib: i.zero? ? nil : pages[i - 1].pid, text: page_data[i]["descMetadata"]["text"].to_s, page_struct: page_data[i]["descMetadata"]["page_struct"])
           package_page =  'spec/fixtures/ingest/pmp/package1/' + 'content/' + page_data[i]["content"]["pageImage"]
           pages[i].pageImage.content = File.open(Rails.root + package_page)
         end
@@ -82,7 +82,7 @@ FactoryGirl.define do
         paged.update_index
       end
     end
-    
+
     #Create a newspaper
     trait :newspaper do
       type "newspaper"

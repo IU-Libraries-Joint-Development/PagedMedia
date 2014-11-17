@@ -17,7 +17,7 @@ class PagedsController < ApplicationController
 
   def validate
     @ordered = JSON.parse(find_pages())
-    validated, @error = @paged.order_pages()
+    validated, @error = @paged.order_children()
     if @error
       flash.now[:error] = "ERROR Ordering Items : #{@error}"
     end
@@ -120,12 +120,12 @@ class PagedsController < ApplicationController
       previous_page = nil
       pages.each do |page|
         page.skip_sibling_validation = true
-        page.prev_page = previous_page
+        page.prev_sib = previous_page
         previous_page = page.id
       end
       next_page = nil
       pages.reverse_each do |page|
-        page.next_page = next_page
+        page.next_sib = next_page
         next_page = page.id
       end
 
