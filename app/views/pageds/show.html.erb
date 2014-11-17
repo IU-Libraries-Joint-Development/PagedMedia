@@ -21,6 +21,11 @@
 </p>
 
 <p>
+  <strong>Place of Publication:</strong>
+  <%= @paged.publisher_place %>
+</p>
+
+<p>
   <strong>Date of Publication:</strong>
   <%= @paged.issued %>
 </p>
@@ -36,9 +41,15 @@
   <% end %>
 </p>
 
-<%= link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> |
-<%= link_to 'Edit', edit_paged_path(@paged) %> |
-<%= link_to 'Back', pageds_path %>
+<div style="display:inline-block;">
+  <%= button_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%>
+</div>
+<div style="display:inline-block;">
+  <%= button_to 'Edit', edit_paged_path(@paged) %>
+</div>
+<div style="display:inline-block;">
+  <%= button_to 'Back', pageds_path %>
+</div>
 
 <hr/>
 

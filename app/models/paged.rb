@@ -15,8 +15,8 @@ class Paged < ActiveFedora::Base
   has_attributes :title, datastream: 'descMetadata', multiple: false  # TODO update DC.title as well?
   has_attributes :creator, datastream: 'descMetadata', multiple: false
   has_attributes :publisher, datastream: 'descMetadata', multiple: false
+  has_attributes :publisher_place, datastream: 'descMetadata', multiple: false
   has_attributes :issued, datastream: 'descMetadata', multiple: false
-  # TODO add place of publication
   has_attributes :type, datastream: 'descMetadata', multiple: false
 
 
