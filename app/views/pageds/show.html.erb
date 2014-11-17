@@ -41,15 +41,9 @@
   <% end %>
 </p>
 
-<div style="display:inline-block;">
-  <%= button_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%>
-</div>
-<div style="display:inline-block;">
-  <%= button_to 'Edit', edit_paged_path(@paged) %>
-</div>
-<div style="display:inline-block;">
-  <%= button_to 'Back', pageds_path %>
-</div>
+<%= link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> |
+<%= link_to 'Edit', edit_paged_path(@paged) %> |
+<%= link_to 'Back', pageds_path %>
 
 <hr/>
 
