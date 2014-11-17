@@ -23,6 +23,7 @@ describe Paged do
     expect(@paged.title).to be_present
     expect(@paged.creator).to be_present
     expect(@paged.publisher).to be_present
+    expect(@paged.publisher_place).to be_present
     expect(@paged.issued).to be_present
   end
   

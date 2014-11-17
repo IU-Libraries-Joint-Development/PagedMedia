@@ -7,6 +7,7 @@
       <th>Title</th>
       <th>Creator</th>
       <th>Publisher</th>
+      <th>Place of Publication</th>
       <th>Date of Publication</th>
       <th colspan="4">Actions</th>
     </tr>
@@ -19,6 +20,7 @@
         <td><%= paged.title %></td>
         <td><%= paged.creator %></td>
         <td><%= paged.publisher %></td>
+        <td><%= paged.publisher_place %></td>
         <td><%= paged.issued %></td>
         <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up', target: "_blank" %></td>
         <td><%= link_to 'Show', paged %></td>
