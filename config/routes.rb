@@ -4,7 +4,7 @@ PagedMedia::Application.routes.draw do
   resources :pageds do
     patch :reorder, on: :member
     get :page, on: :member
-#    get '/page/:index' => 'pageds#page'
+    get :pages, on: :member
     get :bookreader, on: :member
   end
 

@@ -5,11 +5,12 @@ describe PagedsController do
 
   before(:all) do
     @test_paged = create(:paged, :with_pages)
+    @test_paged.update_index
   end
 
   context '#page' do
     it 'should return pid and image ds uri given an index integer' do
-      get :page, id: @test_paged.id, index: 1
+      get :pages, id: @test_paged.id, index: 1
       parsed = JSON.parse response.body
       expect(parsed['id']).to eq @test_paged.pages[1].pid
       expect(parsed['index']).to eq 1.to_s

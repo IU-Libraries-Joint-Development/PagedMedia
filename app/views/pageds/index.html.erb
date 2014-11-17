@@ -20,7 +20,7 @@
         <td><%= paged.creator %></td>
         <td><%= paged.publisher %></td>
         <td><%= paged.issued %></td>
-        <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up' %></td>
+        <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up', target: "_blank" %></td>
         <td><%= link_to 'Show', paged %></td>
         <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
         <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>

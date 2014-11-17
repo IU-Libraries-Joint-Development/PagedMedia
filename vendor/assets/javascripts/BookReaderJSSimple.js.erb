@@ -6,6 +6,17 @@
 // Create the BookReader object
 br = new BookReader();
 
+// Get list of pages for a given paged item, returned as a JSON array of pages.
+var paged_pages_url = '/pageds/' + paged_id + '/pages';
+var paged_pages = $.ajax({
+    url: paged_pages_url,
+    type: 'get',
+    dataType: 'json',
+    async:false,
+    }).responseText;
+// Parse and store as global so that getPageURI can leaf through it
+var pages_json = JSON && JSON.parse(paged_pages) || $.parseJSON(paged_pages);
+
 // Return the width of a given page.  Here we assume all images are 800 pixels wide
 br.getPageWidth = function(index) {
     return 800;
@@ -23,21 +34,7 @@ br.getPageURI = function(index, reduce, rotate) {
     // could e.g. look at reduce and load images from a different directory
     // or pass the information to an image server
 
-    var json_string = br.getPagedJSON(index, reduce, rotate)
-    var json_object = JSON && JSON.parse(json_string) || $.parseJSON(json_string);
-    return json_object.ds_url;
-}
-
-br.getPagedJSON = function(index, reduce, rotate) {
-    var request_url = '/pageds/' + paged_id + '/page?index=' + index;
-    var json_string = $.ajax({
-        url: request_url,
-        type: 'get',
-        dataType: 'json',
-        async:false,
-        }).responseText;
-
-    return json_string;
+    return pages_json[index].ds_url;
 }
 
 // Return which side, left or right, that a given page should be displayed on

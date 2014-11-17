@@ -36,6 +36,8 @@ class PagesController < ApplicationController
       @page.paged_id = params[:paged_id] if params.has_key?(:paged_id)
       if @page.save
         if @page.paged_id
+          paged = Paged.find(@page.paged_id)
+          paged.update_index 
           format.html { redirect_to "/pageds/" + @page.paged_id, notice: 'Page was successfully created.'}
         else
           format.html { redirect_to @page, notice: 'Page was successfully created.' }
