@@ -7,7 +7,7 @@ def with_banner?(message, banner = "*" * 80)
 end
 
 class PagedMedia::DeployGenerator < Rails::Generators::Base
-argument :deploy_env, :type => :string, :default => "test"
+argument :deploy_env, :type => :string, :default => "development"
 desc """
 This generator deploys to a running server environment and makes the following changes:
  1. Pulls the latest commits from develop
@@ -30,10 +30,7 @@ This generator deploys to a running server environment and makes the following c
     system("bundle install")
     rake "db:migrate", env: deploy_env 
 
-    configdir = Rails.root.join("config")
-    gsub_file configdir.join("fedora.yml"), '  url: <%= "http://127.0.0.1:#{ENV[\'TEST_JETTY_PORT\'] || 8983}/fedora-test" %>', "  url: http://poplar.dlib.indiana.edu:8245/fedora", force: true
-    gsub_file configdir.join("solr.yml"), '  url: <%= "http://127.0.0.1:#{ENV[\'TEST_JETTY_PORT\'] || 8983}/solr/test" %>', "  url: http://poplar.dlib.indiana.edu:8245/solr/hydra-test", force: true
-
+    system("cp /srv/deployments/pmp/config/* ./config")    
     system("cp /srv/deployments/pmp/.ruby* .")    
 
     git add: "."
