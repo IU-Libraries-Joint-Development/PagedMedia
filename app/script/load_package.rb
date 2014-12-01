@@ -3,7 +3,7 @@ require File.join('.', 'spec', 'spec_helper.rb')
 describe 'Loading objects' do
 
   before(:all) do
-    @test_paged = create(:paged, :score, :with_score_pages)
+    @test_paged = create(:paged, :package, :package_with_pages)
     @test_paged.update_index
   end
 

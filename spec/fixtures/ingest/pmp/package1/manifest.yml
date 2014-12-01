@@ -1,0 +1,26 @@
+manifest:
+  id: mybatch
+  date: 12-1-2014
+pageds:
+  -
+   descMetadata:
+     title: A Packaged Score
+     creator: Grand Creator of Scores
+     type: score
+     publisher: Score Central
+     publisher_place: Bumblyburg
+   content:
+     pagedXML: score_xml.xml
+   pages:
+     page count: 3
+     descMetadata:
+       logical_num:
+         - Score Page 1
+         - Score Page 2
+         - Score Page 3
+     content:
+       pageImage:
+         - score_image1.jpg
+         - score_image2.jpg
+         - score_image3.jpg
+
