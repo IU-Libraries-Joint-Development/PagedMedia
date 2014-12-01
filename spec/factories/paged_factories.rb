@@ -64,15 +64,18 @@ FactoryGirl.define do
     # Create paged object from ingest package with sample pages
     trait :package_with_pages do
       after(:create) do |paged|
+        # TODO The manifest file is set here but should be discovered by walking tree of package dirs
         manifest_file = "spec/fixtures/ingest/pmp/package1/manifest.yml"
         file_content = YAML.load_file(Rails.root + manifest_file)
+        # TODO The pageds position of 0 is set here but an iterator would be processing across all instances 
+        #   of pageds found in the manifest file
+        page_data = file_content["pageds"][0]["pages"]
         pages = Array.new
-        pages[0] = create(:page, paged: paged, logical_number: "Page 1")
+        pages[0] = create(:page, paged: paged, logical_number: page_data["descMetadata"]["logical_num"][0])
         paged.reload
         i = 1
-        page_count = file_content["pageds"][0]["pages"]["page count"]
-        while i < page_count do
-          pages[i] = create(:page, paged: paged, logical_number: "Page #{i + 1}", prev_page: pages[i - 1].pid)
+        while i < page_data["page count"] do
+          pages[i] = create(:page, paged: paged, logical_number: page_data["descMetadata"]["logical_num"][i], prev_page: pages[i - 1].pid)
           paged.reload
           i += 1
         end
@@ -81,9 +84,9 @@ FactoryGirl.define do
           p pages.index(page)
           p page.pid
           p page.logical_number
-          score_page =  'spec/fixtures/scores/bhr9405/bhr9405-1-' + (pages.index(page)+1).to_s + '.jpg'
-          p score_page
-          page.pageImage.content = File.open(Rails.root + score_page)
+          package_page =  'spec/fixtures/ingest/pmp/package1/' + 'content/' + page_data["content"]["pageImage"][pages.index(page)]
+          p package_page
+          page.pageImage.content = File.open(Rails.root + package_page)
           page.save
         end
       end
@@ -104,8 +107,11 @@ FactoryGirl.define do
 
     #Create from package
     trait :package do
+      # TODO The manifest file is set here but should be discovered by walking tree of package dirs
       manifest_file = "spec/fixtures/ingest/pmp/package1/manifest.yml"
       file_content = YAML.load_file(Rails.root + manifest_file)
+      # TODO The pageds position of 0 is set here but an iterator would be processing across all instances 
+      #   of pageds found in the manifest file
       title file_content["pageds"][0]["descMetadata"]["title"]
       creator file_content["pageds"][0]["descMetadata"]["creator"]
       type file_content["pageds"][0]["descMetadata"]["type"]
