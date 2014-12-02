@@ -18,16 +18,8 @@ class Node < ActiveFedora::Base
 
   has_attributes :prev_sib, datastream: 'nodeMetadata', multiple: false
   has_attributes :next_sib, datastream: 'nodeMetadata', multiple: false
-  has_attributes :_parent, datastream: 'nodeMetadata', multiple: false
-  has_attributes :_children, datastream: 'nodeMetadata', multiple: true
-
-  def parent
-    return Node.find _parent
-  end
-
-  def parent=(arg)
-    _parent = arg.pid
-  end
+  has_attributes :parent, datastream: 'nodeMetadata', multiple: false
+  has_attributes :children, datastream: 'nodeMetadata', multiple: true
 
   class ChildArray < Array
     def [](i)
@@ -35,17 +27,17 @@ class Node < ActiveFedora::Base
     end
 
     def []=
-
+      # TODO
     end
   end
 
-  def children
-    kids = ChildArray.new()
-    _children.each do |child|
-      kids << Node.find(child)
-    end
-    return kids
-  end
+#  def children
+#    kids = ChildArray.new()
+#    _children.each do |child|
+#      kids << Node.find(child)
+#    end
+#    return kids
+#  end
 
   # skip_sibling_validation both skips the custom validation and runs an unchecked save
   attr_accessor :skip_sibling_validation
@@ -60,9 +52,10 @@ class Node < ActiveFedora::Base
   # one must be non-nil.
   def validate_has_required_siblings
     return if parent.nil?
+    my_parent = Node.find(parent)
 
     # Parent has no children yet, so this page can't have siblings
-    if (parent.children.size == 0)
+    if (my_parent.children.size == 0)
       errors.add(:prev_sib, 'prev_sib must be empty') if !unset?(prev_sib)
       errors.add(:next_sib, 'next_sib must be empty') if !unset?(next_sib)
       return
@@ -71,7 +64,7 @@ class Node < ActiveFedora::Base
     # At least one child of my parent already exists.  Must have at least one
     # sibling unless the one child is this one (we are updating, not creating).
     if (unset?(prev_sib) && unset?(next_sib) &&
-        ((parent.children.size > 1) || (parent.children.first.pid != pid)))
+        ((my_parent.children.size > 1) || (my_parent.children.first.pid != pid)))
       errors[:base] << 'must have one or both siblings if parent has children'
     end
   end
@@ -88,14 +81,16 @@ class Node < ActiveFedora::Base
       return super()
     end
 
+    my_parent = Node.find(parent) if !parent.nil?
+
     if (!unset?(prev_sib))
       found = false
       if (!parent.nil?)
-        parent.children.each do |a_child|
+        my_parent.children.each do |a_child|
           found = true if a_child.pid == prev_sib
         end
         if !found
-          errors.add(:prev_sib, "#{prev_sib} not in #{parent.pid}")
+          errors.add(:prev_sib, "#{prev_sib} not in #{my_parent.pid}")
           return false
         end
       else
@@ -113,11 +108,11 @@ class Node < ActiveFedora::Base
     if (!unset?(next_sib))
       found = false
       if (!parent.nil?)
-        parent.children.each do |a_child|
+        my_parent.children.each do |a_child|
           found = true if a_child.pid == next_sib
         end
         if !found
-          errors.add(:next_sib, "#{next_sib} not in #{parent.pid}")
+          errors.add(:next_sib, "#{next_sib} not in #{my_parent.pid}")
           return false
         end
       else
