@@ -26,7 +26,7 @@ FactoryGirl.define do
       after(:create) do |paged|
         pages = Array.new
         (0...5).each do |i|
-          pages[i] = create(:page, :unchecked, paged: paged, logical_number: "Page #{i + 1}", prev_sib: i.zero? ? nil : pages[i - 1].pid)
+          pages[i] = create(:page, :unchecked, parent: paged, logical_number: "Page #{i + 1}", prev_sib: i.zero? ? nil : pages[i - 1].pid)
         end
 	next_page = nil
 	pages.reverse_each do |page|

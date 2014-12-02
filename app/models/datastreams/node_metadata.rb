@@ -8,6 +8,8 @@ class NodeMetadata < ActiveFedora::OmDatastream
     t.root(path: 'fields')
     t.prev_sib index_as: :stored_searchable
     t.next_sib index_as: :stored_searchable
+    t._parent index_as: :stored_searchable
+    t._children index_as: :stored_searchable
   end
 
   def self.xml_template

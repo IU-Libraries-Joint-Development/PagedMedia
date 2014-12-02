@@ -10,20 +10,49 @@ class Node < ActiveFedora::Base
 
   include Hydra::AccessControls::Permissions
 
-  has_many :children, :class_name => "Node", :property => :is_part_of
-  belongs_to :parent, :class_name => "Node", :property => :is_part_of
+#  has_many :children, :class_name => "Node", :property => :has_part
+#  belongs_to :parent, :class_name => "Node", :property => :is_part_of
+#  has_and_belongs_to_many  # WRong!  can't do Node<>Node this way.  Write supporting code instead.
 
   has_metadata 'nodeMetadata', type: NodeMetadata, label: 'PMP generic node metadata'
 
   has_attributes :prev_sib, datastream: 'nodeMetadata', multiple: false
   has_attributes :next_sib, datastream: 'nodeMetadata', multiple: false
+  has_attributes :_parent, datastream: 'nodeMetadata', multiple: false
+  has_attributes :_children, datastream: 'nodeMetadata', multiple: true
+
+  def parent
+    return Node.find _parent
+  end
+
+  def parent=(arg)
+    _parent = arg.pid
+  end
+
+  class ChildArray < Array
+    def [](i)
+      return _children[i]
+    end
+
+    def []=
+
+    end
+  end
+
+  def children
+    kids = ChildArray.new()
+    _children.each do |child|
+      kids << Node.find(child)
+    end
+    return kids
+  end
 
   # skip_sibling_validation both skips the custom validation and runs an unchecked save
   attr_accessor :skip_sibling_validation
   validate :validate_has_required_siblings, unless: :skip_sibling_validation
 
   # A link is "unset" if it is nil or an empty String
-  def unset(attribute)
+  def unset?(attribute)
     attribute.nil? || attribute.empty?
   end
 
@@ -34,14 +63,14 @@ class Node < ActiveFedora::Base
 
     # Parent has no children yet, so this page can't have siblings
     if (parent.children.size == 0)
-      errors.add(:prev_sib, 'prev_sib must be empty') if !unset(prev_sib)
-      errors.add(:next_sib, 'next_sib must be empty') if !unset(next_sib)
+      errors.add(:prev_sib, 'prev_sib must be empty') if !unset?(prev_sib)
+      errors.add(:next_sib, 'next_sib must be empty') if !unset?(next_sib)
       return
     end
 
     # At least one child of my parent already exists.  Must have at least one
     # sibling unless the one child is this one (we are updating, not creating).
-    if (unset(prev_sib) && unset(next_sib) &&
+    if (unset?(prev_sib) && unset?(next_sib) &&
         ((parent.children.size > 1) || (parent.children.first.pid != pid)))
       errors[:base] << 'must have one or both siblings if parent has children'
     end
@@ -59,7 +88,7 @@ class Node < ActiveFedora::Base
       return super()
     end
 
-    if (!unset(prev_sib))
+    if (!unset?(prev_sib))
       found = false
       if (!parent.nil?)
         parent.children.each do |a_child|
@@ -81,7 +110,7 @@ class Node < ActiveFedora::Base
       end
     end
 
-    if (!unset(next_sib))
+    if (!unset?(next_sib))
       found = false
       if (!parent.nil?)
         parent.children.each do |a_child|
@@ -111,13 +140,13 @@ class Node < ActiveFedora::Base
       return false
     end
 
-    if (!unset(prev_sib))
+    if (!unset?(prev_sib))
       prev_sibling = find(prev_sib)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
     end
 
-    if (!unset(next_sib))
+    if (!unset?(next_sib))
       next_sibling = find(next_sib)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
@@ -129,13 +158,13 @@ class Node < ActiveFedora::Base
   # Unlink this node from the list
   def delete
     begin
-      prev_sibling = find(prev_sib) if (!unset(prev_sib))
+      prev_sibling = find(prev_sib) if (!unset?(prev_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing prev_sib: #{e}")
     end
 
     begin
-      next_sibling = find(next_sib) if (!unset(next_sib))
+      next_sibling = find(next_sib) if (!unset?(next_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing next_sib: #{e}")
     end
