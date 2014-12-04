@@ -1,5 +1,7 @@
 # A node in a tree of containers.  Sibling Nodes maintain local order through
-# the prev_sib and next_sib references, which contain PIDs of Nodes.
+# the prev_sib and next_sib references, which contain PIDs of Nodes.  A child
+# Node remembers its parent by PID.  A parent Node has an array of its childrens'
+# PIDs.
 #
 # A Node may have no children (if it is a leaf node, such as a Page) or no
 # parent (if it is at the top of the tree.
@@ -9,10 +11,6 @@
 class Node < ActiveFedora::Base
 
   include Hydra::AccessControls::Permissions
-
-#  has_many :children, :class_name => "Node", :property => :has_part
-#  belongs_to :parent, :class_name => "Node", :property => :is_part_of
-#  has_and_belongs_to_many  # WRong!  can't do Node<>Node this way.  Write supporting code instead.
 
   has_metadata 'nodeMetadata', type: NodeMetadata, label: 'PMP generic node metadata'
 
@@ -81,8 +79,10 @@ class Node < ActiveFedora::Base
       return super()
     end
 
+    # Get a copy of my supposed parent.
     my_parent = Node.find(parent) if !parent.nil?
 
+    # Check that prev_sib is a child of my parent.
     if (!unset?(prev_sib))
       found = false
       if (!parent.nil?)
@@ -105,6 +105,7 @@ class Node < ActiveFedora::Base
       end
     end
 
+    # Check that next_sib is a child of my parent.
     if (!unset?(next_sib))
       found = false
       if (!parent.nil?)
@@ -127,6 +128,11 @@ class Node < ActiveFedora::Base
       end
     end
 
+    # TODO Check my parentage.
+
+    # TODO Check my children.
+
+    # Persist myself.
     begin
       return false if ! super()
     rescue RestClient::BadRequest => e
@@ -135,23 +141,33 @@ class Node < ActiveFedora::Base
       return false
     end
 
+    # Link myself to previous sibling.
     if (!unset?(prev_sib))
       prev_sibling = find(prev_sib)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
     end
 
+    # Link myself to next sibling.
     if (!unset?(next_sib))
       next_sibling = find(next_sib)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
     end
 
+    # TODO Link myself to my parent.
+
+    # TODO Link myself to my children.
+
+    # Success!
     true
   end
 
-  # Unlink this node from the list
+  # Unlink this node from siblings and parent.
   def delete
+    # TODO check for children.
+
+    # Load my siblings, if any.
     begin
       prev_sibling = find(prev_sib) if (!unset?(prev_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
@@ -164,11 +180,13 @@ class Node < ActiveFedora::Base
       logger.error("deleting #{pid}, missing next_sib: #{e}")
     end
 
+    # Unlink from previous sibling.
     if (prev_sibling)
       prev_sibling.next_sib = next_sibling ? next_sibling.pid : nil
       prev_sibling.save(unchecked: 1)
     end
 
+    # Unlink from next sibling.
     if (next_sibling)
       next_sibling.prev_sib = prev_sibling ? prev_sibling.pid : nil
       next_sibling.save(unchecked: 1)
@@ -177,9 +195,9 @@ class Node < ActiveFedora::Base
     super
   end
 
+  # Method returns ordered children and false
+  # Or unordered children and an error message
   def order_children()
-    # Method returns ordered children and false
-    # Or unordered children and an error message
     ordered_children = Array.new
     error = false
     # Get first child and all child ids
