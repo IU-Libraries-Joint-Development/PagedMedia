@@ -68,8 +68,20 @@ class Node < ActiveFedora::Base
   end
 
 
-  # Link this node into the list.
+  # Link this node into the "family tree".
   # These saves should be in a transaction, but does Fedora do transactions?
+  #
+  # The general plan is to:
+  #
+  #  1) sanity-check all "family" relationships;
+  #  2) persist this object;
+  #  3) update this object's relatives with relationships to this object.
+  #
+  # In that way, this object should be available to its relatives in its new
+  # state for *their* sanity-checking as they persist themselves after update.
+  # Any new relationships should already be sane before persisting, so there
+  # should be no need to undo this object's state change due to problems with
+  # relatives.
   #
   # 'foo.save(unchecked: 1)' bypasses integrity checks.  Don't!  It's for this
   # method's internal use.
@@ -129,8 +141,14 @@ class Node < ActiveFedora::Base
     end
 
     # TODO Check my parentage.
+    # does parent exist?
+    # OK to already be parent's child.
 
     # TODO Check my children.
+    # OK to already be this child's parent.
+    # OK if child has no parent.
+    # NOT OK if child has another parent.
+    # (How to re-parent?)
 
     # Persist myself.
     begin
