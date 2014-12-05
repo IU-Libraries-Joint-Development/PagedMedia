@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/aploshay/blacklight-hierarchy.git
+  revision: 56ba282d0911174edfcd1e1ee28a148d64c0fdc6
+  branch: blacklight_470
+  specs:
+    blacklight-hierarchy (0.1.0)
+      blacklight (= 4.7.0)
+      rails (~> 4.1)
+
+GIT
   remote: https://github.com/cjcolvar/omniauth-cas.git
   revision: b6ba1d9208ce230d97cd74681fed87224f0501f8
   specs:
@@ -297,6 +306,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  blacklight-hierarchy!
   bootstrap-sass
   capybara
   coffee-rails (~> 4.0.0)

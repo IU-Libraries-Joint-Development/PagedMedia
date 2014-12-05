@@ -71,6 +71,14 @@ class CatalogController < ApplicationController
     config.add_facet_field solr_name('subject_geo', :facetable), :label => 'Region'
     config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
     config.add_facet_field solr_name('type'), label: 'Media Type'
+    # experimental changes to make a hierarchy
+    config.add_facet_field solr_name('hierarchy'), label: 'Collections', partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.facet_display = {
+      :hierarchy => {
+      'tag' => [nil],
+      'hierarchy' => [['hierarchy', 'tesim'], ":"]
+      }
+    }
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
