@@ -102,7 +102,7 @@ class Node < ActiveFedora::Base
           found = true if a_child.pid == prev_sib
         end
         if !found
-          errors.add(:prev_sib, "#{prev_sib} not in #{my_parent.pid}")
+          errors.add(:prev_sib, "#{prev_sib} not a child of #{my_parent.pid}")
           return false
         end
       else
@@ -140,20 +140,39 @@ class Node < ActiveFedora::Base
       end
     end
 
-    # TODO Check my parentage.
-    # does parent exist?
+    # Check my parentage.
     # OK to already be parent's child.
+    unless (unset?(parent))
+      # NOT OK if parent does not exist.
+      if (my_parent.nil?)
+        errors.add(:parent, 'parent node does not exist')
+        return false
+      end
+    end
 
-    # TODO Check my children.
-    # OK to already be this child's parent.
-    # OK if child has no parent.
-    # NOT OK if child has another parent.
-    # (How to re-parent?)
+    # Check my children.
+    children.each do |child|
+      my_child = Node.find(child)
+      # NOT OK if child does not exist.
+      if (my_child.nil?)
+        errors.add(:child, 'child node does not exist')
+        return false
+      end
+      # OK to already be this child's parent.
+      # OK if child has no parent.
+      # NOT OK if child has another parent.
+      # TODO How to re-parent?
+      if (my_child.parent != pid)
+        errors.add(:child, 'child has another parent')
+        return false
+      end
+    end
 
     # Persist myself.
     begin
       return false if ! super()
     rescue RestClient::BadRequest => e
+      logger.error(e.message)
       errors[:base] << e.message
       errors[:base] << 'Check for a damaged or invalid file'
       return false
@@ -168,14 +187,30 @@ class Node < ActiveFedora::Base
 
     # Link myself to next sibling.
     if (!unset?(next_sib))
-      next_sibling = find(next_sib)
+      next_sibling = Node.find(next_sib)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
     end
 
-    # TODO Link myself to my parent.
+    # Link myself to my parent as a child.
+    unless (unset?(parent))
+      unless (my_parent.children.include?(pid))
+        # This is really weird.  Multi-valued attributes have the usual array
+        # operators but some of them do nothing.  The only way to augment one is
+        # to augment a copy and assign the result back.  ?!?!
+        my_parent.children = my_parent.children << pid
+        my_parent.save(unchecked: 1)
+      end
+    end
 
-    # TODO Link myself to my children.
+    # Link my children to me as parent.
+    children.each do |child|
+      my_child = find(child)
+      if (unset?(my_child.parent))
+        my_child.parent = pid
+        my_child.save(unchecked: 1)
+      end
+    end
 
     # Success!
     true
