@@ -11,6 +11,7 @@
         <th>Links</th>
       </tr>
       <% ordered.each do |page| %>
+      <% my_page = Page.find(page) %>
       <tr>
         <td>
             <%= link_to image_tag(

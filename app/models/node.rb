@@ -62,7 +62,7 @@ class Node < ActiveFedora::Base
     # At least one child of my parent already exists.  Must have at least one
     # sibling unless the one child is this one (we are updating, not creating).
     if (unset?(prev_sib) && unset?(next_sib) &&
-        ((my_parent.children.size > 1) || (my_parent.children.first.pid != pid)))
+        ((my_parent.children.size > 1) || (Node.find(my_parent.children.first).pid != pid)))
       errors[:base] << 'must have one or both siblings if parent has children'
     end
   end
@@ -99,7 +99,7 @@ class Node < ActiveFedora::Base
       found = false
       if (!parent.nil?)
         my_parent.children.each do |a_child|
-          found = true if a_child.pid == prev_sib
+          found = (a_child == prev_sib)
         end
         if !found
           errors.add(:prev_sib, "#{prev_sib} not a child of #{my_parent.pid}")
@@ -110,7 +110,7 @@ class Node < ActiveFedora::Base
         return false
       end
 
-      prev_sibling = find(prev_sib)
+      prev_sibling = Node.find(prev_sib)
       if (prev_sibling.next_sib != next_sib) && (prev_sibling.next_sib != pid)
         errors.add(:next_sib, 'invalid')
         return false
@@ -122,7 +122,7 @@ class Node < ActiveFedora::Base
       found = false
       if (!parent.nil?)
         my_parent.children.each do |a_child|
-          found = true if a_child.pid == next_sib
+          found = (a_child == next_sib)
         end
         if !found
           errors.add(:next_sib, "#{next_sib} not in #{my_parent.pid}")
@@ -133,7 +133,7 @@ class Node < ActiveFedora::Base
         return false
       end
 
-      next_sibling = find(next_sib)
+      next_sibling = Node.find(next_sib)
       if (next_sibling.prev_sib != prev_sib) && (next_sibling.prev_sib != pid)
         errors.add(:prev_sib, 'invalid')
         return false
@@ -180,7 +180,7 @@ class Node < ActiveFedora::Base
 
     # Link myself to previous sibling.
     if (!unset?(prev_sib))
-      prev_sibling = find(prev_sib)
+      prev_sibling = Node.find(prev_sib)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
     end
@@ -205,7 +205,7 @@ class Node < ActiveFedora::Base
 
     # Link my children to me as parent.
     children.each do |child|
-      my_child = find(child)
+      my_child = Node.find(child)
       if (unset?(my_child.parent))
         my_child.parent = pid
         my_child.save(unchecked: 1)
@@ -222,13 +222,13 @@ class Node < ActiveFedora::Base
 
     # Load my siblings, if any.
     begin
-      prev_sibling = find(prev_sib) if (!unset?(prev_sib))
+      prev_sibling = Node.find(prev_sib) if (!unset?(prev_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing prev_sib: #{e}")
     end
 
     begin
-      next_sibling = find(next_sib) if (!unset?(next_sib))
+      next_sibling = Node.find(next_sib) if (!unset?(next_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing next_sib: #{e}")
     end
@@ -258,11 +258,12 @@ class Node < ActiveFedora::Base
     next_child = false
     child_ids = Array.new
     self.children.each do |child|
-      child_ids << child.pid
-      next if child.prev_sib != nil && child.prev_sib != ''
+      child_ids << child
+      my_child = Node.find(child)
+      next if (!my_child.prev_sib.nil?) && (my_child.prev_sib != '')
       # Check for multiple first children
       if !first_child
-        first_child = child
+        first_child = my_child
       else
         error = "Multiple First Children"
         return [self.children, error]
