@@ -71,12 +71,12 @@ class CatalogController < ApplicationController
     config.add_facet_field solr_name('subject_geo', :facetable), :label => 'Region'
     config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
     config.add_facet_field solr_name('type'), label: 'Media Type'
-    # experimental changes to make a hierarchy
-    config.add_facet_field solr_name('treestruct'), label: 'Collections', partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field solr_name('treestruct', :facetable), label: 'Collections', partial: 'blacklight/hierarchy/facet_hierarchy'
+
     config.facet_display = {
       :hierarchy => {
       'tag' => [nil],
-      'treestruct' => [['type', 'tesim'], ":"]
+      'treestruct' => [['sim'], ":"]
       }
     }
 
