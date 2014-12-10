@@ -47,12 +47,12 @@ class PagesController < ApplicationController
       @page.image_file = params[:image_file] if params.has_key?(:image_file)
       @page.ocr_file = params[:ocr_file] if params.has_key?(:ocr_file)
       @page.xml_file = params[:xml_file] if params.has_key?(:xml_file)
-      @page.paged_id = params[:paged_id] if params.has_key?(:paged_id)
+      @page.parent = params[:parent] if params.has_key?(:parent)
       if @page.save
-        if @page.paged_id
-          paged = Paged.find(@page.paged_id)
-          paged.update_index 
-          format.html { redirect_to paged_path(@page.paged_id), notice: 'Page was successfully created.'}
+        if @page.parent
+          paged = Paged.find(@page.parent)
+          paged.update_index
+          format.html { redirect_to paged_path(@page.parent), notice: 'Page was successfully created.'}
         else
           format.html { redirect_to @page, notice: 'Page was successfully created.' }
           format.json { render action: 'show', status: :created, location: @page }
@@ -71,8 +71,8 @@ class PagesController < ApplicationController
       if @page.update(page_params)
         format.html do
           if (:paged == session.delete(:came_from))
-            if @page.paged_id
-              return_url = paged_url(@page.paged_id)
+            if @page.parent
+              return_url = paged_url(@page.parent)
             else
               return_url = pageds_path
             end
@@ -108,6 +108,6 @@ class PagesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def page_params
       params.require(:page).permit(:logical_number, :prev_sib, :next_sib,
-        :image_file, :paged_id, :ocr_file, :xml_file)
+        :image_file, :parent, :ocr_file, :xml_file)
     end
 end

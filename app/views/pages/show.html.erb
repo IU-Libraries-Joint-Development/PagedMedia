@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div id="sidebar" class="span3">
   <%= render partial: 'shared/side_navbar' %>
 </div>
@@ -53,5 +54,54 @@
   
   <%= link_to 'Edit', edit_page_path(@page) %> |
   <%= link_to 'Back', pages_path %>
+=======
+<p id="notice"><%= notice %></p>
+
+<img alt='<%=  @page.image_datastream.label %>'
+     src='<%=  ActiveFedora.fedora_config.credentials[:url] %>/<%=  @page.image_datastream.url %>'
+     width='128' height='128'
+     style='margin-right: 10px; float: left;'/>
+<!-- FIXME if our Fedora instance is inaccessible then we need another way to do this -->
+
+<p>
+  <strong>Logical number:</strong>
+  <%= @page.logical_number %>
+</p>
+
+<p>
+  <strong>Previous page:</strong>
+  <%= @page.prev_sib %>
+</p>
+
+<p>
+  <strong>Next page:</strong>
+  <%= @page.next_sib %>
+</p>
+
+<% if @page.ocr_file %>
+<p>  
+  <%= link_to 'OCR file', ActiveFedora.fedora_config.credentials[:url] + '/' + @page.ocr_datastream.url %> 
+</p>
+<% end %>
+
+<p>
+  <strong>XML file:</strong>
+  <% if @page.xml_file.has_content? %>
+    <%= link_to @page.xml_datastream.label,
+                ActiveFedora.fedora_config.credentials[:url] +
+                  '/' + @page.xml_datastream.url %>
+  <% else %>
+    none.
+  <% end %>
+</p>
+
+<% if @page.parent %>
+<p>  
+  <strong>Page from:</strong>
+  <%= my_parent = Page.find(@page.parent) %>
+  <%= link_to my_parent.title, "/pageds/" + my_parent.pid %>
+</p>
+<% end %>
+>>>>>>> Tidy up many missing changes of field names etc.
 
 </div>

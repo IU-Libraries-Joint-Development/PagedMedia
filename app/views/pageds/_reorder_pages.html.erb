@@ -6,8 +6,8 @@
       <ul id="sortable_pages">
       <% @ordered.each do |page| %>
         <li id="<%= page["id"] %>" class="ui-state-default ui-sortable-handle">
-	  <%= page["logical_number"] %>. <%= page["id"] %>
-	</li>
+          <%= Page.find(page).logical_number %>. <%= page %>
+        </li>
       <% end %>
       </ul>
       <input id="reorder_submission" name="reorder_submission" type="hidden" value="">

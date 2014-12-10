@@ -22,8 +22,10 @@
                   page_path(page["id"])
             %>
         </td>
-        <td class='logical_numbers'><%= page["logical_number"] %></td>
-        <td><%= page["id"] =%></td>
+        <td class='logical_numbers'><%= my_page[logical_number] %></td>
+        <td><%= my_page.id %></td>
+        <td><%= my_page.prev_sib %></td>
+        <td><%= my_page.next_sib %></td>
         <td>
           <div style="float:left;">
           <%= button_to 'View', page_path(page["id"]), :method => :get, :style => "display:inline;" %> 

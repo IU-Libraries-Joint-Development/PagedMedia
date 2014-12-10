@@ -9,12 +9,21 @@
   <table>
     <thead>
       <tr>
+<<<<<<< HEAD
         <th>Logical number</th>
         <th>Previous page</th>
         <th>Next page</th>
         <th></th>
         <th></th>
         <th></th>
+=======
+        <td><%= page.logical_number %></td>
+        <td><%= page.prev_sib %></td>
+        <td><%= page.next_sib %>
+        <td><%= link_to 'Show', page %></td>
+        <td><%= link_to 'Edit', edit_page_path(page) %></td>
+        <td><%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+>>>>>>> Tidy up many missing changes of field names etc.
       </tr>
     </thead>
   
