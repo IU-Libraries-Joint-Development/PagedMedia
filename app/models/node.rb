@@ -92,56 +92,48 @@ class Node < ActiveFedora::Base
     end
 
     # Get a copy of my supposed parent.
-    my_parent = Node.find(parent) if !parent.nil?
+    my_parent = Node.find(parent) unless parent.nil?
 
     # Check that prev_sib is a child of my parent.
-    if (!unset?(prev_sib))
-      found = false
-      if (!parent.nil?)
-        my_parent.children.each do |a_child|
-          found = (a_child == prev_sib)
-        end
-        if !found
+    unless (unset?(prev_sib))
+      if (parent.nil?)
+        logger.error("#{pid}:  unowned node cannot have siblings")
+        errors.add(:prev_sib, 'Unowned node cannot have siblings')
+        return false
+      else
+        unless (my_parent.children.include?(prev_sib))
           logger.error("#{pid}:  #{prev_sib} not a child of #{my_parent.pid}")
           errors.add(:prev_sib, "#{prev_sib} not a child of #{my_parent.pid}")
           return false
         end
-      else
-        logger.error("#{pid}:  unowned node cannot have siblings")
-        errors.add(:prev_sib, 'Unowned node cannot have siblings')
-        return false
       end
 
       prev_sibling = Node.find(prev_sib)
       if (prev_sibling.next_sib != next_sib) && (prev_sibling.next_sib != pid)
         logger.error("#{pid}:  invalid next_sib #{next_sib}")
-        errors.add(:next_sib, 'invalid')
+        errors.add(:next_sib, "invalid next_sib #{next_sib}")
         return false
       end
     end
 
     # Check that next_sib is a child of my parent.
-    if (!unset?(next_sib))
-      found = false
-      if (!parent.nil?)
-        my_parent.children.each do |a_child|
-          found = (a_child == next_sib)
-        end
-        if !found
+    unless (unset?(next_sib))
+      if (parent.nil?)
+        logger.error("#{pid}:  unowned node cannot have siblings")
+        errors.add(:next_sib, 'Unowned node cannot have siblings')
+        return false
+      else
+        unless (my_parent.children.include?(next_sib))
           logger.error("#{pid}:  #{next_sib} not a child of #{my_parent.pid}")
           errors.add(:next_sib, "#{next_sib} not a child of #{my_parent.pid}")
           return false
         end
-      else
-        logger.error("#{pid}:  unowned node cannot have siblings")
-        errors.add(:next_sib, 'Unowned node cannot have siblings')
-        return false
       end
 
       next_sibling = Node.find(next_sib)
       if (next_sibling.prev_sib != prev_sib) && (next_sibling.prev_sib != pid)
         logger.error("#{pid}:  invalid prev_sib #{prev_sib}")
-        errors.add(:prev_sib, 'invalid')
+        errors.add(:prev_sib, "invalid prev_sib #{prev_sib}")
         return false
       end
     end
@@ -155,10 +147,6 @@ class Node < ActiveFedora::Base
         errors.add(:parent, 'parent node does not exist')
         return false
       end
-    end
-
-    def save!(opts={}) # Added to debug tests
-      raise(RecordInvalid.new(self)) unless save(opts)
     end
 
     # Check my children.
@@ -227,6 +215,10 @@ class Node < ActiveFedora::Base
 
     # Success!
     true
+  end
+
+  def save!(opts={}) # Added to debug tests
+    raise(ActiveFedora::RecordInvalid, self, caller) unless save(opts)
   end
 
   # Unlink this node from siblings and parent.
