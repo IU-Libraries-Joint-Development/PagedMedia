@@ -76,7 +76,7 @@ class CatalogController < ApplicationController
     config.facet_display = {
       :hierarchy => {
       'tag' => [nil],
-      'treestruct' => [['sim'], ":"]
+      'treestruct' => [['sim'], "--"]
       }
     }
 
