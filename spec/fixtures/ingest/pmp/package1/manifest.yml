@@ -9,6 +9,10 @@ pageds:
      type: score
      publisher: Score Central
      publisher_place: Bumblyburg
+     treestruct:
+         - "Scores"
+         - "Scores--Ultimate Scores"
+         - "Scores--Ultimate Scores--Volume 1"
    content:
      pagedXML: score_xml.xml
    pages:

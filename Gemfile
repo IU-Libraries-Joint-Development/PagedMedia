@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 # A Rails project
 gem 'rails', '~>4.1'
+gem 'blacklight-hierarchy', :git => "https://github.com/aploshay/blacklight-hierarchy.git", :branch => "blacklight_470"
 
 # This is a Hydra head
 gem 'hydra', '~> 6.1'
