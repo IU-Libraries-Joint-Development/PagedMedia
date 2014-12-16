@@ -184,6 +184,7 @@ class Node < ActiveFedora::Base
       prev_sibling = Node.find(prev_sib)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
+      logger.debug("Saving #{pid}:  prev_sib is #{prev_sib}")
     end
 
     # Link myself to next sibling.
@@ -191,6 +192,7 @@ class Node < ActiveFedora::Base
       next_sibling = Node.find(next_sib)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
+      logger.debug("Saving #{pid}:  next_sib is #{next_sib}")
     end
 
     # Link myself to my parent as a child.
@@ -214,6 +216,7 @@ class Node < ActiveFedora::Base
     end
 
     # Success!
+    logger.info("Saved #{pid}")
     true
   end
 
@@ -250,6 +253,22 @@ class Node < ActiveFedora::Base
       next_sibling.save(unchecked: 1)
     end
 
+    # Load my parent, if any.
+    begin
+      my_parent = Node.find(parent) unless (unset?(parent))
+    rescue ActiveFedora::ObjectNotFoundError => e
+      logger.error("deleting #{pid}, missing parent #{parent}: #{e}")
+    end
+
+    # Unlink from parent.
+    if (my_parent)
+      my_sibs = my_parent.children
+      my_sibs.delete(pid)
+      my_parent.children = my_sibs
+      my_parent.save(unchecked: 1)
+    end
+
+    logger.info("Deleting #{pid}")
     super
   end
 
