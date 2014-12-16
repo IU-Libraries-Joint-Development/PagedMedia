@@ -225,8 +225,13 @@ class Node < ActiveFedora::Base
   end
 
   # Unlink this node from siblings and parent.
+  # Raises OrphanError if this node has children.
   def delete
-    # TODO check for children.
+    # Check for children.
+    unless (children.empty?)
+      logger.error("deleting #{pid}:  would leave orphans #{children.inspect}")
+      raise OrphanError, children.inspect
+    end
 
     # Load my siblings, if any.
     begin
