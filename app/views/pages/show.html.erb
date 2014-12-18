@@ -98,7 +98,7 @@
 <% if @page.parent %>
 <p>  
   <strong>Page from:</strong>
-  <%= my_parent = Page.find(@page.parent) %>
+  <%= my_parent = Paged.find(@page.parent) %>
   <%= link_to my_parent.title, "/pageds/" + my_parent.pid %>
 </p>
 <% end %>
