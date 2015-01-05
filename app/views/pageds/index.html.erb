@@ -1,36 +1,44 @@
-<h1>Listing pageds</h1>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
 
-<table id='listPageds'>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Title</th>
-      <th>Creator</th>
-      <th>Publisher</th>
-      <th>Place of Publication</th>
-      <th>Date of Publication</th>
-      <th colspan="4">Actions</th>
-    </tr>
-  </thead>
+<div id="content" class="span9"
 
-  <tbody>
-    <% @pageds.each do |paged| %>
+  <h1>Listing pageds</h1>
+  
+  <table id='listPageds'>
+    <thead>
       <tr>
-        <td><%= paged.type %></td>
-        <td><%= paged.title %></td>
-        <td><%= paged.creator %></td>
-        <td><%= paged.publisher %></td>
-        <td><%= paged.publisher_place %></td>
-        <td><%= paged.issued %></td>
-        <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up', target: "_blank" %></td>
-        <td><%= link_to 'Show', paged %></td>
-        <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
-        <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Type</th>
+        <th>Title</th>
+        <th>Creator</th>
+        <th>Publisher</th>
+        <th>Place of Publication</th>
+        <th>Date of Publication</th>
+        <th colspan="4">Actions</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+  
+    <tbody>
+      <% @pageds.each do |paged| %>
+        <tr>
+          <td><%= paged.type %></td>
+          <td><%= paged.title %></td>
+          <td><%= paged.creator %></td>
+          <td><%= paged.publisher %></td>
+          <td><%= paged.publisher_place %></td>
+          <td><%= paged.issued %></td>
+          <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up', target: "_blank" %></td>
+          <td><%= link_to 'Show', paged %></td>
+          <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
+          <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+  <br>
+  
+  <%= button_to 'New Paged', new_paged_path, :class=> "button", :method=> :get %>
 
-<br>
-
-<%= button_to 'New Paged', new_paged_path, :class=> "button", :method=> :get %>
+</div>

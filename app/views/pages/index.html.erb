@@ -1,31 +1,39 @@
-<h1>Listing pages</h1>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Logical number</th>
-      <th>Previous page</th>
-      <th>Next page</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @pages.each do |page| %>
+<div id="content" class="span9">
+  
+  <h1>Listing pages</h1>
+  
+  <table>
+    <thead>
       <tr>
-        <td><%= page.logical_number %></td>
-        <td><%= page.prev_page %></td>
-        <td><%= page.next_page %>
-        <td><%= link_to 'Show', page %></td>
-        <td><%= link_to 'Edit', edit_page_path(page) %></td>
-        <td><%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Logical number</th>
+        <th>Previous page</th>
+        <th>Next page</th>
+        <th></th>
+        <th></th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+  
+    <tbody>
+      <% @pages.each do |page| %>
+        <tr>
+          <td><%= page.logical_number %></td>
+          <td><%= page.prev_page %></td>
+          <td><%= page.next_page %>
+          <td><%= link_to 'Show', page %></td>
+          <td><%= link_to 'Edit', edit_page_path(page) %></td>
+          <td><%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+  <br>
+  
+  <%= link_to 'New Page', new_page_path %>
 
-<br>
-
-<%= link_to 'New Page', new_page_path %>
+</div>

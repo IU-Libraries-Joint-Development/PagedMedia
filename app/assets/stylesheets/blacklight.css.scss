@@ -1,8 +1,8 @@
+@charset "UTF-8";
+
+/* This is the default blacklight theme. */
+
 @import 'bootstrap';
 @import 'bootstrap-responsive';
 
-@import 'blacklight/blacklight';
-
-.span3 {
-  width: 300px;
-}
+@import 'blacklight/blacklight_base';
