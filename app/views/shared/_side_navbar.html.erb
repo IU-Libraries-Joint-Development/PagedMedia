@@ -2,9 +2,15 @@
   Copyright 2014 Indiana University
 %>
 
-<div id="pmp-sidenav" class="sidenav">
-  <h4>Navigation</h4>
-  <div class="pmp-sidenav-links">
+<div class="sidenav pmp-sidenav">
+  <h4 data-toggle="collapse" data-target=".pmp-collapse">
+    <a class="btn btn-navbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </a>  
+    Navigation
+  </h4>
+  <div class="pmp-collapse pmp-sidenav-links">
     <h5 class="twiddle">
       <%= link_to 'Home', '/' %>
       <i class="icon-chevron"></i>
