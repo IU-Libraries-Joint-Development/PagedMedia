@@ -18,6 +18,7 @@ class Page < ActiveFedora::Base
   has_attributes :prev_page, datastream: 'descMetadata', multiple: false
   has_attributes :next_page, datastream: 'descMetadata', multiple: false
   has_attributes :text,  datastream: 'descMetadata', multiple: false
+  has_attributes :page_struct, datastream: 'descMetadata', multiple: true
 
   validate :validate_has_required_siblings
 
