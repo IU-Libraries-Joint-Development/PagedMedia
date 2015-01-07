@@ -16,14 +16,14 @@ pageds:
    content:
      pagedXML: score_xml.xml
    pages:
-     page count: 3
+     page count: 5
      descMetadata:
        logical_num:
-         - Score Page 1
-         - Score Page 2
-         - Score Page 3
-         - Score Page 4
-         - Score Page 5
+         - Page A1
+         - Page A2
+         - Page B1
+         - Page B2
+         - Page C1
        text:
          - myparent
          - myparent
@@ -32,25 +32,20 @@ pageds:
          - myparent
        page_struct:
          -
-           - "Main"
-           - "Main--Section 1"
-           - "Main--Section 1--Page 1"
+           - "Section A"
+           - "Section A--Page A1"
          -
-           - "Main"
-           - "Main--Section 1"
-           - "Main--Section 1--Page 2"
+           - "Section A"
+           - "Section A--Page A2"
          -
-           - "Main"
-           - "Main--Section 1"
-           - "Main--Section 1--Page 3"
+           - "Section B"
+           - "Section B--Page B1"
          -
-           - "Main"
-           - "Main--Section 2"
-           - "Main--Section 2--Page 4"
+           - "Section B"
+           - "Section B--Page B2"
          -
-           - "Main"
-           - "Main--Section 3"
-           - "Main--Section 3--Page 5"
+           - "Section C"
+           - "Section C--Page C1"
      content:
        pageImage:
          - bhr9405-1-1.jpg

@@ -25,12 +25,12 @@ class CatalogController < ApplicationController
 
   # List of unwanted models
   def unwanted_models
-    return[Page]
+    return[]
   end
 
   configure_blacklight do |config|
     config.default_solr_params = {
-      :qf => 'title_tesim creator_tesim type_tesim',
+      :qf => 'title_tesim creator_tesim type_tesim text_tesim',
       :qt => 'search',
       :rows => 10
     }
@@ -72,11 +72,13 @@ class CatalogController < ApplicationController
     config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
     config.add_facet_field solr_name('type'), label: 'Media Type'
     config.add_facet_field solr_name('treestruct', :facetable), label: 'Collections', partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field solr_name('page_struct', :facetable), label: 'Contents', partial: 'blacklight/hierarchy/facet_hierarchy'
 
     config.facet_display = {
       :hierarchy => {
       'tag' => [nil],
-      'treestruct' => [['sim'], "--"]
+      'treestruct' => [['sim'], "--"],
+      'page_struct' => [['sim'], "--"]
       }
     }
 
