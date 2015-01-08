@@ -110,6 +110,7 @@ class Paged < ActiveFedora::Base
     super(solr_doc, opts)
     solr_doc[Solrizer.solr_name('pages', 'ss')] = pages.to_json # single value field as json
     solr_doc[Solrizer.solr_name('pages', 'ssm')] = pages # multivalue field as ruby hash
+    solr_doc[Solrizer.solr_name('item_id', 'si')] = self.pid
     return solr_doc
   end
 

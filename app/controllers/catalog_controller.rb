@@ -92,7 +92,7 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
-    config.add_index_field solr_name('title', :stored_searchable, type: :string), :label => 'Title:'
+#    config.add_index_field solr_name('title', :stored_searchable, type: :string), :label => 'Title:'
     config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), :label => 'Title:'
     config.add_index_field solr_name('author', :stored_searchable, type: :string), :label => 'Author:'
     config.add_index_field solr_name('author_vern', :stored_searchable, type: :string), :label => 'Author:'

@@ -209,4 +209,12 @@ class Page < ActiveFedora::Base
     super
   end
 
+  def to_solr(solr_doc={}, opts={})
+    super(solr_doc, opts)
+    if (!paged.nil?)
+      solr_doc[Solrizer.solr_name('item_id', 'si')] = paged.pid
+    end
+    return solr_doc
+  end
+
 end
