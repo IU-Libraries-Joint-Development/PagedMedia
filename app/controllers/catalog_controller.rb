@@ -28,6 +28,20 @@ class CatalogController < ApplicationController
     return[]
   end
 
+  # view individual paged object with navigation of hierarchical facets
+  def view
+    @response, @documents = get_search_results( { q: "item_id_si:#{params[:id].to_s}"}, {})
+    #FIXME; validate results?  Should be 1 Paged, 0 or more Pages
+
+
+    #FIXME: placeholder testing code to view results
+    @pageds = @documents.select { |x| x["active_fedora_model_ssi"] == "Paged" }
+    @pages = @documents.select { |x| x["active_fedora_model_ssi"] == "Page" }
+    raise "No Paged found for id: #{params[:id].to_s}" if @pageds.empty?
+    @document = @pageds.first
+    render :show
+  end
+
   configure_blacklight do |config|
     config.default_solr_params = {
       :qf => 'title_tesim creator_tesim type_tesim text_tesim',

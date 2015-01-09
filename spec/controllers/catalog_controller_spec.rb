@@ -117,3 +117,50 @@ require 'spec_helper'
       expect(page).to have_table('listPageds')
     end
   end
+
+  describe CatalogController do
+    before(:all) do
+      @newspaper_without_pages = FactoryGirl.create :paged, :newspaper
+      @newspaper_with_pages = FactoryGirl.create :paged, :newspaper, :with_pages
+    end
+
+    describe "GET view" do
+      let(:get_args) { {id: "SET_FOR_CONTEXT" } }
+      let(:get_view) { get :view, **get_args }
+      context "with no pages" do
+        before(:each) do
+          get_args[:id] = @newspaper_without_pages.id
+          get_view
+        end
+        it "returns only paged object in @documents" do
+          expect(assigns(:documents).size).to eq 1
+          expect(assigns(:pageds).size).to eq 1
+          expect(assigns(:pages).size).to eq 0
+        end
+      end
+      context "with 5 pages" do
+        before(:each) do
+          get_args[:id] = @newspaper_with_pages.id
+          get_view
+        end
+        it "returns paged object and pages in @documents" do
+          expect(assigns(:documents).size).to eq 6
+          expect(assigns(:pageds).size).to eq 1
+          expect(assigns(:pages).size).to eq 5
+        end
+      end
+      context "with invalid paged id" do
+        before(:each) do
+          get_args[:id] = "INVALID ID"
+        end
+        it "raises an error" do
+          expect{ get_view }.to raise_error
+        end
+      end
+    end
+
+   after(:all) do
+     @newspaper_without_pages.delete
+     @newspaper_with_pages.delete
+   end
+  end
