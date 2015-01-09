@@ -18,7 +18,7 @@ class Paged < ActiveFedora::Base
   has_attributes :publisher_place, datastream: 'descMetadata', multiple: false
   has_attributes :issued, datastream: 'descMetadata', multiple: false
   has_attributes :type, datastream: 'descMetadata', multiple: false
-  has_attributes :treestruct, datastream: 'descMetadata', multiple: true
+  has_attributes :paged_struct, datastream: 'descMetadata', multiple: true
 
   # Setter for the XML datastream
   def xml_file=(file)

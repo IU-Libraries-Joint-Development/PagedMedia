@@ -117,7 +117,7 @@ FactoryGirl.define do
       type file_content["pageds"][0]["descMetadata"]["type"]
       publisher file_content["pageds"][0]["descMetadata"]["publisher"]
       publisher_place file_content["pageds"][0]["descMetadata"]["publisher_place"]
-      treestruct file_content["pageds"][0]["descMetadata"]["treestruct"]
+      paged_struct file_content["pageds"][0]["descMetadata"]["paged_struct"]
     end
 
   end

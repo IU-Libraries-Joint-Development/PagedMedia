@@ -71,13 +71,13 @@ class CatalogController < ApplicationController
     config.add_facet_field solr_name('subject_geo', :facetable), :label => 'Region'
     config.add_facet_field solr_name('subject_era', :facetable), :label => 'Era'
     config.add_facet_field solr_name('type'), label: 'Media Type'
-    config.add_facet_field solr_name('treestruct', :facetable), label: 'Collections', partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field solr_name('paged_struct', :facetable), label: 'Collections', partial: 'blacklight/hierarchy/facet_hierarchy'
     config.add_facet_field solr_name('page_struct', :facetable), label: 'Contents', partial: 'blacklight/hierarchy/facet_hierarchy'
 
     config.facet_display = {
       :hierarchy => {
       'tag' => [nil],
-      'treestruct' => [['sim'], "--"],
+      'paged_struct' => [['sim'], "--"],
       'page_struct' => [['sim'], "--"]
       }
     }

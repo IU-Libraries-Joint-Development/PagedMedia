@@ -9,7 +9,7 @@ pageds:
      type: score
      publisher: Score Central
      publisher_place: Bumblyburg
-     treestruct:
+     paged_struct:
          - "Scores"
          - "Scores--Ultimate Scores"
          - "Scores--Ultimate Scores--Volume 1"
