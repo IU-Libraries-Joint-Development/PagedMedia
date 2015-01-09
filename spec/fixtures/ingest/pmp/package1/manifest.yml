@@ -25,11 +25,11 @@ pageds:
          - Page B2
          - Page C1
        text:
-         - myparent
-         - myparent
-         - myparent
-         - myparent
-         - myparent
+         - Some text about Page A1
+         - Some text about Page A2
+         - Some text about Page B1
+         - Some text about Page B2
+         - Some text about Page C1
        page_struct:
          -
            - "Section A"
