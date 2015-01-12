@@ -1,56 +1,62 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <strong>Type:</strong>
-  <%= @paged.type %>
-</p>
-
-<p>
-  <strong>Title:</strong>
-  <%= @paged.title %>
-</p>
-
-<p>
-  <strong>Creator:</strong>
-  <%= @paged.creator %>
-</p>
-
-<p>
-  <strong>Publisher:</strong>
-  <%= @paged.publisher %>
-</p>
-
-<p>
-  <strong>Place of Publication:</strong>
-  <%= @paged.publisher_place %>
-</p>
-
-<p>
-  <strong>Date of Publication:</strong>
-  <%= @paged.issued %>
-</p>
-
-<p>
-  <strong>XML file:</strong>
-  <% if @paged.xml_file.has_content? %>
-    <%= link_to @paged.xml_datastream.label,
-                ActiveFedora.fedora_config.credentials[:url] +
-                  '/' + @paged.xml_datastream.url %>
-  <% else %>
-    none.
-  <% end %>
-</p>
-
-<%= link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> |
-<%= link_to 'Edit', edit_paged_path(@paged) %> |
-<%= link_to 'Back', pageds_path %>
-
-<hr/>
-
-<div id='pages'>
-  <%= render :partial=>'paged_pages', :locals => { :paged => @paged, :ordered => @ordered } %>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
 </div>
 
-<%= render partial: 'reorder_pages', locals: { paged: @paged, ordered: @ordered } %>
+<div id="content" class="span9">
+  
+  <p id="notice"><%= notice %></p>
+  
+  <p>
+    <strong>Type:</strong>
+    <%= @paged.type %>
+  </p>
+  
+  <p>
+    <strong>Title:</strong>
+    <%= @paged.title %>
+  </p>
+  
+  <p>
+    <strong>Creator:</strong>
+    <%= @paged.creator %>
+  </p>
+  
+  <p>
+    <strong>Publisher:</strong>
+    <%= @paged.publisher %>
+  </p>
+  
+  <p>
+    <strong>Place of Publication:</strong>
+    <%= @paged.publisher_place %>
+  </p>
+  
+  <p>
+    <strong>Date of Publication:</strong>
+    <%= @paged.issued %>
+  </p>
+  
+  <p>
+    <strong>XML file:</strong>
+    <% if @paged.xml_file.has_content? %>
+      <%= link_to @paged.xml_datastream.label,
+                  ActiveFedora.fedora_config.credentials[:url] +
+                    '/' + @paged.xml_datastream.url %>
+    <% else %>
+      none.
+    <% end %>
+  </p>
+  
+  <%= link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> |
+  <%= link_to 'Edit', edit_paged_path(@paged) %> |
+  <%= link_to 'Back', pageds_path %>
+  
+  <hr/>
+  
+  <div id='pages'>
+    <%= render :partial=>'paged_pages', :locals => { :paged => @paged, :ordered => @ordered } %>
+  </div>
+  
+  <%= render partial: 'reorder_pages', locals: { paged: @paged, ordered: @ordered } %>
 
-
+</div>

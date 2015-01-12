@@ -2,18 +2,22 @@
   Copyright 2014 Indiana University
 %>
 
-<style type='text/css'>
-  .side_navbar {
-    list-style-type: none;
-    border: 1px solid;
-    margin: 0;
-    padding: 2em;
-    padding-bottom: 1em;
-    }
-</style>
-
-<ul class='side_navbar'>
-  <li>
-  <%= button_to 'Browse', pageds_path, :class=> {id: 'side_nav_browse'}, :method=> :get %>
-  </li>
-</ul>
+<div class="sidenav pmp-sidenav">
+  <h4 data-toggle="collapse" data-target=".pmp-collapse">
+    <a class="btn btn-navbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </a>  
+    Navigation
+  </h4>
+  <div class="pmp-collapse pmp-sidenav-links">
+    <h5 class="twiddle">
+      <%= link_to 'Home', '/' %>
+      <i class="icon-chevron"></i>
+    </h5>
+    <h5 class="twiddle">
+      <%= link_to 'Browse', pageds_path %>
+      <i class="icon-chevron"></i>
+    </h5>
+  </div>
+</div>
