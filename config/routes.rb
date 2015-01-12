@@ -6,6 +6,7 @@ PagedMedia::Application.routes.draw do
     get :page, on: :member
     get :pages, on: :member
     get :bookreader, on: :member
+    get :view, on: :member, controller: "catalog", action: "view"
   end
 
   root :to => "catalog#index"
@@ -13,6 +14,8 @@ PagedMedia::Application.routes.draw do
   HydraHead.add_routes(self)
   #devise_for :users
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+
+  #get 'pageds/view/:id' => 'catalog#view' 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

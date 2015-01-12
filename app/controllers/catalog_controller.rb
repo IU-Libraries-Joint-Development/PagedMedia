@@ -28,6 +28,12 @@ class CatalogController < ApplicationController
     return[]
   end
 
+  # view individual paged object with navigation of hierarchical facets
+  def view
+    params[:q] = "item_id_si:#{params[:id].to_s}"
+    @response, @document_list = get_search_results
+  end
+
   configure_blacklight do |config|
     config.default_solr_params = {
       :qf => 'title_tesim creator_tesim type_tesim text_tesim',
