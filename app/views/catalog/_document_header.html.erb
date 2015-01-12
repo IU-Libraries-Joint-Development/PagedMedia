@@ -15,6 +15,14 @@
 		  <%= t 'pmp.document.untitled.title' %>
 		<% end %>
               </a>
+          <% elsif document.document_type == "Page" %>
+              <a href='pages/<%= document.id %>'>
+	        <% if document.has_key?('logical_number_tesim') %>
+		  <%= document['logical_number_tesim'][0] %>
+		<% else %>
+		  <%= t 'pmp.document.untitled.title' %>
+		<% end %>
+              </a>
           <% else %>
             <%= link_to_document document, :label=>document_show_link_field(document), :counter => counter %>
           <% end %>

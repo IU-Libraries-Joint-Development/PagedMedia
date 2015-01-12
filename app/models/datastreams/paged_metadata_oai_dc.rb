@@ -14,7 +14,7 @@ class PagedMetadataOaiDc < ActiveFedora::OmDatastream
     t.publisher(namespace_prefix: 'dc', index_as: :stored_searchable)
     t.publisher_place(namespace_prefix: 'dc', index_as: :stored_searchable)
     t.issued(namespace_prefix: 'dc', index_as: :stored_searchable, type: :date)
-    t.treestruct(namespace_prefix: 'dc', index_as: :facetable)
+    t.paged_struct(namespace_prefix: 'dc', index_as: :facetable)
   end
 
   def self.xml_template

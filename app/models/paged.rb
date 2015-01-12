@@ -18,7 +18,7 @@ class Paged < ActiveFedora::Base
   has_attributes :publisher_place, datastream: 'descMetadata', multiple: false
   has_attributes :issued, datastream: 'descMetadata', multiple: false
   has_attributes :type, datastream: 'descMetadata', multiple: false
-  has_attributes :treestruct, datastream: 'descMetadata', multiple: true
+  has_attributes :paged_struct, datastream: 'descMetadata', multiple: true
 
   # Setter for the XML datastream
   def xml_file=(file)
@@ -110,6 +110,7 @@ class Paged < ActiveFedora::Base
     super(solr_doc, opts)
     solr_doc[Solrizer.solr_name('pages', 'ss')] = pages.to_json # single value field as json
     solr_doc[Solrizer.solr_name('pages', 'ssm')] = pages # multivalue field as ruby hash
+    solr_doc[Solrizer.solr_name('item_id', 'si')] = self.pid
     return solr_doc
   end
 
