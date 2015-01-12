@@ -132,10 +132,8 @@ require 'spec_helper'
           get_args[:id] = @newspaper_without_pages.id
           get_view
         end
-        it "returns only paged object in @documents" do
-          expect(assigns(:documents).size).to eq 1
-          expect(assigns(:pageds).size).to eq 1
-          expect(assigns(:pages).size).to eq 0
+        it "returns only paged object in @document_list" do
+          expect(assigns(:document_list).size).to eq 1
         end
       end
       context "with 5 pages" do
@@ -143,24 +141,23 @@ require 'spec_helper'
           get_args[:id] = @newspaper_with_pages.id
           get_view
         end
-        it "returns paged object and pages in @documents" do
-          expect(assigns(:documents).size).to eq 6
-          expect(assigns(:pageds).size).to eq 1
-          expect(assigns(:pages).size).to eq 5
+        it "returns paged object and pages in @document_list" do
+          expect(assigns(:document_list).size).to eq 6
         end
       end
       context "with invalid paged id" do
         before(:each) do
           get_args[:id] = "INVALID ID"
         end
-        it "raises an error" do
-          expect{ get_view }.to raise_error
+        it "returns no objects in @document_list" do
+          expect(assigns(:document_list).to_a.size).to eq 0
         end
       end
     end
 
    after(:all) do
      @newspaper_without_pages.delete
+     @newspaper_with_pages.pages.each { |page| page.delete }
      @newspaper_with_pages.delete
    end
   end
