@@ -15,8 +15,17 @@
 
     <title><%= h(@page_title || application_name) %></title>
     <link href="<%= opensearch_catalog_path(:format => 'xml', :only_path => false) %>" title="<%= application_name%>" type="application/opensearchdescription+xml" rel="search"/>
-    <%= favicon_link_tag asset_path('favicon.ico') %>
+    <%= favicon_link_tag '/img/favicon.ico' %>
     <%= stylesheet_link_tag    "application" %>
+    <!--[if (lte IE 8) & (!IEMobile)]>
+        <link href="/iucss/fixed.css" media="screen" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    <!--[if IE 7]>
+        <link href="/iucss/ie7.css" rel="stylesheet" type="text/css" />
+    <![endif]--> 
+    <!--[if IE 6]>
+        <link href="/iucss/ie6.css" rel="stylesheet" type="text/css" />
+    <![endif]-->
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
     <%= Deprecation.silence(Blacklight::HtmlHeadHelperBehavior) { raw(render_head_content) } %> 
