@@ -58,6 +58,7 @@ gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
 group :development, :test do
   gem "rspec-rails"
   gem "capybara"
+  gem "launchy"
   gem "factory_girl_rails"
   gem "jettywrapper"
 end
