@@ -2,7 +2,9 @@
 #--
 # Copyright 2014 Indiana University
 
-class Page < Node
+class Page < ActiveFedora::Base
+
+  include Node
 
   has_metadata 'descMetadata', type: PageMetadata
 

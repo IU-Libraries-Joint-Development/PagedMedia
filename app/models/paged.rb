@@ -2,7 +2,8 @@
 #--
 # Copyright 2014 Indiana University.
 
-class Paged < Node
+class Paged < ActiveFedora::Base
+  include Node
 
   has_file_datastream 'pagedXML'
 

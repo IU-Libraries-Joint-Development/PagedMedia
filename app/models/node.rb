@@ -8,34 +8,20 @@
 #--
 # Copyright 2014 Indiana University
 
-class Node < ActiveFedora::Base
+module Node# < ActiveFedora::Base
 
-  include Hydra::AccessControls::Permissions
+  def self.included(including_class)
+    including_class.class_eval do
+      include Hydra::AccessControls::Permissions
 
-  has_metadata 'nodeMetadata', type: NodeMetadata, label: 'PMP generic node metadata'
+      has_metadata 'nodeMetadata', type: NodeMetadata, label: 'PMP generic node metadata'
 
-  has_attributes :prev_sib, datastream: 'nodeMetadata', multiple: false
-  has_attributes :next_sib, datastream: 'nodeMetadata', multiple: false
-  has_attributes :parent, datastream: 'nodeMetadata', multiple: false
-  has_attributes :children, datastream: 'nodeMetadata', multiple: true
-
-  class ChildArray < Array
-    def [](i)
-      return _children[i]
-    end
-
-    def []=
-      # TODO
+      has_attributes :prev_sib, datastream: 'nodeMetadata', multiple: false
+      has_attributes :next_sib, datastream: 'nodeMetadata', multiple: false
+      has_attributes :parent, datastream: 'nodeMetadata', multiple: false
+      has_attributes :children, datastream: 'nodeMetadata', multiple: true
     end
   end
-
-#  def children
-#    kids = ChildArray.new()
-#    _children.each do |child|
-#      kids << Node.find(child)
-#    end
-#    return kids
-#  end
 
   # skip_sibling_validation both skips the custom validation and runs an unchecked save
   attr_accessor :skip_sibling_validation
@@ -50,7 +36,8 @@ class Node < ActiveFedora::Base
   # one must be non-nil.
   def validate_has_required_siblings
     return if parent.nil?
-    my_parent = Node.find(parent)
+    #FIXME: refactor Node.find calls
+    my_parent = self.class.find(parent)
 
     # Parent has no children yet, so this page can't have siblings
     if (my_parent.children.size == 0)
@@ -62,7 +49,7 @@ class Node < ActiveFedora::Base
     # At least one child of my parent already exists.  Must have at least one
     # sibling unless the one child is this one (we are updating, not creating).
     if (unset?(prev_sib) && unset?(next_sib) &&
-        ((my_parent.children.size > 1) || (Node.find(my_parent.children.first).pid != pid)))
+        ((my_parent.children.size > 1) || (self.class.find(my_parent.children.first).pid != pid)))
       errors[:base] << 'must have one or both siblings if parent has children'
     end
   end
@@ -92,7 +79,7 @@ class Node < ActiveFedora::Base
     end
 
     # Get a copy of my supposed parent.
-    my_parent = Node.find(parent) unless parent.nil?
+    my_parent = self.class.find(parent) unless parent.nil?
 
     # Check that prev_sib is a child of my parent.
     unless (unset?(prev_sib))
@@ -108,7 +95,7 @@ class Node < ActiveFedora::Base
         end
       end
 
-      prev_sibling = Node.find(prev_sib)
+      prev_sibling = self.class.find(prev_sib)
       if (prev_sibling.next_sib != next_sib) && (prev_sibling.next_sib != pid)
         logger.error("#{pid}:  invalid next_sib #{next_sib}")
         errors.add(:next_sib, "invalid next_sib #{next_sib}")
@@ -130,7 +117,7 @@ class Node < ActiveFedora::Base
         end
       end
 
-      next_sibling = Node.find(next_sib)
+      next_sibling = self.class.find(next_sib)
       if (next_sibling.prev_sib != prev_sib) && (next_sibling.prev_sib != pid)
         logger.error("#{pid}:  invalid prev_sib #{prev_sib}")
         errors.add(:prev_sib, "invalid prev_sib #{prev_sib}")
@@ -151,7 +138,7 @@ class Node < ActiveFedora::Base
 
     # Check my children.
     children.each do |child|
-      my_child = Node.find(child)
+      my_child = self.class.find(child)
       # NOT OK if child does not exist.
       if (my_child.nil?)
         logger.error("#{pid}:  child #{child} does not exist")
@@ -181,7 +168,7 @@ class Node < ActiveFedora::Base
 
     # Link myself to previous sibling.
     if (!unset?(prev_sib))
-      prev_sibling = Node.find(prev_sib)
+      prev_sibling = self.class.find(prev_sib)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
       logger.debug("Saving #{pid}:  prev_sib is #{prev_sib}")
@@ -189,7 +176,7 @@ class Node < ActiveFedora::Base
 
     # Link myself to next sibling.
     if (!unset?(next_sib))
-      next_sibling = Node.find(next_sib)
+      next_sibling = self.class.find(next_sib)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
       logger.debug("Saving #{pid}:  next_sib is #{next_sib}")
@@ -208,7 +195,7 @@ class Node < ActiveFedora::Base
 
     # Link my children to me as parent.
     children.each do |child|
-      my_child = Node.find(child)
+      my_child = self.class.find(child)
       if (unset?(my_child.parent))
         my_child.parent = pid
         my_child.save(unchecked: 1)
@@ -235,13 +222,13 @@ class Node < ActiveFedora::Base
 
     # Load my siblings, if any.
     begin
-      prev_sibling = Node.find(prev_sib) if (!unset?(prev_sib))
+      prev_sibling = self.class.find(prev_sib) if (!unset?(prev_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing prev_sib: #{e}")
     end
 
     begin
-      next_sibling = Node.find(next_sib) if (!unset?(next_sib))
+      next_sibling = self.class.find(next_sib) if (!unset?(next_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing next_sib: #{e}")
     end
@@ -260,7 +247,7 @@ class Node < ActiveFedora::Base
 
     # Load my parent, if any.
     begin
-      my_parent = Node.find(parent) unless (unset?(parent))
+      my_parent = self.class.find(parent) unless (unset?(parent))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{pid}, missing parent #{parent}: #{e}")
     end
@@ -288,7 +275,7 @@ class Node < ActiveFedora::Base
     child_ids = Array.new
     self.children.each do |child|
       child_ids << child
-      my_child = Node.find(child)
+      my_child = self.class.find(child)
       next if (!my_child.prev_sib.nil?) && (my_child.prev_sib != '')
       # Check for multiple first children
       if !first_child
@@ -317,7 +304,7 @@ class Node < ActiveFedora::Base
         elsif child_ids.include?(np_id)
           # Find next child
           my_children << np_id
-          next_child = Node.find(np_id)
+          next_child = self.class.find(np_id)
         else
           # Node has no parent
           error = "Node not Found in Listing - " + np_id.to_s
