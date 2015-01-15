@@ -1,13 +1,13 @@
-  <div class="util-links-other">
+  <div class="util-links-other pmp-util-links">
     <% if render_bookmarks_control? %>
-      <%= link_to t('blacklight.header_links.bookmarks'), bookmarks_path %>
+      <%= link_to image_tag("icons/bookmark_32.png"), bookmarks_path %>
     <% end %>
     <% if has_user_authentication_provider? and current_user %>
-      |
-      <%= link_to t('blacklight.header_links.saved_searches'), saved_searches_path %>
+
+      <%= link_to image_tag("icons/saved_search_32.png"), saved_searches_path %>
     <% end %>
-    |
-    <%= link_to t('blacklight.header_links.search_history'), search_history_path %>
+
+    <%= link_to image_tag("icons/history_32.png"), search_history_path %>
     
     <% if has_user_authentication_provider? %>
       <% if current_user %>
