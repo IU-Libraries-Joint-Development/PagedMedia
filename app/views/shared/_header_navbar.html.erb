@@ -2,36 +2,41 @@
   <!-- BEGIN INDIANA UNIVERSITY BRANDING BAR -->
   <div id="branding-bar">
       <div class="bar">
-          <div class="wrapper">
+          <div class="wrapper"> 
               <p class="campus">
                   <a href="http://www.iu.edu/">
                       <img src="/assets/iu_branding/trident-tab.gif" height="73" width="64" alt=" " />
                       <!-- Campus Goes Here -->
                   </a>
               </p>
+              <div>
+                <%= render :partial=>'/shared/user_util_links' %>                  
+              </div>
           </div>
       </div>
   </div>
   <!-- END INDIANA UNIVERSITY BRANDING BAR -->  
-     <div class="navbar-inner">
-            <div class="container">
+     <div id="pmp-navbar-inner" class="navbar-inner">
+            <div class="container"> 
               <div class="row">
-                      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <!--
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                     </a>
-<div class="span3">
+                    -->
+                  <div id="pmp-title" class="span6">
                     <%= link_to application_name, root_path, :class => "brand-name" %>
                   </div>
                   <div class="span6 clearfix" id="searchbar">         
-                                    <%= render_search_bar  %>
+                    <%= render_search_bar  %>
                   </div>
-
+                  <!--
                   <div class="span3 nav-collapse">
-                    <%= render :partial=>'/user_util_links' %>
-                  
+                    <%= render :partial=>'/user_util_links' %>                  
                   </div>
+                  -->
 
         </div>
         </div>
