@@ -1,28 +1,97 @@
-require 'spec_helper'
-
 describe PagesController do
+  render_views
 
-  describe 'GET index' do
-    it 'lists pages'
+  let!(:test_page) { FactoryGirl.create :page } 
+
+  describe '#index' do
+    before(:each) { get :index }
+    it 'sets @pages' do
+      expect(assigns(:pages)).to eq [test_page]
+    end
+    it 'sets session[:came_from] to :page' do
+      expect(session[:came_from]).to eq :page
+    end
+    it 'renders :index template' do
+      expect(response).to render_template :index
+    end
   end
 
-  describe 'GET show' do
-    it 'displays detail of a page'
+  describe '#show' do
+    before(:each) { get :show, id: test_page.id }
+    it 'sets @page' do
+      expect(assigns(:page)).to eq test_page
+    end
+    it 'renders :show template' do
+      expect(response).to render_template :show
+    end
   end
 
-  describe 'GET new' do
-    it 'displays the create form'
+  describe '#new' do
+    before(:each) { get :new }
+    it 'sets @page' do
+      expect(assigns(:page)).to be_a_new Page
+      expect(assigns(:page)).not_to be_persisted
+    end
+    it 'renders :new template' do
+      expect(response).to render_template :new
+    end
   end
 
-  describe 'GET edit' do
-    it 'displays the edit form'
+  describe '#edit' do
+    before(:each) { get :edit, id: test_page.id }
+    it 'sets @page' do
+      expect(assigns(:page)).to eq test_page
+    end
+    it 'renders :edit template' do
+      expect(response).to render_template :edit
+    end
   end
 
-  describe 'POST create' do
-    it 'stores a new Page'
+  describe '#create' do
+    context 'with valid params' do
+      let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
+      it 'assigns @page' do
+        post_create
+        expect(assigns(:page)).to be_a Page
+        expect(assigns(:page)).to be_persisted
+      end
+      it 'saves the new object' do
+        expect{ post_create }.to change(Page, :count).by(1)
+      end
+      it 'redirects to the object' do
+        post_create
+        expect(response).to redirect_to assigns(:page)
+      end
+    end
+    context 'with invalid params' do
+      specify 'FIXME: untestable until invalid page parameters determined'
+    end
   end
 
-  describe 'PUT update' do
+  describe '#update' do
+    specify "FIXME: add context checks for 3 :came_from sources"
+    context 'with valid params' do
+      let!(:original_number) { test_page.logical_number } 
+      before(:each) { put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" } }
+      it 'assigns @page' do
+        expect(assigns(:page)).to eq test_page
+      end
+      it 'updates values' do
+        expect(test_page.logical_number).to eq original_number
+        test_page.reload
+        expect(test_page.logical_number).not_to eq original_number
+      end
+      it 'flashes success' do
+        expect(flash[:notice]).to match /success/i
+      end
+      it 'redirects to updated page' do
+        expect(response).to redirect_to test_page
+      end
+    end
+    context 'with invalid params' do
+      specify 'FIXME: untestable until invalid page parameters determined'
+    end
+=begin
     it 'stores a previous-page link' do
       apage = mock_model(Page, :prev_page= => nil, update: nil)
       expect(Page).to receive(:find).and_return(apage)
@@ -65,10 +134,18 @@ describe PagesController do
       }
       assert_response :success
     end
+=end
   end
 
-  describe 'DELETE destroy' do
-    it 'destroys a Page'
+  describe '#destroy' do
+    let(:delete_destroy) { delete :destroy, id: test_page.id }
+    it 'destroys a Page' do
+      expect{ delete_destroy }.to change(Page, :count).by(-1)
+    end
+    it 'redirects to pages index' do
+      delete_destroy
+      expect(response).to redirect_to pages_path
+    end
   end
 
 end
