@@ -6,6 +6,8 @@
  * Author URI: http://communications.iu.edu
  ************************************************/
 
+/* PMP specific styles added at bottom */
+
 @media only screen and (min-width: 768px){
 
 /****************************************
@@ -246,6 +248,8 @@
 }
 
 }
+
+/* PMP specific styles */
 
 @media only screen and (min-width: 1200px){
   .wrapper{

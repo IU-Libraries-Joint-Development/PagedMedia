@@ -3,12 +3,9 @@
       <%= link_to image_tag("icons/bookmark_32.png"), bookmarks_path %>
     <% end %>
     <% if has_user_authentication_provider? and current_user %>
-
       <%= link_to image_tag("icons/saved_search_32.png"), saved_searches_path %>
     <% end %>
-
     <%= link_to image_tag("icons/history_32.png"), search_history_path %>
-    
     <% if has_user_authentication_provider? %>
       <% if current_user %>
         <span id="user-base">
