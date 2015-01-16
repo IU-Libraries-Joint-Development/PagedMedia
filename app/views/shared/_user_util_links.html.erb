@@ -11,9 +11,22 @@
     
     <% if has_user_authentication_provider? %>
       <% if current_user %>
-        <%= link_to t('blacklight.header_links.logout'), destroy_user_session_path %> <%= "[#{ link_to current_user, edit_user_registration_path }]".html_safe unless current_user.to_s.blank? %>
+        <span id="user-base">
+          <%= link_to image_tag("icons/profile_32.png"), edit_user_registration_path unless current_user.to_s.blank? %>
+          <%= link_to image_tag("icons/logout_32.png"), destroy_user_session_path %>
+        </span>
+        <span id="user-wide">
+          <%= "#{ link_to current_user, edit_user_registration_path }".html_safe unless current_user.to_s.blank? %>
+          |
+          <%= link_to t('blacklight.header_links.logout'), destroy_user_session_path %>
+        </span>
       <% else %>
-        <%= link_to t('blacklight.header_links.login'), new_user_session_path %>
+        <span id="user-base">
+          <%= link_to image_tag("icons/logon_32.png"), new_user_session_path %>
+        </span>
+        <span id="user-wide">
+          <%= link_to t('blacklight.header_links.login'), new_user_session_path %>
+        </span>
       <% end %>
     <% end %>
   </div>

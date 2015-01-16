@@ -593,3 +593,9 @@ drupal.org/node/897638 */
 	}
 	
 }
+
+/* PMP specific styles */
+#branding-bar a:hover{
+	background-color:#7d110c;
+	text-decoration: none;
+}

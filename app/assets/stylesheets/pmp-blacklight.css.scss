@@ -9,7 +9,12 @@
 /* User Header Links */
 .pmp-util-links img{
   display: inline !important;
-  padding:0 10px !important;
+  padding:0 5px !important;
+}
+
+
+#user-wide{
+  display:none;
 }
 
 /* Alternative site name */
@@ -25,10 +30,21 @@
   color:#ffffff;
 }
 
+@media only screen and (min-width: 481px){
+  .pmp-util-links img{
+    padding:0 10px !important;
+  }
+}
 @media only screen and (min-width: 768px){
   #pmp-title a{
     padding-left:75px;
     color:#ffffff;
+  }
+  #user-base{
+    display:none;
+  }
+  #user-wide{
+    display:inline;
   }
 }
 
