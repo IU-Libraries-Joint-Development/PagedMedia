@@ -1,3 +1,69 @@
+/* Styles specific to Paged Media Project */
+
+/* Moves content below IU Branding */
+
+#main-container{
+  margin-top:50px;
+}
+
+/* User Header Links */
+.pmp-util-links img{
+  display: inline !important;
+  padding:0 5px !important;
+}
+
+
+#user-wide{
+  display:none;
+}
+
+/* Alternative site name */
+
+#pmp-title{
+  font-size: 24px;
+  padding-top:15px;
+  padding-bottom:15px;
+}
+
+#pmp-title a{
+  padding-left:5px;
+  color:#ffffff;
+}
+
+/* Adds responsiveness to header */
+
+@media only screen and (min-width: 481px){
+  .pmp-util-links img{
+    padding:0 10px !important;
+  }
+}
+@media only screen and (min-width: 768px){
+  #pmp-title a{
+    padding-left:75px;
+    color:#ffffff;
+  }
+  #user-base{
+    display:none;
+  }
+  #user-wide{
+    display:inline;
+  }
+}
+
+
+#pmp-title a:hover{
+  text-decoration: none;
+  background-color:#456978;
+}
+
+#pmp-navbar-inner{
+  background-color:#45697B;
+  background-image:none;
+  border-bottom:5px solid #817870;
+}
+
+/* Aditional sidebar styles */
+
 .pmp-sidenav h5{
   cursor:pointer;
 }

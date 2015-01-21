@@ -1,0 +1,139 @@
+/*************************************************
+ * IU Branding Bar & Footer
+ *
+ * Version: 1.01
+ * Author: IU Communications 
+ * Author URI: http://communications.iu.edu
+ ************************************************/
+
+/****************************************
+ * Branding Bar
+ ****************************************/
+
+#branding-bar {
+	background-position: 0 6px;
+	height: 52px;
+}
+#branding-bar.gateway {
+	height: auto;	
+}
+#branding-bar .wrapper {
+	zoom: 1; /* Trigger hasLayout */
+}
+
+/*** Trident Tab & Campus Name ***/
+
+#branding-bar .campus a {
+	display: block;
+	float: left;
+	height: 61px;
+	padding-top: 12px;
+	zoom: 1; /* Trigger hasLayout */
+}
+
+/*** Search ***/
+
+#branding-bar.gateway #cse-search {
+	padding-right: 0;	
+}
+#branding-bar #cse-search form {
+	float: right;
+	zoom: 1; /* Trigger hasLayout */
+}
+#branding-bar #cse-search fieldset {
+	display: inline;
+	zoom: 1; /* Trigger hasLayout */
+}
+
+/* Fieldset 1 */
+#branding-bar #cse-search-fieldset1 input,
+#branding-bar #cse-search-fieldset1 label {
+	display: inline;
+	vertical-align: middle;
+	zoom: 1; /* Trigger hasLayout */	
+}
+
+/* Keywords */
+#branding-bar #cse-search-keywords {
+	height: 26px;
+	width: 144px;
+}
+
+/* Submit */
+#branding-bar #cse-search-submit {
+	background-image: none;
+	text-indent: 0;	
+}
+
+/*** Tools ***/
+
+#branding-bar #campus-tools {
+	float: none;
+	left: 0;
+	margin: 0;
+}
+#branding-bar #campus-tools .groups {
+	display: block;
+	overflow: hidden;
+}
+#branding-bar #campus-tools .group {
+	border-bottom: 1px solid #585858;
+	display: block;
+	margin: 0 0 15px 0;
+	padding: 0 0 10px 0;	
+}
+#branding-bar #campus-tools .group:last-child {
+	border-bottom: none;
+	padding-bottom: 0;	
+}
+#branding-bar #campus-tools ul {
+	overflow: hidden;	
+	zoom: 1; /* Trigger hasLayout */
+}
+#branding-bar #campus-tools li {
+	float: left;
+	width: 50%;	
+}
+#branding-bar #campus-tools li a {
+	zoom: 1; /* Trigger hasLayout */	
+}
+
+/*** Toggles ***/
+
+#branding-bar .toggle {
+	display: none;
+}
+
+
+/****************************************
+ * Footer
+ ****************************************/
+
+#footer {
+	zoom: 1; /* IE has layout */
+}
+#footer .tagline {
+	width: 444px;
+}
+
+
+/****************************************
+ * Search Results Form
+ ****************************************/
+
+#cse-search-results-form ul {
+	zoom: 1; /* IE has layout */
+}
+#cse-search-results-fieldset1 input, 
+#cse-search-results-fieldset1 label {
+	display: inline;
+	vertical-align: middle;	
+	zoom: 1; /* IE has layout */
+}
+#cse-search-results-keywords {
+	height: 26px;
+}
+#cse-search-results-submit {
+	background-image: none;
+	text-indent: 0;
+}
