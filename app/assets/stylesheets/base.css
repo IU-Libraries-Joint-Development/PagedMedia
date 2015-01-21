@@ -430,7 +430,8 @@ drupal.org/node/897638 */
 	text-decoration: none;	
 }
 #footer a:hover {
-	text-decoration: underline;	
+	text-decoration: none;
+	background-color: #ffffff;
 }
 #footer .wrapper {
 	font-size: 0.688em; /* 11px (11/16) */
