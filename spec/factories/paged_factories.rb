@@ -50,6 +50,8 @@ FactoryGirl.define do
           pages[i].pageImage.content = File.open(Rails.root + score_page)
       	  pages[i].skip_sibling_validation = true
           pages[i].save!(unchecked: true)
+      	  #FIXME: helpful?
+          page.reload
         end
       end
     end
