@@ -14,6 +14,9 @@ PagedMedia::Application.routes.draw do
   HydraHead.add_routes(self)
   #devise_for :users
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+  
+  #Static Pages
+  get '/credits' => 'static_pages#credits'
 
   #get 'pageds/view/:id' => 'catalog#view' 
   # The priority is based upon order of creation: first created -> highest priority.
