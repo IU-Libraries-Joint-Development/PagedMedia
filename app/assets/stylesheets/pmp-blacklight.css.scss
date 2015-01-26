@@ -32,6 +32,10 @@
 
 /* Adds responsiveness to header */
 
+#header-navbar-fixed-top{
+  min-width: 100px;
+}
+
 @media only screen and (min-width: 481px){
   .pmp-util-links img{
     padding:0 10px !important;

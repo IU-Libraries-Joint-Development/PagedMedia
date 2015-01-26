@@ -25,3 +25,14 @@ en:
     document:
       untitled:
         title: 'Untitled'
+        
+en:
+  blacklight:
+    application_name: 'Paged Media Project'
+    
+en:
+  blacklight:
+    header_links:
+      login: 'Sign in'
+      logout: 'Sign out'
+      
