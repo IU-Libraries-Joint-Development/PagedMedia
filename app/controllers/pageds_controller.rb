@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy, :page, :bookreader]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader]
 
   # GET /pageds
   # GET /pageds.json

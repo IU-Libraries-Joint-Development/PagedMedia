@@ -28,7 +28,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of
@@ -40,11 +40,31 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = "random"
+
+  config.before(:suite) do
+    # DatabaseCleaner[:active_record].strategy = :deletion
+    DatabaseCleaner[:active_fedora].strategy = :deletion
+    Deprecation.default_deprecation_behavior = :silence
+
+    Rails.cache.clear 
+    DatabaseCleaner.clean
+  end
+
+  config.before(:each) do
+    Rails.cache.clear
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    Rails.cache.clear
+    DatabaseCleaner.clean
+  end 
   
   #Factory Girl
   config.include FactoryGirl::Syntax::Methods
-  
   #Added to get routes working in RSpec tests
   config.include Rails.application.routes.url_helpers
+  # Added to support view rendering in controller tests
+  config.include Devise::TestHelpers, type: :controller
   
 end

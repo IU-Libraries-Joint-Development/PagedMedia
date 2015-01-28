@@ -56,7 +56,10 @@ gem 'omniauth'
 gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
 
 group :development, :test do
+  gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm'
   gem "rspec-rails"
+  gem "spring-commands-rspec"
+  gem "guard-rspec"
   gem "capybara"
   gem "launchy"
   gem "factory_girl_rails"

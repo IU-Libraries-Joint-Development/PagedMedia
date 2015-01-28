@@ -33,6 +33,7 @@ FactoryGirl.define do
           paged.reload
           i += 1
         end
+        paged.update_index
       end
     end
     
@@ -58,6 +59,7 @@ FactoryGirl.define do
           page.pageImage.content = File.open(Rails.root + score_page)
           page.save
         end
+        paged.update_index
       end
     end
 
@@ -89,6 +91,7 @@ FactoryGirl.define do
           page.pageImage.content = File.open(Rails.root + package_page)
           page.save
         end
+        paged.update_index
       end
     end
 
