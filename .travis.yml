@@ -2,7 +2,7 @@ language: ruby
 rvm:
   - "2.0.0"
 
-before_script: "bundle exec rake db:migrate"
+before_script: "bundle install; bundle exec spring binstub --all; bundle exec rake db:migrate"
 script: "bundle exec rake ci"
 
 branches:
