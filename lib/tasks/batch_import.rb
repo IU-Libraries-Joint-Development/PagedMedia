@@ -1,5 +1,5 @@
 #
-# Ruby process for batch ingest, called by batch_ingest rake task
+# Ruby process for batch ingest, called by import_batches rake task
 #
 
 def import_batch
@@ -99,7 +99,6 @@ def import_paged(subdir, paged_yaml)
         pages[index].prev_page = pages[index - 1].pid unless index.zero?
 	pages[index].next_page = pages[index + 1].pid unless index >= (pages.size - 1)
 	if page.save(unchecked: true)
-          #page.reload
 	  print "."
 	else
 	  puts "ABORT: problems saving page"
@@ -109,6 +108,9 @@ def import_paged(subdir, paged_yaml)
 	  break
 	end
       end
+      print "\nUpdating paged index."
+      paged.reload
+      paged.update_index
       print "\nDone.\n\n"
     end
   end
