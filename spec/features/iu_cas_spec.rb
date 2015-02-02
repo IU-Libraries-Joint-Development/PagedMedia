@@ -1,5 +1,7 @@
 require 'spec_helper'
+
 describe "Access to signin page" do
+
   it "can sign in user with IU CAS" do
     visit '/users/sign_in'
     page.should have_content("Sign in with IU CAS")
