@@ -8,6 +8,7 @@ class PageMetadata < ActiveFedora::OmDatastream
     t.prev_page index_as: :stored_searchable
     t.next_page index_as: :stored_searchable
     t.text index_as: :stored_searchable
+    t.page_struct index_as: :facetable
   end
 
   def self.xml_template

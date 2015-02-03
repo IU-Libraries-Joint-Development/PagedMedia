@@ -7,10 +7,18 @@
              <% counter = document_counter_with_offset(document_counter) %>
              <%= t('blacklight.search.documents.counter', :counter => counter) if counter %>
            </span>
-          <% if document.document_type == "Paged" %>
+          <% if document.respond_to?(:document_type) and document.document_type == "Paged" %>
               <a href='pageds/<%= document.id %>'>
 	        <% if document.has_key?('title_tesim') %>
 		  <%= document['title_tesim'][0] %>
+		<% else %>
+		  <%= t 'pmp.document.untitled.title' %>
+		<% end %>
+              </a>
+          <% elsif document.respond_to?(:document_type) and document.document_type == "Page" %>
+              <a href='pages/<%= document.id %>'>
+	        <% if document.has_key?('logical_number_tesim') %>
+		  <%= document['logical_number_tesim'][0] %>
 		<% else %>
 		  <%= t 'pmp.document.untitled.title' %>
 		<% end %>

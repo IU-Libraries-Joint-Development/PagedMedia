@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 # A Rails project
 gem 'rails', '~>4.1'
+gem 'blacklight-hierarchy', :git => "https://github.com/aploshay/blacklight-hierarchy.git", :branch => "blacklight_470"
 
 # This is a Hydra head
 gem 'hydra', '~> 6.1'
@@ -55,8 +56,12 @@ gem 'omniauth'
 gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
 
 group :development, :test do
+  gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm'
   gem "rspec-rails"
+  gem "spring-commands-rspec"
+  gem "guard-rspec"
   gem "capybara"
+  gem "launchy"
   gem "factory_girl_rails"
   gem "jettywrapper"
 end

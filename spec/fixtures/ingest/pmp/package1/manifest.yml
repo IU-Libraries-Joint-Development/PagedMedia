@@ -9,22 +9,43 @@ pageds:
      type: score
      publisher: Score Central
      publisher_place: Bumblyburg
+     paged_struct:
+         - "Scores"
+         - "Scores--Ultimate Scores"
+         - "Scores--Ultimate Scores--Volume 1"
    content:
      pagedXML: score_xml.xml
    pages:
-     page count: 10
+     page count: 5
      descMetadata:
        logical_num:
-         - Score Page 1
-         - Score Page 2
-         - Score Page 3
-         - Score Page 4
-         - Score Page 5
-         - Score Page 6
-         - Score Page 7
-         - Score Page 8
-         - Score Page 9
-         - Score Page 10
+         - Page A1
+         - Page A2
+         - Page B1
+         - Page B2
+         - Page C1
+       text:
+         - Some text about Page A1
+         - Some text about Page A2
+         - Some text about Page B1
+         - Some text about Page B2
+         - Some text about Page C1
+       page_struct:
+         -
+           - "Section A"
+           - "Section A--Page A1"
+         -
+           - "Section A"
+           - "Section A--Page A2"
+         -
+           - "Section B"
+           - "Section B--Page B1"
+         -
+           - "Section B"
+           - "Section B--Page B2"
+         -
+           - "Section C"
+           - "Section C--Page C1"
      content:
        pageImage:
          - bhr9405-1-1.jpg
@@ -32,8 +53,3 @@ pageds:
          - bhr9405-1-3.jpg
          - bhr9405-1-4.jpg
          - bhr9405-1-5.jpg
-         - bhr9405-1-6.jpg
-         - bhr9405-1-7.jpg
-         - bhr9405-1-8.jpg
-         - bhr9405-1-9.jpg
-         - bhr9405-1-10.jpg

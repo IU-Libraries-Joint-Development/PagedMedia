@@ -18,6 +18,7 @@ class Page < ActiveFedora::Base
   has_attributes :prev_page, datastream: 'descMetadata', multiple: false
   has_attributes :next_page, datastream: 'descMetadata', multiple: false
   has_attributes :text,  datastream: 'descMetadata', multiple: false
+  has_attributes :page_struct, datastream: 'descMetadata', multiple: true
 
   validate :validate_has_required_siblings
 
@@ -206,6 +207,14 @@ class Page < ActiveFedora::Base
     end
 
     super
+  end
+
+  def to_solr(solr_doc={}, opts={})
+    super(solr_doc, opts)
+    if (!paged.nil?)
+      solr_doc[Solrizer.solr_name('item_id', 'si')] = paged.pid
+    end
+    return solr_doc
   end
 
 end
