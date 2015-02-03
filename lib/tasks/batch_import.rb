@@ -37,24 +37,25 @@ def import_paged(subdir, paged_yaml)
     end
   rescue
     puts "ABORTING PAGED CREATION: invalid structure in descMetadata"
+    return
   end
   if paged_attributes.any?
     begin
-      paged = Paged.new(**paged_attributes)
+      paged = Paged.new(paged_attributes)
     rescue
-      puts "ABORTING PAGED CREATION: invalid contents of descMetadata"
+      puts "ABORTING PAGED CREATION: invalid contents of descMetadata:"
+      puts paged_attributes.inspect
+      return
     end
   end
   if paged_yaml["content"] && paged_yaml["content"]["pagedXML"]
     begin
       xmlPath = Rails.root + subdir + "content/" + paged_yaml["content"]["pagedXML"]
       puts "Adding pagedXML file."
-      test_file = File.open(xmlPath)
-      #test_file = File.open(Rails.root + subdir + "content/" + paged_yaml["content"]["pagedXML"])
-      paged.pagedXML.content = test_file
+      paged.pagedXML.content = File.open(xmlPath)
     rescue
       puts "ABORTING PAGED CREATION: unable to open specified XML file: #{xmlPath}"
-      paged = nil
+      return
     end
   else
     puts "No pagedXML file specified."
@@ -78,13 +79,36 @@ def import_paged(subdir, paged_yaml)
       puts "Processing #{page_count.to_s} pages."
       #TODO: check page count matches pages provided?
       pages = []
-      print "Creating initial page records"
+      prev_page = nil
+      print "Creating page records:"
       (0...page_count).each do |index|
-	page = Page.new(paged: paged, logical_number: pages_yaml["descMetadata"]["logical_num"][index])
-	page.pageImage.content = File.open(Rails.root + subdir + "content/" + pages_yaml["content"]["pageImage"][index]) unless pages_yaml["content"]["pageImage"][index].to_s.blank?
+        page_attributes = { paged_id: paged.pid, skip_sibling_validation: true }
+        page_attributes[:prev_page] = prev_page.pid if prev_page
+        pages_yaml["descMetadata"].each_pair do |key, values|
+          page_attributes[key.to_sym] = values[index]
+        end
+        begin
+	  page = Page.new(page_attributes)
+        rescue
+          puts "ABORTING: invalid page attributes:"
+          puts page_attributes.inspect
+          break
+        end
+        pageImage = pages_yaml["content"]["pageImage"][index] if pages_yaml["content"]
+	page.pageImage.content = File.open(Rails.root + subdir + "content/" + pageImage) if pageImage
 	if page.save(unchecked: true)
 	  page.reload
 	  pages << page
+          unless prev_page.nil?
+            prev_page.next_page = page.pid
+            unless prev_page.save(unchecked: true)
+              puts "ABORT: problems re-saving prior page"
+              puts prev_page.errors.messages
+              pages = []
+              break
+            end
+          end
+          prev_page = page
 	  print "."
 	else
 	  puts "ABORT: problems saving page"
@@ -94,24 +118,10 @@ def import_paged(subdir, paged_yaml)
 	  break
 	end
       end
-      print "\nSetting page relationships"
-      pages.each_with_index do |page, index|
-        pages[index].prev_page = pages[index - 1].pid unless index.zero?
-	pages[index].next_page = pages[index + 1].pid unless index >= (pages.size - 1)
-	if page.save(unchecked: true)
-	  print "."
-	else
-	  puts "ABORT: problems saving page"
-	  puts page.errors.messages
-	  #TODO: destroy pages, paged?
-	  pages = []
-	  break
-	end
-      end
-      print "\nUpdating paged index."
+      puts "\nUpdating paged index."
       paged.reload
       paged.update_index
-      print "\nDone.\n\n"
+      puts "Done.\n"
     end
   end
 end

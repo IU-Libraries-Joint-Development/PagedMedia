@@ -58,8 +58,10 @@ RSpec::Core::RakeTask.new(:load_paged_fixtures) do |t|
   t.pattern = Dir.glob('app/script/load*.rb')
 end
 
-require "#{Rails.root}/lib/tasks/batch_import"
-desc "Import batch manifests"
-task :import_batches => :environment do |task, args|
-  import_batch
+namespace :pmp do
+  require "#{Rails.root}/lib/tasks/batch_import"
+  desc "Import batch manifests"
+  task :import_batches => :environment do |task, args|
+    import_batch
+  end
 end

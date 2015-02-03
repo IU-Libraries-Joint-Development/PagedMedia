@@ -20,7 +20,8 @@ class Page < ActiveFedora::Base
   has_attributes :text,  datastream: 'descMetadata', multiple: false
   has_attributes :page_struct, datastream: 'descMetadata', multiple: true
 
-  validate :validate_has_required_siblings
+  attr_accessor :skip_sibling_validation
+  validate :validate_has_required_siblings, unless: :skip_sibling_validation
 
 
   # Setter for the image
@@ -86,6 +87,7 @@ class Page < ActiveFedora::Base
   # If the Paged is empty, sibling pointers should be nil, otherwise at least
   # one must be non-nil.
   def validate_has_required_siblings
+    puts "HI ADAM"
     return if paged.nil? # FIXME should we allow unowned Page?
 
     # No pages yet, so this page can't have siblings
