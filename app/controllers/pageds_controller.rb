@@ -10,10 +10,13 @@ class PagedsController < ApplicationController
   # GET /pageds/1
   # GET /pageds/1.json
   def show
-    @ordered, @error = @paged.order_pages()
+#    @ordered, @error = @paged.order_pages()
+    @ordered = JSON.parse(find_pages())
+=begin
     if @error
       flash.now[:error] = "ERROR Ordering Items : #{@error}"
     end
+=end
   end
 
   # GET /pageds/new
@@ -136,6 +139,19 @@ class PagedsController < ApplicationController
   end
 
   private
+
+  def find_pages
+    pages = {}
+    search = ActiveFedora::SolrService.instance.conn.select :params => { :q => params[:id], :fl => "pages_ss" }
+    unless search['response']['numFound'].to_i == 0
+      pages = search['response']['docs'][0]['pages_ss']
+    else
+      pages = {:id => params[:id], :error => 'No pages'}
+    end
+    return pages
+  end
+
+
     # Use callbacks to share common setup or constraints between actions.
     def set_paged
       @paged = Paged.find(params[:id])

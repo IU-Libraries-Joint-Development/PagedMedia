@@ -4,8 +4,8 @@
     <%= form_for(@paged, url: { action: :reorder }) do |f| %>
       <ul id="sortable_pages">
       <% @ordered.each do |page| %>
-        <li id="<%= page.id %>" class="ui-state-default ui-sortable-handle">
-	  <%= page.logical_number %>. <%= page.id %>
+        <li id="<%= page["id"] %>" class="ui-state-default ui-sortable-handle">
+	  <%= page["index"] %>. <%= page["id"] %>
 	</li>
       <% end %>
       </ul>

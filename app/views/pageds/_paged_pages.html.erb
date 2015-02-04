@@ -14,26 +14,18 @@
       <% ordered.each do |page| %>
       <tr>
         <td>
-          <% if page.image_datastream.mimeType %>
             <%= link_to image_tag(
-                    ActiveFedora.fedora_config.credentials[:url] + "/" + page.image_datastream.url,
-                    alt: page.image_datastream.label,
+                    page["ds_url"],
                     height: "64",
                     width: "64"
                   ),
-                  page
+                  page["id"]
             %>
-          <% end %>
         </td>
-        <td class='logical_numbers'><%= page.logical_number %></td>
-        <td><%= page.id %></td>
-        <td><%= page.prev_page %></td>
-        <td><%= page.next_page %></td>
-        <td>
-          <%= link_to 'Show', page %> |
-          <%= link_to 'Edit', edit_page_path(page) %> |
-          <%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %>
-        </td>
+        <td class='logical_numbers'><%= page["index"] %></td>
+        <td>page.id</td>
+        <td>page.prev_page</td>
+        <td>page.next_page</td>
       </tr>
       <% end %>
     </table>
