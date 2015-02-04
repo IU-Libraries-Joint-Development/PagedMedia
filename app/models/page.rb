@@ -87,7 +87,6 @@ class Page < ActiveFedora::Base
   # If the Paged is empty, sibling pointers should be nil, otherwise at least
   # one must be non-nil.
   def validate_has_required_siblings
-    puts "HI ADAM"
     return if paged.nil? # FIXME should we allow unowned Page?
 
     # No pages yet, so this page can't have siblings
