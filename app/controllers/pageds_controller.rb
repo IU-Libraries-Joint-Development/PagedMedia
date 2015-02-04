@@ -108,6 +108,7 @@ class PagedsController < ApplicationController
 
       previous_page = nil
       pages.each do |page|
+        page.skip_sibling_validation = true
         page.prev_page = previous_page
         previous_page = page.id
       end
