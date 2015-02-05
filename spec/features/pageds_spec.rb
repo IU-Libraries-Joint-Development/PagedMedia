@@ -24,7 +24,7 @@ describe 'For page listing' do
           page.save!
         end
       }      
-      visit pageds_path + '/' + test_paged.pid
+      visit pageds_path + '/' + test_paged.pid + '/validate'
       # Return page 3's prev page
       page3.prev_page = prev_page
       page3.save!
@@ -45,7 +45,7 @@ describe 'For page listing' do
           page.save!
         end
       }
-      visit pageds_path + '/' + test_paged.pid
+      visit pageds_path + '/' + test_paged.pid + '/validate'
       # Return page 3's prev page
       page3.next_page = next_page
       page3.save!
@@ -66,7 +66,7 @@ describe 'For page listing' do
           page.save!
         end
       }
-      visit pageds_path + '/' + test_paged.pid
+      visit pageds_path + '/' + test_paged.pid + '/validate'
       # Return page 3's prev page
       page3.next_page = next_page
       page3.save!

@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader, :validate]
 
   # GET /pageds
   # GET /pageds.json
@@ -11,6 +11,18 @@ class PagedsController < ApplicationController
   # GET /pageds/1.json
   def show
     @ordered = JSON.parse(find_pages())
+  end
+
+  def validate
+    @ordered = JSON.parse(find_pages())
+    validated, @error = @paged.order_pages()
+    if @error
+      flash.now[:error] = "ERROR Ordering Items : #{@error}"
+    end
+    respond_to do |format|
+      format.html { render action: 'show' }
+      format.json { render action: 'show' }
+    end
   end
 
   # GET /pageds/new
