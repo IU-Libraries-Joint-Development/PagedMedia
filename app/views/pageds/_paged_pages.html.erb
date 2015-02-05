@@ -7,25 +7,23 @@
         <td></td>
         <th>Logical Number</th>
         <th>Page ID</th>
-        <th>Previous Page</th>
-        <th>Next Page</th>
         <th>Links</th>
       </tr>
       <% ordered.each do |page| %>
       <tr>
         <td>
-            <%= link_to image_tag(
-                    page["ds_url"],
-                    height: "64",
-                    width: "64"
-                  ),
-                  page["id"]
+            <%= link_to "image",
+                  page_path(page["id"])
             %>
         </td>
-        <td class='logical_numbers'><%= page["index"] %></td>
-        <td>page.id</td>
-        <td>page.prev_page</td>
-        <td>page.next_page</td>
+        <td class='logical_numbers'><%= page["logical_number"] %></td>
+        <td><%= page["id"] =%></td>
+        <td>
+          <%= link_to 'Show', page_path(page["id"]) %> |
+          <%= link_to 'Edit', edit_page_path(page["id"]) %> |
+          <%= link_to 'Destroy', page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
+
       </tr>
       <% end %>
     </table>
