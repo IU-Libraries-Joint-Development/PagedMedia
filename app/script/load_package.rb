@@ -9,7 +9,7 @@ describe 'Loading objects' do
 
   context 'Loading an example score' do
     it 'should create a score and load pages' do
-      @test_paged.pages.each {|page|
+      @test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number }.each {|page|
         p 'Loaded ' + page.logical_number
       }
     end
