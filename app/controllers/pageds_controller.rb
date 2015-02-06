@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy, :page, :bookreader]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader]
 
   # GET /pageds
   # GET /pageds.json
@@ -69,7 +69,7 @@ class PagedsController < ApplicationController
   # GET /pageds/1/pages.json
   def pages
     page_rsp = {}
-    search = Blacklight.solr.select :params => { :q => params[:id], :fl => "pages_ss" }
+    search = ActiveFedora::SolrService.instance.conn.select :params => { :q => params[:id], :fl => "pages_ss" }
     unless search['response']['numFound'].to_i == 0
       parsed = JSON.parse(search['response']['docs'][0]['pages_ss'])
       if params[:index].nil?
@@ -105,12 +105,10 @@ class PagedsController < ApplicationController
       page_ids.each do |page_id|
         pages << Page.find(page_id)
       end
-      pages.each_with_index do |page, index|
-        page.logical_number = (index + 1).to_s
-      end
 
       previous_page = nil
       pages.each do |page|
+        page.skip_sibling_validation = true
         page.prev_page = previous_page
         previous_page = page.id
       end
