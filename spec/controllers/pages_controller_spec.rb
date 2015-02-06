@@ -1,7 +1,8 @@
 describe PagesController do
   render_views
 
-  let!(:test_page) { FactoryGirl.create :page } 
+  let!(:test_page) { FactoryGirl.create :page }
+  let!(:test_paged) { FactoryGirl.create :paged }
 
   describe '#index' do
     before(:each) { get :index }
@@ -58,18 +59,48 @@ describe PagesController do
       it 'saves the new object' do
         expect{ post_create }.to change(Page, :count).by(1)
       end
+      #FIXME: 2 contexts for paged_id present vs absent, determines redirect_to
       it 'redirects to the object' do
         post_create
         expect(response).to redirect_to assigns(:page)
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid page parameters determined'
+      before(:each) do
+        first_page = FactoryGirl.create :page, paged: test_paged
+        test_paged.reload
+        post :create, page: FactoryGirl.attributes_for(:page, paged_id: test_paged.id)
+      end
+      it 'renders the new template' do
+        expect(response).to render_template(:new)
+      end
     end
   end
 
   describe '#update' do
-    specify "FIXME: add context checks for 3 :came_from sources"
+    context 'when came from paged' do
+      before(:each) { session[:came_from] = :paged }
+      context 'with parent paged' do
+        before(:each) do
+          test_page.paged_id = test_paged.id
+          test_page.save
+          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
+        end
+        it 'redirects to parent paged' do
+          expect(response).to redirect_to paged_path(test_paged.id)
+        end
+      end
+      context 'without a parent paged' do
+        before(:each) do
+          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
+        end
+        it 'redirects to paged_url' do
+          puts "paged: #{test_paged.id}, page: #{test_page.id}"
+          #FIXME: where is the controller meant to send us?  Surely not to paged_url(@page.id) because that's mixing paged/page...
+          expect(response).to redirect_to pageds_path
+        end
+      end
+    end
     context 'with valid params' do
       let!(:original_number) { test_page.logical_number } 
       before(:each) { put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" } }
@@ -90,6 +121,16 @@ describe PagesController do
     end
     context 'with invalid params' do
       specify 'FIXME: untestable until invalid page parameters determined'
+      context 'with invalid params' do
+      before(:each) do
+        first_page = FactoryGirl.create :page, paged: test_paged
+        test_paged.reload
+        put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated", paged_id: test_paged.id }
+      end
+      it 'renders the edit template' do
+        expect(response).to render_template(:edit)
+      end
+    end
     end
 =begin
     it 'stores a previous-page link' do
