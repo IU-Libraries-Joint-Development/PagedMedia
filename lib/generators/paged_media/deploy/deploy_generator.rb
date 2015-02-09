@@ -23,6 +23,7 @@ This generator deploys to a running server environment and makes the following c
     git checkout: "develop"
     git fetch: "origin"
     git pull: "origin develop"
+    system("bundle install")
     git checkout: "-b deployment_sprint_#{mytime}"
 
     gem "thin", "1.6.2"
