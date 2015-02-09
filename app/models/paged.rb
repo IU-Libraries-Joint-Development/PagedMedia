@@ -100,7 +100,7 @@ class Paged < ActiveFedora::Base
     pages = []
     fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
     self.order_pages[0].each_with_index do |page, index|
-      pages.push({:id => page.pid, :index => index.to_s, :ds_url => fedora_url + page.image_datastream.url})
+      pages.push({:id => page.pid, :index => index.to_s, :logical_number => page.logical_number, :ds_url => fedora_url + page.image_datastream.url})
     end
     pages
   end

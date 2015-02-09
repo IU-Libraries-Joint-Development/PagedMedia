@@ -20,7 +20,7 @@ describe 'For page listing' do
       page3.save!(unchecked: true)
     end
     specify "an error message should display" do
-      visit pageds_path + '/' + test_paged.pid
+      visit pageds_path + '/' + test_paged.pid + '/validate'
       expect(page).to have_css('div.alert-error')
     end
   end
@@ -33,7 +33,7 @@ describe 'For page listing' do
       page3.save!(unchecked: true)
     end
     specify "an error message should display" do
-      visit pageds_path + '/' + test_paged.pid
+      visit pageds_path + '/' + test_paged.pid + '/validate'
       expect(page).to have_css('div.alert-error')
     end
   end
@@ -46,7 +46,7 @@ describe 'For page listing' do
       page3.save!(unchecked: true)
     end
     specify "an error message should display" do
-      visit pageds_path + '/' + test_paged.pid
+      visit pageds_path + '/' + test_paged.pid + '/validate'
       expect(page).to have_css('div.alert-error')
     end
   end
