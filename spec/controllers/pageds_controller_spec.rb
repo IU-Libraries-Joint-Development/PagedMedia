@@ -102,12 +102,14 @@ describe PagedsController do
   end
 
   describe '#pages' do
+    let!(:ordered_pages) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number } }
     it 'should return pid and image ds uri given an index integer' do
-      get :pages, id: test_paged.id, index: 1
+      index = 1
+      get :pages, id: test_paged.id, index: index
       parsed = JSON.parse response.body
-      expect(parsed['id']).to eq test_paged.pages[1].pid
-      expect(parsed['index']).to eq 1.to_s
-      expect(parsed['ds_url']).to match /#{ERB::Util.url_encode(test_paged.pages[1].pid)}\/datastreams\/pageImage\/content$/
+      expect(parsed['id']).to eq ordered_pages[index].pid
+      expect(parsed['index']).to eq index.to_s
+      expect(parsed['ds_url']).to match /#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/
     end
   end
 
