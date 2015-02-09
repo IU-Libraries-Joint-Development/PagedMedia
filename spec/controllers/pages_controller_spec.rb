@@ -92,10 +92,12 @@ describe PagesController do
       end
       context 'without a parent paged' do
         before(:each) do
+          test_page.paged_id = nil
+          test_page.save
           put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
         end
         it 'redirects to paged_url' do
-          puts "paged: #{test_paged.id}, page: #{test_page.id}"
+          puts "paged: #{test_paged.id}, page: #{test_page.id}, paged_id: #{test_page.paged_id}"
           #FIXME: where is the controller meant to send us?  Surely not to paged_url(@page.id) because that's mixing paged/page...
           expect(response).to redirect_to pageds_path
         end
@@ -120,7 +122,6 @@ describe PagesController do
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid page parameters determined'
       context 'with invalid params' do
       before(:each) do
         first_page = FactoryGirl.create :page, paged: test_paged
