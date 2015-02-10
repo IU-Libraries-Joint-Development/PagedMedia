@@ -6,6 +6,7 @@ PagedMedia::Application.routes.draw do
     get :page, on: :member
     get :pages, on: :member
     get :bookreader, on: :member
+    get :validate, on: :member
     get :view, on: :member, controller: "catalog", action: "view"
   end
 
