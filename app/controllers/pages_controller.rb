@@ -60,7 +60,7 @@ class PagesController < ApplicationController
             if @page.paged_id
               return_url = paged_url(@page.paged_id)
             else
-              return_url = paged_url
+              return_url = "/pageds"
             end
             redirect_to return_url, notice: 'Page was successfully updated.'
           else
