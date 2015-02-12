@@ -3,6 +3,7 @@ require 'json'
 describe PagedsController do
   render_views
   let!(:test_paged) { FactoryGirl.create(:paged, :with_pages) }
+  let(:ordered_pages) { test_paged.order_pages[0] }
 
   describe '#index' do
     before(:each) { get :index }
@@ -62,7 +63,7 @@ describe PagedsController do
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid paged parameters determined'
+      pending '(untestable until invalid paged parameters exist)'
     end
   end
 
@@ -86,7 +87,7 @@ describe PagedsController do
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid paged parameters determined'
+      pending '(untestable until invalid paged parameters exist)'
     end
   end
 
@@ -102,7 +103,6 @@ describe PagedsController do
   end
 
   describe '#pages' do
-    let!(:ordered_pages) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number } }
     it 'should return pid and image ds uri given an index integer' do
       index = 1
       get :pages, id: test_paged.id, index: index
@@ -114,11 +114,24 @@ describe PagedsController do
   end
 
   describe '#reorder' do
-    context 'with no params provided' do
-      specify 'FIXME: write empty reorder tests'
+    before(:each) { patch :reorder, id: test_paged.id, reorder_submission: reorder_submission }
+    context 'with no reorder values provided' do
+      let(:reorder_submission) { nil }
+      it 'flashes "No change"' do
+        expect(flash[:notice]).to match /No change/i
+      end
+      it 'redirects to :show' do
+        expect(response).to redirect_to action: :show
+      end
     end
-    context 'with valid params' do
-      specify 'FIXME: write valid reorder tests'
+    context 'with valid reorder values' do
+      let(:reorder_submission) { ordered_pages.reverse.map { |p| p.pid }.join(',') }
+      it 'reorders pages' do
+	expect(test_paged.order_pages[0]).to eq ordered_pages.reverse
+      end
+      it 'redirects to :show' do
+        expect(response).to redirect_to action: :show
+      end
     end
   end
 
