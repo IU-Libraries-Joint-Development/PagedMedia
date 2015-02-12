@@ -1,5 +1,4 @@
 # Despite its name, this is a functional test of pageds_controller *and its supporting cast*.
-=begin
 describe 'For page listing' do
   let!(:test_paged) { FactoryGirl.create :paged, :with_pages }
   let(:page3) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number }[2] } 
@@ -56,21 +55,47 @@ describe 'For page listing' do
 it 'stores a new XML datastream'
 
 end
-=end
+=begin
+# Abortive attempt at testing the drag/drop page reordering interface.  This
+# turns out to be really hard to do, because of JQuery weirdness.  After
+# discussion, I think we agreed that this is better done as a controller
+# test of some kind.
+#
+# This depends on https://github.com/mattheworiordan/jquery.simulate.drag-sortable.js
+#
+# I could not find a way to fetch the script from the application assets, so I
+# just dropped it into my local webserver.  The author thinks serving it from
+# the application is possible but gives no example.
+
 feature 'User reorders pages', js: true do
 
   let!(:test_paged) { FactoryGirl.create(:paged, :with_pages) }
 
-  scenario "by dragging and dropping in the page order list" do
+  scenario 'by dragging and dropping in the page order list' do
     visit pageds_path + '/' + test_paged.pid
     sortablePages = page.all(:xpath, "//ul[@id='sortable_pages']/li")
-    p sortablePages
+    puts 'sortablePages:'
+    for i in 0..sortablePages.length-1 do p sortablePages[i] end
+    puts 'test_paged.pages:'
+    for i in 0..test_paged.pages.length-1 do p test_paged.pages[i] end
     # find a likely page, drag it across another and drop it.
-    sortablePages[1].drag_to(sortablePages[0])
+    #sortablePages[1].drag_to(sortablePages[0]) # doesn't work!
+    puts 'sortablePages[0]:  ', sortablePages[0].native.id
+    url = '"https://mhw.ulib.iupui.edu/~mwood/jquery.simulate.drag-sortable.js"' # FIXME don't depend on Mark's webserver
+    function = "function() {$(\"li##{sortablePages[0][:id]}\").simulateDragSortable({ move: 1});}"
+    script = "$.getScript(#{url}, #{function});"
+    p script
+    page.execute_script script
+    test_paged.save
+
+    test_paged.reload
     # check the page order list
     visit pageds_path + '/' + test_paged.pid
     sortablePages = page.all(:xpath, "//ul[@id='sortable_pages']/li")
-    p sortablePages
+    puts 'sortablePages:'
+    for i in 0..sortablePages.length-1 do p sortablePages[i] end
+    puts 'test_paged.pages:'
+    for i in 0..test_paged.pages.length-1 do p test_paged.pages[i] end
   end
 
   scenario "accepts a list of pages that need to have their order reset"
@@ -78,3 +103,4 @@ feature 'User reorders pages', js: true do
   scenario "calculates and saves previous and next siblings for each page"
 
 end
+=end
