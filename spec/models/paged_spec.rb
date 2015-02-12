@@ -33,8 +33,8 @@ describe Paged do
     paged.update_attributes( attributes_hash )
     
     # These attributes are "unique" in the call to delegate, which causes the results to be singular
-    paged.title.should == attributes_hash["title"]
-    paged.creator.should == attributes_hash["creator"]
+    paged.title.should be == attributes_hash["title"]
+    paged.creator.should be == attributes_hash["creator"]
   end
   
   it "should be saved to Fedora" do
