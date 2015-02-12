@@ -20,14 +20,37 @@
   margin-left: -1.3em;
 }
 
+/*
+ * Paged Edit and Create forms
+ */
 
-form#new_paged ol li{
+form#new_paged ol li,
+form.edit_paged ol li{
   list-style: none;
 }
 
-form#new_paged label{
+form#new_paged label,
+form.edit_paged label,
+span.form_label{
   float: left;
   font-size: 13px;
   font-weight: bold;
   width: 175px;
+}
+
+form#new_paged input[type="file"],
+form.edit_paged input[type="file"]{
+  height:inherit;
+  line-height:inherit;
+}
+
+form#new_paged span.form_field,
+form.edit_paged span.form_field{
+  display:block;
+  padding-bottom: 15px;
+}
+
+.paged_submit{
+  padding-top:25px;
+  padding-left:150px;
 }

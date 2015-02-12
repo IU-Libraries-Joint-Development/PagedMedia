@@ -12,45 +12,56 @@
   <% end %>
 
   <ol>
-  <li>
-    <%= f.label :type %><%= f.text_field :type %>
-  </li>
-  <li>
-    <%= f.label :title %>
-    <%= f.text_field :title %>
-  </li>
-  <li class="field">
-    <%= f.label :creator %>
-    <%= f.text_field :creator %>
-  </li>
-  <li class="field">
-    <%= f.label :publisher %>
-    <%= f.text_field :publisher %>
-  </li>
+    <li>
+      <%= f.label :type %>
+      <%# f.text_field :type %>
+      <%= f.select(:type, ["Newspaper", "Musical Score", "Book"], prompt: 'Select type') %>
+    </li>
+    <li>
+      <%= f.label :title %>
+      <%= f.text_field :title %>
+      
+    </li>
     <li class="field">
-    <%= f.label :publisher_place %>
-    <%= f.text_field :publisher_place %>
-  </li>
-  <li class="field">
-    <%= f.label "Date of Publication" %>
-    <%= f.date_field :issued %>
-  </li>
-
-
-  <div class='field'>
+      <%= f.label :creator %>
+      <%= f.text_field :creator %>
+    </li>
+    <li class="field">
+      <%= f.label :publisher %>
+      <%= f.text_field :publisher %>
+    </li>
+      <li class="field">
+      <%= f.label :publisher_place %>
+      <%= f.text_field :publisher_place %>
+    </li>
+    <li class="field">
+      <%= f.label "Date of Publication" %>
+      <%= f.date_field :issued, placeholder: 'mm/dd/yyyy' %>
+    </li>
+  
     <% if !@paged.new? %>
-      Current paged XML file:
-      <% if @paged.xml_datastream.has_content? %>
-        <%= link_to @paged.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @paged.xml_datastream.url %>
-      <% else %>
-        none.
-      <% end %>
+      <li class='field'>
+        <span class="form_label">Current XML File</span>
+        <span class="form_field">
+        <% if @paged.xml_datastream.has_content? %>
+          <%= link_to @paged.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @paged.xml_datastream.url %>
+        <% else %>
+          none.
+        <% end %>
+        </span>
+      </li>
     <% end %>
-    <%= f.label 'New XML file:' %>
-    <%= f.file_field :xml_file %>
-  </div>
+    
+    <li class='field'>
+      <%= f.label 'Select new XML File' %>
+      <%= f.file_field :xml_file %>
+    </li>
   </ol>
-  <div class="actions">
-    <%= f.submit %>
+  <div class="actions paged_submit">
+    <% if !@paged.new? %>
+      <%= f.submit "Update"%>
+    <% else %>
+      <%= f.submit "Create"%>
+    <% end %>
   </div>
 <% end %>
