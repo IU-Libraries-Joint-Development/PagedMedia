@@ -75,7 +75,7 @@ def import_paged(subdir, paged_yaml)
       puts "No pages specified for page object."
     else
       #TODO: check page count exists?
-      page_count = pages_yaml["page count"].to_i
+      page_count = pages_yaml.count
       puts "Processing #{page_count.to_s} pages."
       #TODO: check page count matches pages provided?
       pages = []
@@ -84,8 +84,8 @@ def import_paged(subdir, paged_yaml)
       (0...page_count).each do |index|
         page_attributes = { paged_id: paged.pid, skip_sibling_validation: true }
         page_attributes[:prev_page] = prev_page.pid if prev_page
-        pages_yaml["descMetadata"].each_pair do |key, values|
-          page_attributes[key.to_sym] = values[index]
+        pages_yaml[index]["descMetadata"].each_pair do |key, value|
+          page_attributes[key.to_sym] = value
         end
         begin
 	  page = Page.new(page_attributes)
@@ -94,7 +94,7 @@ def import_paged(subdir, paged_yaml)
           puts page_attributes.inspect
           break
         end
-        pageImage = pages_yaml["content"]["pageImage"][index] if pages_yaml["content"]
+        pageImage = pages_yaml[index]["content"]["pageImage"] if pages_yaml[index]["content"]
 	page.pageImage.content = File.open(Rails.root + subdir + "content/" + pageImage) if pageImage
 	if page.save(unchecked: true)
 	  page.reload
