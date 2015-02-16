@@ -63,7 +63,7 @@ def import_paged(subdir, paged_yaml)
   if paged
     #TODO: check for failed connection
     if paged.save
-      puts "Paged object successfully created."
+      puts "Paged object #{paged.pid} successfully created."
     else
       puts "ABORTING PAGED CREATION: problem saving paged object"
       puts paged.errors.messages
