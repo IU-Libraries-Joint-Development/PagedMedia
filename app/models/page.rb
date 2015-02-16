@@ -20,7 +20,9 @@ class Page < ActiveFedora::Base
   has_attributes :text,  datastream: 'descMetadata', multiple: false
   has_attributes :page_struct, datastream: 'descMetadata', multiple: true
 
-  validate :validate_has_required_siblings
+  # skip_sibling_validation both skips the custom validation and runs an unchecked save
+  attr_accessor :skip_sibling_validation
+  validate :validate_has_required_siblings, unless: :skip_sibling_validation
 
 
   # Setter for the image
@@ -111,7 +113,7 @@ class Page < ActiveFedora::Base
   # method's internal use.
   def save(opts={})
 
-    if (opts.has_key?(:unchecked))
+    if (opts.has_key?(:unchecked) || skip_sibling_validation)
       return super()
     end
 

@@ -18,7 +18,7 @@ pageds:
    pages:
      page count: 5
      descMetadata:
-       logical_num:
+       logical_number:
          - Page A1
          - Page A2
          - Page B1

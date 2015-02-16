@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader, :validate]
 
   # GET /pageds
   # GET /pageds.json
@@ -10,9 +10,18 @@ class PagedsController < ApplicationController
   # GET /pageds/1
   # GET /pageds/1.json
   def show
-    @ordered, @error = @paged.order_pages()
+    @ordered = JSON.parse(find_pages())
+  end
+
+  def validate
+    @ordered = JSON.parse(find_pages())
+    validated, @error = @paged.order_pages()
     if @error
       flash.now[:error] = "ERROR Ordering Items : #{@error}"
+    end
+    respond_to do |format|
+      format.html { render action: 'show' }
+      format.json { render action: 'show' }
     end
   end
 
@@ -69,23 +78,20 @@ class PagedsController < ApplicationController
   # GET /pageds/1/pages.json
   def pages
     page_rsp = {}
-    search = ActiveFedora::SolrService.instance.conn.select :params => { :q => params[:id], :fl => "pages_ss" }
-    unless search['response']['numFound'].to_i == 0
-      parsed = JSON.parse(search['response']['docs'][0]['pages_ss'])
-      if params[:index].nil?
-        page_rsp = parsed
-      else
-        unless params[:index].to_i > parsed.count
-          page_id = parsed[params[:index].to_i]['id']
-          ds_url = parsed[params[:index].to_i]['ds_url']
-          ds_url ||= ''
-          page_rsp = {:id => page_id, :index => params[:index], :ds_url => ds_url}
-        else
-          page_rsp = {:id => params[:id], :index => params[:index], :error => 'Index out of bounds'}
-        end
-      end
+    search = find_pages
+    parsed = JSON.parse(search)
+    if params[:index].nil?
+      page_rsp = parsed
     else
-      page_rsp = {:id => params[:id], :error => 'No pages'}
+      unless params[:index].to_i > parsed.count
+        page_id = parsed[params[:index].to_i]['id']
+        ds_url = parsed[params[:index].to_i]['ds_url']
+        logical_number = parsed[params[:index].to_i]['logical_number']
+        ds_url ||= ''
+        page_rsp = {:id => page_id, :index => params[:index], :logical_number => logical_number, :ds_url => ds_url}
+      else
+        page_rsp = {:id => params[:id], :index => params[:index], :error => 'Index out of bounds'}
+      end
     end
     respond_to do |format|
       format.html { render json: page_rsp, head: :no_content }
@@ -108,6 +114,7 @@ class PagedsController < ApplicationController
 
       previous_page = nil
       pages.each do |page|
+        page.skip_sibling_validation = true
         page.prev_page = previous_page
         previous_page = page.id
       end
@@ -135,6 +142,19 @@ class PagedsController < ApplicationController
   end
 
   private
+
+  def find_pages
+    pages = {}
+    search = ActiveFedora::SolrService.instance.conn.select :params => { :q => params[:id], :fl => "pages_ss" }
+    unless search['response']['numFound'].to_i == 0
+      pages = search['response']['docs'][0]['pages_ss']
+    else
+      pages = {:id => params[:id], :error => 'No pages'}
+    end
+    return pages
+  end
+
+
     # Use callbacks to share common setup or constraints between actions.
     def set_paged
       @paged = Paged.find(params[:id])
