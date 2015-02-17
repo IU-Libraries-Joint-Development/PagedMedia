@@ -118,15 +118,47 @@ describe PagedsController do
   describe '#reorder' do
     context 'with no params provided' do
       specify 'user is notified in the flash' do
-        get :reorder
-        # TODO expect flash :notice saying there were no changes
+        patch :reorder, id: test_paged.id
+        expect(flash[:notice]).to be_present
       end
     end
+
     context 'with valid params' do
-      specify 'FIXME: write valid reorder tests' do
-        # TODO test this
-        get :reorder, reorder_submission: "TODO" # TODO
+      # This test looks a bit odd, because the order of pages in a Paged is
+      # actually distributed across its children (the Pages) and is not found
+      # anywhere in Paged.
+      specify 'pages are reordered as given' do
+        # List the pages
+        my_pages = {}
+        first_page = nil
+        test_paged.pages.each do |page|
+          first_page = page.pid if page.prev_page.nil?
+          my_pages[page.pid] = page.next_page
+        end
+
+        # Discover the existing page order
+        page_ids = []
+        next_page = first_page
+        loop do
+          page_ids << next_page
+          next_page = my_pages[next_page]
+          break if next_page.nil?
+        end
+
+        # Rearrange the pages
+        page_ids.insert(0, page_ids.slice!(1))
+        patch :reorder, id: test_paged.id, reorder_submission: page_ids.join(',')
+
+        # expect "saves the logical position of each of the pages from the list"
+        # expect "calculates and saves previous and next siblings for each page"
+        page_ids.each_index do |pageN|
+          my_page = Page.find(page_ids[pageN])
+          expect(my_page.prev_page).to eq(pageN-1 < 0 ? nil : page_ids[pageN-1])
+          expect(my_page.next_page).to eq(pageN+1 > page_ids.length ? nil : page_ids[pageN+1])
+        end
+
       end
+
     end
   end
 
