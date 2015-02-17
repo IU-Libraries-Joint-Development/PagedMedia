@@ -4,7 +4,6 @@ describe PagedsController do
   render_views
   let!(:test_paged) { FactoryGirl.create(:paged, :with_pages) }
 
-=begin
   describe '#index' do
     before(:each) { get :index }
     it 'sets @pageds' do
@@ -113,7 +112,6 @@ describe PagedsController do
       expect(parsed['ds_url']).to match(/#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/)
     end
   end
-=end
 
   describe '#reorder' do
     context 'with no params provided' do
@@ -162,7 +160,6 @@ describe PagedsController do
     end
   end
 
-=begin
   describe '#bookreader' do
     before(:each) { get :bookreader, id: test_paged.id }
     it 'assigns @paged' do
@@ -172,6 +169,5 @@ describe PagedsController do
       expect(response).to render_template :bookreader
     end
   end
-=end
 
 end
