@@ -98,9 +98,5 @@ feature 'User reorders pages', js: true do
     for i in 0..test_paged.pages.length-1 do p test_paged.pages[i] end
   end
 
-  scenario "accepts a list of pages that need to have their order reset"
-  scenario "saves the logical position of each of the pages from the list"
-  scenario "calculates and saves previous and next siblings for each page"
-
 end
 =end
