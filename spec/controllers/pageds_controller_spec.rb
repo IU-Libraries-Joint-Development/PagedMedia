@@ -122,10 +122,8 @@ describe PagedsController do
     end
 
     context 'with valid params' do
-      # This test looks a bit odd, because the order of pages in a Paged is
-      # actually distributed across its children (the Pages) and is not found
-      # anywhere in Paged.
-      specify 'pages are reordered as given' do
+
+      before(:each) do
         # List the pages
         my_pages = {}
         first_page = nil
@@ -135,24 +133,35 @@ describe PagedsController do
         end
 
         # Discover the existing page order
-        page_ids = []
+        @page_ids = []
         next_page = first_page
         loop do
-          page_ids << next_page
+          @page_ids << next_page
           next_page = my_pages[next_page]
           break if next_page.nil?
         end
 
         # Rearrange the pages
-        page_ids.insert(0, page_ids.slice!(1))
-        patch :reorder, id: test_paged.id, reorder_submission: page_ids.join(',')
+        @page_ids.insert(0, @page_ids.slice!(1))
+        patch :reorder, id: test_paged.id, reorder_submission: @page_ids.join(',')
+      end
 
-        # expect "saves the logical position of each of the pages from the list"
-        # expect "calculates and saves previous and next siblings for each page"
-        page_ids.each_index do |pageN|
-          my_page = Page.find(page_ids[pageN])
-          expect(my_page.prev_page).to eq(pageN-1 < 0 ? nil : page_ids[pageN-1])
-          expect(my_page.next_page).to eq(pageN+1 > page_ids.length ? nil : page_ids[pageN+1])
+      it 'redirects to updated paged' do
+        expect(response).to redirect_to test_paged
+      end
+
+      it "does not set the notice" do
+        expect(flash[:notice]).to be_nil
+      end
+
+      # This test looks a bit odd, because the order of pages in a Paged is
+      # actually distributed across its children (the Pages) and is not found
+      # anywhere in Paged.
+      specify 'pages are reordered as given' do
+        @page_ids.each_index do |pageN|
+          my_page = Page.find(@page_ids[pageN])
+          expect(my_page.prev_page).to eq(pageN-1 < 0 ? nil : @page_ids[pageN-1])
+          expect(my_page.next_page).to eq(@page_ids[pageN+1])
         end
 
       end
