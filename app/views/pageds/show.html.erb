@@ -26,6 +26,11 @@
     </li>
   </ul>
   
+  <!-- Cover Image -->
+  <div>
+    <%= image_tag(@ordered[0]["ds_url"], height: "64", width: "64" ) %>
+  </div>
+  
   <%= link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> |
   <%= link_to 'Edit', edit_paged_path(@paged) %> |
   <%= link_to 'Back', pageds_path %>
