@@ -59,7 +59,6 @@ describe PagesController do
       it 'saves the new object' do
         expect{ post_create }.to change(Page, :count).by(1)
       end
-      #FIXME: 2 contexts for paged_id present vs absent, determines redirect_to
       it 'redirects to the object' do
         post_create
         expect(response).to redirect_to assigns(:page)
@@ -97,8 +96,6 @@ describe PagesController do
           put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
         end
         it 'redirects to paged_url' do
-          puts "paged: #{test_paged.id}, page: #{test_page.id}, paged_id: #{test_page.paged_id}"
-          #FIXME: where is the controller meant to send us?  Surely not to paged_url(@page.id) because that's mixing paged/page...
           expect(response).to redirect_to pageds_path
         end
       end
@@ -123,60 +120,16 @@ describe PagesController do
     end
     context 'with invalid params' do
       context 'with invalid params' do
-      before(:each) do
-        first_page = FactoryGirl.create :page, paged: test_paged
-        test_paged.reload
-        put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated", paged_id: test_paged.id }
+        before(:each) do
+          first_page = FactoryGirl.create :page, paged: test_paged
+          test_paged.reload
+          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated", paged_id: test_paged.id }
+        end
+        it 'renders the edit template' do
+          expect(response).to render_template(:edit)
+        end
       end
-      it 'renders the edit template' do
-        expect(response).to render_template(:edit)
-      end
     end
-    end
-=begin
-    it 'stores a previous-page link' do
-      apage = mock_model(Page, :prev_page= => nil, update: nil)
-      expect(Page).to receive(:find).and_return(apage)
-      expect(apage).to receive(:update).with('prev_page' => 'page:3')
-      put :update, {
-        page: {prev_page: 'page:3'},
-        id: 'page:4'
-      }
-      assert_response :success
-    end
-
-    it 'stores a next-page link' do
-      apage = mock_model(Page, :next_page= => nil, update: nil)
-      expect(Page).to receive(:find).and_return(apage)
-      expect(apage).to receive(:update).with('next_page' => 'page:5')
-      put :update, {
-        page: {next_page: 'page:5'},
-        id: 'page:4'
-      }
-      assert_response :success
-    end
-
-    it 'stores a new image datastream'
-
-    it 'stores a new OCR datastream'
-
-    it 'stores a new XML datastream' do
-      xml_upload = fixture_file_upload('/xml-test.xml', 'application/xml')
-
-      apage = mock_model(Page,
-                         xml_file: xml_upload,
-                         :xml_file= => nil,
-                         update: nil)
-
-      expect(Page).to receive(:find).and_return(apage)
-      expect(apage).to receive(:update).with('xml_file' => xml_upload)
-      put :update, {
-        page: {xml_file: xml_upload},
-        id: '1'
-      }
-      assert_response :success
-    end
-=end
   end
 
   describe '#destroy' do
