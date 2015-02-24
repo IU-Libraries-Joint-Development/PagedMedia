@@ -1,5 +1,6 @@
 <div id="reorder_pages_container">
-  <p><strong>Reorder pages</strong><p>
+  <p><strong>Current Page Order</strong><p>
+  <p>Drag and Drop pages to reorder them.</p>
   <div id="reorder_pages">
     <%= form_for(@paged, url: { action: :reorder }) do |f| %>
       <ul id="sortable_pages">
@@ -10,7 +11,7 @@
       <% end %>
       </ul>
       <input id="reorder_submission" name="reorder_submission" type="hidden" value="">
-      <%= f.submit "Reorder pages" %>
+      <%= f.submit "Save Reordered Pages" %>
     <% end %>
   </div>
 </div>

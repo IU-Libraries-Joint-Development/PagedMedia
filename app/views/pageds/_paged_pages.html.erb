@@ -42,10 +42,10 @@
     <%= render :partial=>'pages/add_page_form', :local => {:paged => @paged} %>
   </div>
   <div id="add_page">
-    <%= link_to "Add Page", "#", class: "show_add_page_form" %>
+    <%= button_to "Add Page", "#", class: "show_add_page_form", :method => :get %>
   </div>
   <div id="cancel_add_page" style="display:none">
-    <%= link_to "Cancel", "#", class: "show_add_page_form" %>
+    <%= button_to "Cancel", "#", class: "show_add_page_form", :method => :get %>
   </div>
 
 </div>
