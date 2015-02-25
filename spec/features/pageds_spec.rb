@@ -6,10 +6,10 @@ describe 'For page listing' do
   context "when pages are listed" do  
     specify "they should be ordered according to prev and next page ids" do
       visit pageds_path + '/' + test_paged.pid
-      page.body.index("Page 1").should be < page.body.index("Page 2")
-      page.body.index("Page 2").should be < page.body.index("Page 3")
-      page.body.index("Page 3").should be < page.body.index("Page 4")
-      page.body.index("Page 4").should be < page.body.index("Page 5")
+      expect(page.body.index("Page 1")).to be < page.body.index("Page 2")
+      expect(page.body.index("Page 2")).to be < page.body.index("Page 3")
+      expect(page.body.index("Page 3")).to be < page.body.index("Page 4")
+      expect(page.body.index("Page 4")).to be < page.body.index("Page 5")
     end
   end
   

@@ -4,7 +4,7 @@ describe 'Credit Page' do
   
   it 'has content' do
     visit '/credits'
-    page.should have_content('Credits')
+    expect(page).to have_content('Credits')
   end
 
 end

@@ -6,12 +6,12 @@ describe Paged do
   
   it "should have the specified datastreams" do
     # Check for descMetadata datastream
-    paged.datastreams.keys.should include("descMetadata")
-    paged.descMetadata.should be_kind_of PagedMetadataOaiDc
+    expect(paged.datastreams.keys).to include("descMetadata")
+    expect(paged.descMetadata).to be_kind_of PagedMetadataOaiDc
     # Check for rightsMetadata datastream
-    paged.datastreams.keys.should include("rightsMetadata")
-    paged.rightsMetadata.should be_kind_of Hydra::Datastream::RightsMetadata
-    paged.pagedXML.should be_kind_of ActiveFedora::Datastream
+    expect(paged.datastreams.keys).to include("rightsMetadata")
+    expect(paged.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
+    expect(paged.pagedXML).to be_kind_of ActiveFedora::Datastream
   end
 
   it "should have the attributes of a Paged object" do
@@ -33,13 +33,13 @@ describe Paged do
     paged.update_attributes( attributes_hash )
     
     # These attributes are "unique" in the call to delegate, which causes the results to be singular
-    paged.title.should be == attributes_hash["title"]
-    paged.creator.should be == attributes_hash["creator"]
+    expect(paged.title).to be == attributes_hash["title"]
+    expect(paged.creator).to be == attributes_hash["creator"]
   end
   
   it "should be saved to Fedora" do
     # This will attempt to use Fedora and will fail if not available during tests
-    paged.save.should be_true
+    expect(paged.save).to be_true
   end
   
 end
