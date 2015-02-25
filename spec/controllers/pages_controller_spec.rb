@@ -50,18 +50,34 @@ describe PagesController do
 
   describe '#create' do
     context 'with valid params' do
-      let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
-      it 'assigns @page' do
-        post_create
-        expect(assigns(:page)).to be_a Page
-        expect(assigns(:page)).to be_persisted
+      shared_examples "creates a page" do |paged_id|
+        it 'assigns @page' do
+          post_create
+          expect(assigns(:page)).to be_a Page
+          expect(assigns(:page)).to be_persisted
+        end
+        it 'saves the new object' do
+          expect{ post_create }.to change(Page, :count).by(1)
+        end
+	if paged_id
+          it 'redirects to the parent paged' do
+            post_create
+            expect(response).to redirect_to test_paged
+	  end
+	else
+	  it 'redirects to the page' do
+	    post_create
+	    expect(response).to redirect_to assigns(:page)
+	  end
+	end
       end
-      it 'saves the new object' do
-        expect{ post_create }.to change(Page, :count).by(1)
+      context 'with a paged_id' do
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
+        include_examples "creates a page", false
       end
-      it 'redirects to the object' do
-        post_create
-        expect(response).to redirect_to assigns(:page)
+      context 'without a paged_id' do
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page, paged_id: test_paged.id) }
+        include_examples "creates a page", true 
       end
     end
     context 'with invalid params' do
