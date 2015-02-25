@@ -65,3 +65,9 @@ group :development, :test do
   gem "factory_girl_rails"
   gem "jettywrapper"
 end
+
+# --- roo Gem ---
+# Roo implements read access for all spreadsheet types and read/write access
+# for Google spreadsheets. It can handle * OpenOffice * Excel *
+# Google spreadsheets * Excelx * LibreOffice * CSV
+gem "roo"
