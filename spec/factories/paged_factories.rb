@@ -66,9 +66,9 @@ FactoryGirl.define do
         #   of pageds found in the manifest file
         page_data = file_content["pageds"][0]["pages"]
         pages = Array.new
-        (0...page_data["page count"].to_i).each do |i|
-          pages[i] = create(:page, :unchecked, paged: paged, logical_number: page_data["descMetadata"]["logical_number"][i], prev_page: i.zero? ? nil : pages[i - 1].pid, text: page_data["descMetadata"]["text"][i], page_struct: page_data["descMetadata"]["page_struct"][i])
-          package_page =  'spec/fixtures/ingest/pmp/package1/' + 'content/' + page_data["content"]["pageImage"][i]
+        (0...page_data.count).each do |i|
+          pages[i] = create(:page, :unchecked, paged: paged, logical_number: page_data[i]["descMetadata"]["logical_number"].to_s, prev_page: i.zero? ? nil : pages[i - 1].pid, text: page_data[i]["descMetadata"]["text"].to_s, page_struct: page_data[i]["descMetadata"]["page_struct"])
+          package_page =  'spec/fixtures/ingest/pmp/package1/' + 'content/' + page_data[i]["content"]["pageImage"]
           pages[i].pageImage.content = File.open(Rails.root + package_page)
         end
         next_page = nil
