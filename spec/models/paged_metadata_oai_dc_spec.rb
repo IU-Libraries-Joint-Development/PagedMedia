@@ -1,7 +1,5 @@
 # Copyright 2014 Indiana University
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-
 describe PageMetadata do
 
   before { @paged_metadata = PagedMetadataOaiDc.new }
