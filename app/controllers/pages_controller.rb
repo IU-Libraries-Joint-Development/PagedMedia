@@ -38,7 +38,7 @@ class PagesController < ApplicationController
         if @page.paged_id
           paged = Paged.find(@page.paged_id)
           paged.update_index 
-          format.html { redirect_to "/pageds/" + @page.paged_id, notice: 'Page was successfully created.'}
+          format.html { redirect_to paged_path(@page.paged_id), notice: 'Page was successfully created.'}
         else
           format.html { redirect_to @page, notice: 'Page was successfully created.' }
           format.json { render action: 'show', status: :created, location: @page }
