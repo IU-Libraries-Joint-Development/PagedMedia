@@ -5,11 +5,11 @@ describe 'For page listing' do
 
   context "when pages are listed" do  
     specify "they should be ordered according to prev and next page ids" do
-      visit pageds_path + '/' + test_paged.pid
-      page.body.index("Page 1").should be < page.body.index("Page 2")
-      page.body.index("Page 2").should be < page.body.index("Page 3")
-      page.body.index("Page 3").should be < page.body.index("Page 4")
-      page.body.index("Page 4").should be < page.body.index("Page 5")
+      visit paged_path(test_paged.pid)
+      expect(page.body.index("Page 1")).to be < page.body.index("Page 2")
+      expect(page.body.index("Page 2")).to be < page.body.index("Page 3")
+      expect(page.body.index("Page 3")).to be < page.body.index("Page 4")
+      expect(page.body.index("Page 4")).to be < page.body.index("Page 5")
     end
   end
   
@@ -21,7 +21,7 @@ describe 'For page listing' do
       page3.save!(unchecked: true)
     end
     specify "an error message should display" do
-      visit pageds_path + '/' + test_paged.pid + '/validate'
+      visit validate_paged_path(test_paged.pid)
       expect(page).to have_css('div.alert-error')
     end
   end
@@ -34,7 +34,7 @@ describe 'For page listing' do
       page3.save!(unchecked: true)
     end
     specify "an error message should display" do
-      visit pageds_path + '/' + test_paged.pid + '/validate'
+      visit validate_paged_path(test_paged.pid)
       expect(page).to have_css('div.alert-error')
     end
   end
@@ -47,7 +47,7 @@ describe 'For page listing' do
       page3.save!(unchecked: true)
     end
     specify "an error message should display" do
-      visit pageds_path + '/' + test_paged.pid + '/validate'
+      visit validate_paged_path(test_paged.pid)
       expect(page).to have_css('div.alert-error')
     end
   end
@@ -72,7 +72,7 @@ feature 'User reorders pages', js: true do
   let!(:test_paged) { FactoryGirl.create(:paged, :with_pages) }
 
   scenario 'by dragging and dropping in the page order list' do
-    visit pageds_path + '/' + test_paged.pid
+    visit paged_path(test_paged.pid)
     sortablePages = page.all(:xpath, "//ul[@id='sortable_pages']/li")
     puts 'sortablePages:'
     for i in 0..sortablePages.length-1 do p sortablePages[i] end
@@ -90,7 +90,7 @@ feature 'User reorders pages', js: true do
 
     test_paged.reload
     # check the page order list
-    visit pageds_path + '/' + test_paged.pid
+    visit paged_path(test_paged.pid)
     sortablePages = page.all(:xpath, "//ul[@id='sortable_pages']/li")
     puts 'sortablePages:'
     for i in 0..sortablePages.length-1 do p sortablePages[i] end
