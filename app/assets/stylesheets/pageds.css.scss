@@ -21,6 +21,25 @@
 }
 
 /*
+ * Paged Show view
+ */
+
+div.pmp_paged_info{
+  float:left;
+}
+
+div.pmp_paged_info ul{
+  padding: 0;
+  margin: 0 0 10px 0;
+  list-style-type: none;
+}
+
+div.pmp_paged_info ul li{
+  list-style: none;
+  
+}
+
+/*
  * Paged Edit and Create forms
  */
 

@@ -6,52 +6,40 @@
   
   <p id="notice"><%= notice %></p>
   
-  <p>
-    <strong>Type:</strong>
-    <%= @paged.type %>
-  </p>
+  <h2><%= @paged.title %></h2>
   
-  <p>
-    <strong>Title:</strong>
-    <%= @paged.title %>
-  </p>
+  <div class="pmp_paged_info">
+    <ul>
+      <li>Type: <%= @paged.type %></li>
+      <li>Title: <%= @paged.title %></li>
+      <li>Creator: <%= @paged.creator %></li>
+      <li>Publisher: <%= @paged.publisher %></li>
+      <li>Place of Publication: <%= @paged.publisher_place %></li>
+      <li>Date of Publication: <%= @paged.issued %></li>
+      <li>XML file:
+        <% if @paged.xml_file.has_content? %>
+          <%= link_to @paged.xml_datastream.label,
+                      ActiveFedora.fedora_config.credentials[:url] +
+                        '/' + @paged.xml_datastream.url %>
+        <% else %>
+          none.
+        <% end %>
+      </li>
+    </ul>
+  </div>
   
-  <p>
-    <strong>Creator:</strong>
-    <%= @paged.creator %>
-  </p>
+  <!-- Cover Image -->
+  <div style="float:left; padding-left:50px;">
+    <%= image_tag(@ordered[0]["ds_url"], height: "64", width: "64" ) %>
+  </div>
   
-  <p>
-    <strong>Publisher:</strong>
-    <%= @paged.publisher %>
-  </p>
+  <div style="clear:both;">
+    <%= button_to 'Update', edit_paged_path(@paged), :method => :get %>
+  </div>
   
-  <p>
-    <strong>Place of Publication:</strong>
-    <%= @paged.publisher_place %>
-  </p>
-  
-  <p>
-    <strong>Date of Publication:</strong>
-    <%= @paged.issued %>
-  </p>
-  
-  <p>
-    <strong>XML file:</strong>
-    <% if @paged.xml_file.has_content? %>
-      <%= link_to @paged.xml_datastream.label,
-                  ActiveFedora.fedora_config.credentials[:url] +
-                    '/' + @paged.xml_datastream.url %>
-    <% else %>
-      none.
-    <% end %>
-  </p>
-  
-  <%= link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> |
-  <%= link_to 'Edit', edit_paged_path(@paged) %> |
-  <%= link_to 'Back', pageds_path %>
-  
-  <hr/>
+  <%# link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> 
+  <%# link_to 'Edit', edit_paged_path(@paged) %> 
+  <%# link_to 'Back', pageds_path %>
   
   <div id='pages'>
     <%= render :partial=>'paged_pages', :locals => { :paged => @paged, :ordered => @ordered } %>

@@ -1,5 +1,5 @@
 <div id="paged_pages">
-  <p><strong>Number of pages : </strong><%= paged.pages.size %></p>
+  <h3><%= paged.title %></h3>
   <% session[:came_from] = :paged %>
   <div id="pages">
     <table border="1">
@@ -23,9 +23,15 @@
         <td class='logical_numbers'><%= page["logical_number"] %></td>
         <td><%= page["id"] =%></td>
         <td>
-          <%= link_to 'Show', page_path(page["id"]) %> |
-          <%= link_to 'Edit', edit_page_path(page["id"]) %> |
-          <%= link_to 'Destroy', page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } %>
+          <div style="float:left;">
+          <%= button_to 'View', page_path(page["id"]), :method => :get, :style => "display:inline;" %> 
+          </div>
+          <div style="float:left;">
+          <%= button_to 'Edit', edit_page_path(page["id"]), :method => :get, :style => "display:inline;" %> 
+          </div>
+          <div style="float:left;">
+          <%= button_to 'Delete', page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } %>
+          </div>
         </td>
 
       </tr>
@@ -36,10 +42,10 @@
     <%= render :partial=>'pages/add_page_form', :local => {:paged => @paged} %>
   </div>
   <div id="add_page">
-    <%= link_to "Add Page", "#", class: "show_add_page_form" %>
+    <%= button_to "Add Page", "#", class: "show_add_page_form", :method => :get %>
   </div>
   <div id="cancel_add_page" style="display:none">
-    <%= link_to "Cancel", "#", class: "show_add_page_form" %>
+    <%= button_to "Cancel", "#", class: "show_add_page_form", :method => :get %>
   </div>
 
 </div>
