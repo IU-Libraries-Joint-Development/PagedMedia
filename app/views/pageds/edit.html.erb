@@ -1,6 +1,12 @@
-<h1>Editing paged</h1>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
 
-<%= render 'form' %>
-
-<%= link_to 'Show', @paged %> |
-<%= link_to 'Back', pageds_path %>
+<div id="content" class="span9">
+  <h1>Paged Media: Edit</h1>
+  
+  <%= render 'form' %>
+  
+  <%= link_to 'Show', @paged %> |
+  <%= link_to 'Back', pageds_path %>
+</div>

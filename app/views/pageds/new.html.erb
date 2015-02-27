@@ -1,5 +1,13 @@
-<h1>New paged</h1>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
 
-<%= render 'form' %>
+<div id="content" class="span9">
+  
+  <h1>Paged Media: New</h1>
+  
+  <%= render 'form' %>
+  
+  <%= link_to 'Back', pageds_path %>
 
-<%= link_to 'Back', pageds_path %>
+</div>
