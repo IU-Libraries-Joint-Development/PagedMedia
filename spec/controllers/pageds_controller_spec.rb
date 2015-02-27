@@ -3,6 +3,7 @@ require 'json'
 describe PagedsController do
   render_views
   let!(:test_paged) { FactoryGirl.create(:paged, :with_pages) }
+  let(:ordered_pages) { test_paged.order_pages[0] }
 
   describe '#index' do
     before(:each) { get :index }
@@ -62,7 +63,7 @@ describe PagedsController do
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid paged parameters determined'
+      pending '(untestable until invalid paged parameters exist)'
     end
   end
 
@@ -86,7 +87,7 @@ describe PagedsController do
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid paged parameters determined'
+      pending '(untestable until invalid paged parameters exist)'
     end
   end
 
@@ -102,7 +103,6 @@ describe PagedsController do
   end
 
   describe '#pages' do
-    let!(:ordered_pages) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number } }
     it 'should return pid and image ds uri given an index integer' do
       index = 1
       get :pages, id: test_paged.id, index: index
@@ -114,58 +114,24 @@ describe PagedsController do
   end
 
   describe '#reorder' do
-    context 'with no params provided' do
-      specify 'user is notified in the flash' do
-        patch :reorder, id: test_paged.id
-        expect(flash[:notice]).to be_present
-      end
+    before(:each) { patch :reorder, id: test_paged.id, reorder_submission: reorder_submission }
+    context 'with no reorder values provided' do
+      let(:reorder_submission) { nil }
+      it 'flashes "No change"' do
+        expect(flash[:notice]).to match /No change/i
     end
-
-    context 'with valid params' do
-
-      before(:each) do
-        # List the pages
-        my_pages = {}
-        first_page = nil
-        test_paged.pages.each do |page|
-          first_page = page.pid if page.prev_page.nil?
-          my_pages[page.pid] = page.next_page
-        end
-
-        # Discover the existing page order
-        @page_ids = []
-        next_page = first_page
-        loop do
-          @page_ids << next_page
-          next_page = my_pages[next_page]
-          break if next_page.nil?
-        end
-
-        # Rearrange the pages
-        @page_ids.insert(0, @page_ids.slice!(1))
-        patch :reorder, id: test_paged.id, reorder_submission: @page_ids.join(',')
+      it 'redirects to :show' do
+        expect(response).to redirect_to action: :show
+    end
+    end
+    context 'with valid reorder values' do
+      let(:reorder_submission) { ordered_pages.reverse.map { |p| p.pid }.join(',') }
+      it 'reorders pages' do
+	expect(test_paged.order_pages[0]).to eq ordered_pages.reverse
       end
-
-      it 'redirects to updated paged' do
-        expect(response).to redirect_to test_paged
+      it 'redirects to :show' do
+        expect(response).to redirect_to action: :show
       end
-
-      it "does not set the notice" do
-        expect(flash[:notice]).to be_nil
-      end
-
-      # This test looks a bit odd, because the order of pages in a Paged is
-      # actually distributed across its children (the Pages) and is not found
-      # anywhere in Paged.
-      specify 'pages are reordered as given' do
-        @page_ids.each_index do |pageN|
-          my_page = Page.find(@page_ids[pageN])
-          expect(my_page.prev_page).to eq(pageN-1 < 0 ? nil : @page_ids[pageN-1])
-          expect(my_page.next_page).to eq(@page_ids[pageN+1])
-        end
-
-      end
-
     end
   end
 
