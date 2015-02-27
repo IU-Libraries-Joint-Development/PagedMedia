@@ -103,6 +103,7 @@ class PagedsController < ApplicationController
     render layout: false
   end
 
+  # PATCH /pageds/1/reorder
   def reorder
     unless params[:reorder_submission].nil? || params[:reorder_submission].blank?
       page_ids = params[:reorder_submission].to_s.split(',')

@@ -19,3 +19,6 @@
 # Ignore NetBeans stuff
 /nbproject
 /nbproject/private/
+
+# Ignore Aptana (Eclipse) stuff
+/.project

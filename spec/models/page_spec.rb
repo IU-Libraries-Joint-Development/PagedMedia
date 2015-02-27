@@ -10,8 +10,8 @@ describe Page do
     # Check for pageImage datastream
     # Check for pageOCR datastream
     # Check for pageXML datastream
-    page.datastreams.keys.should include "pageXML"
-    page.pageXML.should be_kind_of ActiveFedora::Datastream
+    expect(page.datastreams.keys).to include "pageXML"
+    expect(page.pageXML).to be_kind_of ActiveFedora::Datastream
   end
 
   it "should have the specified attributes" do

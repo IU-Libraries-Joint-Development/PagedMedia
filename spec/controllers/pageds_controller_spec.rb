@@ -79,7 +79,7 @@ describe PagedsController do
         expect(test_paged.title).not_to eq original_title
       end
       it 'flashes success' do
-        expect(flash[:notice]).to match /success/i
+        expect(flash[:notice]).to match(/success/i)
       end
       it 'redirects to updated paged' do
         expect(response).to redirect_to test_paged
@@ -109,16 +109,63 @@ describe PagedsController do
       parsed = JSON.parse response.body
       expect(parsed['id']).to eq ordered_pages[index].pid
       expect(parsed['index']).to eq index.to_s
-      expect(parsed['ds_url']).to match /#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/
+      expect(parsed['ds_url']).to match(/#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/)
     end
   end
 
   describe '#reorder' do
     context 'with no params provided' do
-      specify 'FIXME: write empty reorder tests'
+      specify 'user is notified in the flash' do
+        patch :reorder, id: test_paged.id
+        expect(flash[:notice]).to be_present
+      end
     end
+
     context 'with valid params' do
-      specify 'FIXME: write valid reorder tests'
+
+      before(:each) do
+        # List the pages
+        my_pages = {}
+        first_page = nil
+        test_paged.pages.each do |page|
+          first_page = page.pid if page.prev_page.nil?
+          my_pages[page.pid] = page.next_page
+        end
+
+        # Discover the existing page order
+        @page_ids = []
+        next_page = first_page
+        loop do
+          @page_ids << next_page
+          next_page = my_pages[next_page]
+          break if next_page.nil?
+        end
+
+        # Rearrange the pages
+        @page_ids.insert(0, @page_ids.slice!(1))
+        patch :reorder, id: test_paged.id, reorder_submission: @page_ids.join(',')
+      end
+
+      it 'redirects to updated paged' do
+        expect(response).to redirect_to test_paged
+      end
+
+      it "does not set the notice" do
+        expect(flash[:notice]).to be_nil
+      end
+
+      # This test looks a bit odd, because the order of pages in a Paged is
+      # actually distributed across its children (the Pages) and is not found
+      # anywhere in Paged.
+      specify 'pages are reordered as given' do
+        @page_ids.each_index do |pageN|
+          my_page = Page.find(@page_ids[pageN])
+          expect(my_page.prev_page).to eq(pageN-1 < 0 ? nil : @page_ids[pageN-1])
+          expect(my_page.next_page).to eq(@page_ids[pageN+1])
+        end
+
+      end
+
     end
   end
 

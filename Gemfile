@@ -61,6 +61,7 @@ group :development, :test do
   gem "spring-commands-rspec"
   gem "guard-rspec"
   gem "capybara"
+  gem "capybara-webkit"
   gem "launchy"
   gem "factory_girl_rails"
   gem "jettywrapper"
