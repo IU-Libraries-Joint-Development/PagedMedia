@@ -1,7 +1,6 @@
 # Copyright 2014 Indiana University.
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require_relative '../app/models/datastreams/paged_metadata_dublin_core'
+require 'paged_metadata_dublin_core'
 
 describe PagedMetadataDublinCore do
   before(:each) do

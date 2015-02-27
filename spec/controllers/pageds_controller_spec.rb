@@ -80,7 +80,7 @@ describe PagedsController do
         expect(test_paged.title).not_to eq original_title
       end
       it 'flashes success' do
-        expect(flash[:notice]).to match /success/i
+        expect(flash[:notice]).to match(/success/i)
       end
       it 'redirects to updated paged' do
         expect(response).to redirect_to test_paged
@@ -109,7 +109,7 @@ describe PagedsController do
       parsed = JSON.parse response.body
       expect(parsed['id']).to eq ordered_pages[index].pid
       expect(parsed['index']).to eq index.to_s
-      expect(parsed['ds_url']).to match /#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/
+      expect(parsed['ds_url']).to match(/#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/)
     end
   end
 
@@ -119,10 +119,10 @@ describe PagedsController do
       let(:reorder_submission) { nil }
       it 'flashes "No change"' do
         expect(flash[:notice]).to match /No change/i
-      end
+    end
       it 'redirects to :show' do
         expect(response).to redirect_to action: :show
-      end
+    end
     end
     context 'with valid reorder values' do
       let(:reorder_submission) { ordered_pages.reverse.map { |p| p.pid }.join(',') }

@@ -66,5 +66,9 @@ RSpec.configure do |config|
   config.include Rails.application.routes.url_helpers
   # Added to support view rendering in controller tests
   config.include Devise::TestHelpers, type: :controller
-  
+
+end
+
+Capybara.configure do |config|
+  config.javascript_driver = :webkit
 end

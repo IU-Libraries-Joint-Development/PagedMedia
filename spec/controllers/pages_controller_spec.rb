@@ -1,7 +1,8 @@
 describe PagesController do
   render_views
 
-  let!(:test_page) { FactoryGirl.create :page } 
+  let!(:test_page) { FactoryGirl.create :page }
+  let!(:test_paged) { FactoryGirl.create :paged }
 
   describe '#index' do
     before(:each) { get :index }
@@ -49,27 +50,72 @@ describe PagesController do
 
   describe '#create' do
     context 'with valid params' do
-      let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
-      it 'assigns @page' do
-        post_create
-        expect(assigns(:page)).to be_a Page
-        expect(assigns(:page)).to be_persisted
+      shared_examples "creates a page" do |paged_id|
+        it 'assigns @page' do
+          post_create
+          expect(assigns(:page)).to be_a Page
+          expect(assigns(:page)).to be_persisted
+        end
+        it 'saves the new object' do
+          expect{ post_create }.to change(Page, :count).by(1)
+        end
+	if paged_id
+          it 'redirects to the parent paged' do
+            post_create
+            expect(response).to redirect_to test_paged
+	  end
+	else
+	  it 'redirects to the page' do
+	    post_create
+	    expect(response).to redirect_to assigns(:page)
+	  end
+	end
       end
-      it 'saves the new object' do
-        expect{ post_create }.to change(Page, :count).by(1)
+      context 'with a paged_id' do
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
+        include_examples "creates a page", false
       end
-      it 'redirects to the object' do
-        post_create
-        expect(response).to redirect_to assigns(:page)
+      context 'without a paged_id' do
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page, paged_id: test_paged.id) }
+        include_examples "creates a page", true 
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid page parameters determined'
+      before(:each) do
+        first_page = FactoryGirl.create :page, paged: test_paged
+        test_paged.reload
+        post :create, page: FactoryGirl.attributes_for(:page, paged_id: test_paged.id)
+      end
+      it 'renders the new template' do
+        expect(response).to render_template(:new)
+      end
     end
   end
 
   describe '#update' do
-    specify "FIXME: add context checks for 3 :came_from sources"
+    context 'when came from paged' do
+      before(:each) { session[:came_from] = :paged }
+      context 'with parent paged' do
+        before(:each) do
+          test_page.paged_id = test_paged.id
+          test_page.save
+          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
+        end
+        it 'redirects to parent paged' do
+          expect(response).to redirect_to paged_path(test_paged.id)
+        end
+      end
+      context 'without a parent paged' do
+        before(:each) do
+          test_page.paged_id = nil
+          test_page.save
+          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
+        end
+        it 'redirects to paged_url' do
+          expect(response).to redirect_to pageds_path
+        end
+      end
+    end
     context 'with valid params' do
       let!(:original_number) { test_page.logical_number } 
       before(:each) { put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" } }
@@ -89,52 +135,17 @@ describe PagesController do
       end
     end
     context 'with invalid params' do
-      specify 'FIXME: untestable until invalid page parameters determined'
+      context 'with invalid params' do
+        before(:each) do
+          first_page = FactoryGirl.create :page, paged: test_paged
+          test_paged.reload
+          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated", paged_id: test_paged.id }
+        end
+        it 'renders the edit template' do
+          expect(response).to render_template(:edit)
+        end
+      end
     end
-=begin
-    it 'stores a previous-page link' do
-      apage = mock_model(Page, :prev_page= => nil, update: nil)
-      expect(Page).to receive(:find).and_return(apage)
-      expect(apage).to receive(:update).with('prev_page' => 'page:3')
-      put :update, {
-        page: {prev_page: 'page:3'},
-        id: 'page:4'
-      }
-      assert_response :success
-    end
-
-    it 'stores a next-page link' do
-      apage = mock_model(Page, :next_page= => nil, update: nil)
-      expect(Page).to receive(:find).and_return(apage)
-      expect(apage).to receive(:update).with('next_page' => 'page:5')
-      put :update, {
-        page: {next_page: 'page:5'},
-        id: 'page:4'
-      }
-      assert_response :success
-    end
-
-    it 'stores a new image datastream'
-
-    it 'stores a new OCR datastream'
-
-    it 'stores a new XML datastream' do
-      xml_upload = fixture_file_upload('/xml-test.xml', 'application/xml')
-
-      apage = mock_model(Page,
-                         xml_file: xml_upload,
-                         :xml_file= => nil,
-                         update: nil)
-
-      expect(Page).to receive(:find).and_return(apage)
-      expect(apage).to receive(:update).with('xml_file' => xml_upload)
-      put :update, {
-        page: {xml_file: xml_upload},
-        id: '1'
-      }
-      assert_response :success
-    end
-=end
   end
 
   describe '#destroy' do
