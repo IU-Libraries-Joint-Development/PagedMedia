@@ -5,6 +5,7 @@ class PagedsController < ApplicationController
   # GET /pageds.json
   def index
     @pageds = Paged.all
+    add_breadcrumb "Browse", pageds_path
   end
 
   # GET /pageds/1
@@ -28,10 +29,12 @@ class PagedsController < ApplicationController
   # GET /pageds/new
   def new
     @paged = Paged.new
+    add_breadcrumb "Add Paged Media", new_paged_path
   end
 
   # GET /pageds/1/edit
   def edit
+    add_breadcrumb "Edit Paged Media", new_paged_path
   end
 
   # POST /pageds
