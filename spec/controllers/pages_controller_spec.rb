@@ -18,7 +18,7 @@ describe PagesController do
   end
 
   describe '#show' do
-    before(:each) { get :show, id: test_page.id }
+    before(:each) { get :show, id: test_page.pid }
     it 'sets @page' do
       expect(assigns(:page)).to eq test_page
     end
@@ -39,7 +39,7 @@ describe PagesController do
   end
 
   describe '#edit' do
-    before(:each) { get :edit, id: test_page.id }
+    before(:each) { get :edit, id: test_page.pid }
     it 'sets @page' do
       expect(assigns(:page)).to eq test_page
     end
@@ -50,7 +50,7 @@ describe PagesController do
 
   describe '#create' do
     context 'with valid params' do
-      shared_examples "creates a page" do |paged_id|
+      shared_examples "creates a page" do |parent|
         it 'assigns @page' do
           post_create
           expect(assigns(:page)).to be_a Page
@@ -59,32 +59,32 @@ describe PagesController do
         it 'saves the new object' do
           expect{ post_create }.to change(Page, :count).by(1)
         end
-	if paged_id
+        if parent
           it 'redirects to the parent paged' do
             post_create
             expect(response).to redirect_to test_paged
-	  end
-	else
-	  it 'redirects to the page' do
-	    post_create
-	    expect(response).to redirect_to assigns(:page)
-	  end
-	end
+          end
+      	else
+          it 'redirects to the page' do
+            post_create
+            expect(response).to redirect_to assigns(:page)
+          end
+        end
       end
-      context 'with a paged_id' do
+      context 'with a parent' do
         let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
         include_examples "creates a page", false
       end
-      context 'without a paged_id' do
-        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page, paged_id: test_paged.id) }
+      context 'without a parent' do
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page, parent: test_paged.pid) }
         include_examples "creates a page", true 
       end
     end
     context 'with invalid params' do
       before(:each) do
-        first_page = FactoryGirl.create :page, paged: test_paged
+        first_page = FactoryGirl.create :page, parent: test_paged.pid
         test_paged.reload
-        post :create, page: FactoryGirl.attributes_for(:page, paged_id: test_paged.id)
+        post :create, page: FactoryGirl.attributes_for(:page, parent: test_paged.pid)
       end
       it 'renders the new template' do
         expect(response).to render_template(:new)
@@ -97,17 +97,17 @@ describe PagesController do
       before(:each) { session[:came_from] = :paged }
       context 'with parent paged' do
         before(:each) do
-          test_page.paged_id = test_paged.id
+          test_page.parent = test_paged.pid
           test_page.save
           put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
         end
         it 'redirects to parent paged' do
-          expect(response).to redirect_to paged_path(test_paged.id)
+          expect(response).to redirect_to paged_path(test_paged.pid)
         end
       end
       context 'without a parent paged' do
         before(:each) do
-          test_page.paged_id = nil
+          test_page.parent = nil
           test_page.save
           put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
         end
@@ -118,7 +118,7 @@ describe PagesController do
     end
     context 'with valid params' do
       let!(:original_number) { test_page.logical_number } 
-      before(:each) { put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" } }
+      before(:each) { put :update, id: test_page.pid, page: { logical_number: test_page.logical_number + " updated" } }
       it 'assigns @page' do
         expect(assigns(:page)).to eq test_page
       end
@@ -128,7 +128,7 @@ describe PagesController do
         expect(test_page.logical_number).not_to eq original_number
       end
       it 'flashes success' do
-        expect(flash[:notice]).to match /success/i
+        expect(flash[:notice]).to match(/success/i)
       end
       it 'redirects to updated page' do
         expect(response).to redirect_to test_page
@@ -137,9 +137,9 @@ describe PagesController do
     context 'with invalid params' do
       context 'with invalid params' do
         before(:each) do
-          first_page = FactoryGirl.create :page, paged: test_paged
+          first_page = FactoryGirl.create :page, parent: test_paged.pid
           test_paged.reload
-          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated", paged_id: test_paged.id }
+          put :update, id: test_page.pid, page: { logical_number: test_page.logical_number + " updated", parent: test_paged.pid }
         end
         it 'renders the edit template' do
           expect(response).to render_template(:edit)
@@ -149,7 +149,7 @@ describe PagesController do
   end
 
   describe '#destroy' do
-    let(:delete_destroy) { delete :destroy, id: test_page.id }
+    let(:delete_destroy) { delete :destroy, id: test_page.pid }
     it 'destroys a Page' do
       expect{ delete_destroy }.to change(Page, :count).by(-1)
     end

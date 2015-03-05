@@ -20,12 +20,12 @@ module Node# < ActiveFedora::Base
       has_attributes :next_sib, datastream: 'nodeMetadata', multiple: false
       has_attributes :parent, datastream: 'nodeMetadata', multiple: false
       has_attributes :children, datastream: 'nodeMetadata', multiple: true
+
+      # skip_sibling_validation both skips the custom validation and runs an unchecked save
+      attr_accessor :skip_sibling_validation
+      validate :validate_has_required_siblings, unless: :skip_sibling_validation
     end
   end
-
-  # skip_sibling_validation both skips the custom validation and runs an unchecked save
-  attr_accessor :skip_sibling_validation
-  validate :validate_has_required_siblings, unless: :skip_sibling_validation
 
   # A link is "unset" if it is nil or an empty String
   def unset?(attribute)

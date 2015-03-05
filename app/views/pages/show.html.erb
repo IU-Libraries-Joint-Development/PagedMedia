@@ -20,12 +20,12 @@
   
   <p>
     <strong>Previous page:</strong>
-    <%= @page.prev_page %>
+    <%= @page.prev_sib %>
   </p>
   
   <p>
     <strong>Next page:</strong>
-    <%= @page.next_page %>
+    <%= @page.next_sib %>
   </p>
   
   <% if @page.ocr_file %>
@@ -45,10 +45,10 @@
     <% end %>
   </p>
   
-  <% if @page.paged %>
-  <p>  
+  <% if @page.parent %>
+  <p>
     <strong>Page from:</strong>
-    <%= link_to @page.paged.title, "/pageds/" + @page.paged.pid %>
+    <%= link_to @page.parent.title, "/pageds/" + @page.parent.pid %>
   </p>
   <% end %>
   

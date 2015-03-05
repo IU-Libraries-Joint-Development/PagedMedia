@@ -1,7 +1,7 @@
 # Despite its name, this is a functional test of pageds_controller *and its supporting cast*.
-describe 'For page listing' do
+describe 'Pageds features' do
   let!(:test_paged) { FactoryGirl.create :paged, :with_pages }
-  let(:page3) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number }[2] } 
+  let(:page3) { Page.find(test_paged.children.sort { |a, b| Page.find(a).logical_number <=> Page.find(b).logical_number }[2]) }
 
   context "when pages are listed" do  
     specify "they should be ordered according to prev and next page ids" do
@@ -15,8 +15,8 @@ describe 'For page listing' do
   
   context "when more than one first page is found" do
     before(:each) do
-      # Remove page 3's prev_page
-      page3.prev_page = ''
+      # Remove page 3's prev_sib
+      page3.prev_sib = ''
       page3.skip_sibling_validation = true
       page3.save!(unchecked: true)
     end
@@ -28,8 +28,8 @@ describe 'For page listing' do
 
   context "when an infinite loop would occur " do
     before(:each) do
-      # Point page 3's next_page to itself
-      page3.next_page = page3.pid
+      # Point page 3's next_sib to itself
+      page3.next_sib = page3.pid
       page3.skip_sibling_validation = true
       page3.save!(unchecked: true)
     end
@@ -41,8 +41,8 @@ describe 'For page listing' do
   
   context "when not all the pages are included in listing" do
     before(:each) do
-      # Point page 3's next_page to nothing
-      page3.next_page = ''
+      # Point page 3's next_sib to nothing
+      page3.next_sib = ''
       page3.skip_sibling_validation = true
       page3.save!(unchecked: true)
     end
@@ -76,8 +76,8 @@ feature 'User reorders pages', js: true do
     sortablePages = page.all(:xpath, "//ul[@id='sortable_pages']/li")
     puts 'sortablePages:'
     for i in 0..sortablePages.length-1 do p sortablePages[i] end
-    puts 'test_paged.pages:'
-    for i in 0..test_paged.pages.length-1 do p test_paged.pages[i] end
+    puts 'test_paged.children:'
+    for i in 0..test_paged.children.length-1 do p test_paged.children[i] end
     # find a likely page, drag it across another and drop it.
     #sortablePages[1].drag_to(sortablePages[0]) # doesn't work!
     puts 'sortablePages[0]:  ', sortablePages[0].native.id
@@ -94,8 +94,8 @@ feature 'User reorders pages', js: true do
     sortablePages = page.all(:xpath, "//ul[@id='sortable_pages']/li")
     puts 'sortablePages:'
     for i in 0..sortablePages.length-1 do p sortablePages[i] end
-    puts 'test_paged.pages:'
-    for i in 0..test_paged.pages.length-1 do p test_paged.pages[i] end
+    puts 'test_paged.children:'
+    for i in 0..test_paged.children.length-1 do p test_paged.children[i] end
   end
 
 end

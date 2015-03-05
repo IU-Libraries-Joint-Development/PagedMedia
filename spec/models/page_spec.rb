@@ -28,14 +28,14 @@ describe Page do
   describe 'enforces linkage rules:' do
 
     it 'adds itself to its Paged' do
-      page.parent = paged
+      page.parent = paged.pid
       page.save
       paged.reload # paged didn't see page linkage yet
       expect(paged.children.size).to eq 1
     end
 
     it 'must have no siblings if it is the only one in this Paged' do
-      page.parent = paged
+      page.parent = paged.pid
       page.prev_sib = 'too:many'
       expect(page.save).to be_false
     end
@@ -88,7 +88,7 @@ describe Page do
   def make_a_book
     # First page, can have no siblings
     page1 = FactoryGirl.create(:page, logical_number: '1', prev_sib: '', next_sib: '')
-    page1.paged = paged.pid
+    page1.parent = paged.pid
     page1.save!
     paged.save!
 

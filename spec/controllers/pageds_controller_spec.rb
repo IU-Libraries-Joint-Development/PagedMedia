@@ -3,7 +3,7 @@ require 'json'
 describe PagedsController do
   render_views
   let!(:test_paged) { FactoryGirl.create(:paged, :with_pages) }
-  let(:ordered_pages) { test_paged.order_pages[0] }
+  let(:ordered_pages) { test_paged.order_children[0] }
 
   describe '#index' do
     before(:each) { get :index }
@@ -16,7 +16,7 @@ describe PagedsController do
   end
 
   describe '#show' do
-    before(:each) { get :show, id: test_paged.id }
+    before(:each) { get :show, id: test_paged.pid }
     it 'sets @paged' do
       expect(assigns(:paged)).to eq test_paged
     end
@@ -37,7 +37,7 @@ describe PagedsController do
   end
 
   describe '#edit' do
-    before(:each) { get :edit, id: test_paged.id }
+    before(:each) { get :edit, id: test_paged.pid }
     it 'sets @paged' do
       expect(assigns(:paged)).to eq test_paged
     end
@@ -92,7 +92,7 @@ describe PagedsController do
   end
 
   describe '#destroy' do
-    let(:delete_destroy) { delete :destroy, id: test_paged.id }
+    let(:delete_destroy) { delete :destroy, id: test_paged.pid }
     it 'destroys a Paged' do
       expect{ delete_destroy }.to change(Paged, :count).by(-1)
     end
@@ -105,29 +105,29 @@ describe PagedsController do
   describe '#pages' do
     it 'should return pid and image ds uri given an index integer' do
       index = 1
-      get :pages, id: test_paged.id, index: index
+      get :pages, id: test_paged.pid, index: index
       parsed = JSON.parse response.body
-      expect(parsed['id']).to eq ordered_pages[index].pid
+      expect(parsed['id']).to eq ordered_pages[index]
       expect(parsed['index']).to eq index.to_s
-      expect(parsed['ds_url']).to match(/#{ERB::Util.url_encode(ordered_pages[index].pid)}\/datastreams\/pageImage\/content$/)
+      expect(parsed['ds_url']).to match(/#{ERB::Util.url_encode(ordered_pages[index])}\/datastreams\/pageImage\/content$/)
     end
   end
 
   describe '#reorder' do
-    before(:each) { patch :reorder, id: test_paged.id, reorder_submission: reorder_submission }
+    before(:each) { patch :reorder, id: test_paged.pid, reorder_submission: reorder_submission }
     context 'with no reorder values provided' do
       let(:reorder_submission) { nil }
       it 'flashes "No change"' do
         expect(flash[:notice]).to match(/No change/i)
-    end
+      end
       it 'redirects to :show' do
         expect(response).to redirect_to action: :show
-    end
+      end
     end
     context 'with valid reorder values' do
-      let(:reorder_submission) { ordered_pages.reverse.map { |p| p.pid }.join(',') }
+      let(:reorder_submission) { ordered_pages.reverse.join(',') }
       it 'reorders pages' do
-	expect(test_paged.order_pages[0]).to eq ordered_pages.reverse
+        expect(test_paged.order_children[0]).to eq ordered_pages.reverse
       end
       it 'redirects to :show' do
         expect(response).to redirect_to action: :show
