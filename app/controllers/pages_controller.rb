@@ -12,6 +12,11 @@ class PagesController < ApplicationController
   # GET /pages/1.json
   def show
     session[:came_from] = :page
+    if @page.paged_id
+      paged = Paged.find(@page.paged_id)
+      add_breadcrumb paged.title, paged
+    end
+    
   end
 
   # GET /pages/new
