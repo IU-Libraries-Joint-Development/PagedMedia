@@ -118,7 +118,7 @@ describe PagedsController do
     context 'with no reorder values provided' do
       let(:reorder_submission) { nil }
       it 'flashes "No change"' do
-        expect(flash[:notice]).to match /No change/i
+        expect(flash[:notice]).to match(/No change/i)
     end
       it 'redirects to :show' do
         expect(response).to redirect_to action: :show
