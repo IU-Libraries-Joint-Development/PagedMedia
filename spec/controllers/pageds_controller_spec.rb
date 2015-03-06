@@ -92,13 +92,21 @@ describe PagedsController do
   end
 
   describe '#destroy' do
-    let(:delete_destroy) { delete :destroy, id: test_paged.pid }
-    it 'destroys a Paged' do
-      expect{ delete_destroy }.to change(Paged, :count).by(-1)
+    context 'when a Paged has no children' do
+      let!(:empty_paged) { FactoryGirl.create(:paged) }
+      let(:delete_destroy) { delete :destroy, id: empty_paged.pid }
+      it 'destroys a Paged' do
+        expect{ delete_destroy }.to change(Paged, :count).by(-1)
+      end
+      it 'redirects to pageds index' do
+        delete_destroy
+        expect(response).to redirect_to pageds_path
+      end
     end
-    it 'redirects to pageds index' do
-      delete_destroy
-      expect(response).to redirect_to pageds_path
+    context 'when a Paged has children' do
+      it 'raises an exception' do
+        expect{ delete :destroy, id: test_paged.pid }.to raise_error(OrphanError)
+      end
     end
   end
 
