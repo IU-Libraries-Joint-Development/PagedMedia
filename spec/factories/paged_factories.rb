@@ -28,14 +28,14 @@ FactoryGirl.define do
         (0...5).each do |i|
           pages[i] = create(:page, :unchecked, parent: paged.pid, logical_number: "Page #{i + 1}", prev_sib: i.zero? ? nil : pages[i - 1].pid)
         end
-	next_page = nil
-	pages.reverse_each do |page|
-	  page.next_sib = next_page.pid if next_page
-	  page.skip_sibling_validation = true
-	  page.save!(unchecked: true)
-	  next_page = page
-	end
-	paged.reload
+        next_page = nil
+        pages.reverse_each do |page|
+          page.next_sib = next_page.pid if next_page
+          page.skip_sibling_validation = true
+          page.save!(unchecked: true)
+          next_page = page
+        end
+        paged.reload
         paged.update_index
       end
     end
@@ -80,7 +80,7 @@ FactoryGirl.define do
           page.save!(unchecked: true)
           next_page = page
         end
-	paged.reload
+        paged.reload
         paged.update_index
       end
     end
