@@ -36,10 +36,9 @@ module Node# < ActiveFedora::Base
   # one must be non-nil.
   def validate_has_required_siblings
     return if parent.nil?
-    #FIXME: refactor Node.find calls
     my_parent = self.class.find(parent)
 
-    # Parent has no children yet, so this page can't have siblings
+    # Parent has no children yet, so this node can't have siblings
     if (my_parent.children.size == 0)
       errors.add(:prev_sib, 'prev_sib must be empty') if !unset?(prev_sib)
       errors.add(:next_sib, 'next_sib must be empty') if !unset?(next_sib)
@@ -84,12 +83,12 @@ module Node# < ActiveFedora::Base
     # Check that prev_sib is a child of my parent.
     unless (unset?(prev_sib))
       if (parent.nil?)
-        logger.error("#{pid}:  unowned node cannot have siblings")
+        logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
         errors.add(:prev_sib, 'Unowned node cannot have siblings')
         return false
       else
         unless (my_parent.children.include?(prev_sib))
-          logger.error("#{pid}:  #{prev_sib} not a child of #{my_parent.pid}")
+          logger.error("#{self.class.name} #{pid}:  #{prev_sib} not a child of #{my_parent.pid}")
           errors.add(:prev_sib, "#{prev_sib} not a child of #{my_parent.pid}")
           return false
         end
@@ -97,7 +96,7 @@ module Node# < ActiveFedora::Base
 
       prev_sibling = self.class.find(prev_sib)
       if (prev_sibling.next_sib != next_sib) && (prev_sibling.next_sib != pid)
-        logger.error("#{pid}:  invalid next_sib #{next_sib}")
+        logger.error("#{self.class.name} #{pid}:  invalid next_sib #{next_sib}")
         errors.add(:next_sib, "invalid next_sib #{next_sib}")
         return false
       end
@@ -106,12 +105,12 @@ module Node# < ActiveFedora::Base
     # Check that next_sib is a child of my parent.
     unless (unset?(next_sib))
       if (parent.nil?)
-        logger.error("#{pid}:  unowned node cannot have siblings")
+        logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
         errors.add(:next_sib, 'Unowned node cannot have siblings')
         return false
       else
         unless (my_parent.children.include?(next_sib))
-          logger.error("#{pid}:  #{next_sib} not a child of #{my_parent.pid}")
+          logger.error("#{self.class.name} #{pid}:  #{next_sib} not a child of #{my_parent.pid}")
           errors.add(:next_sib, "#{next_sib} not a child of #{my_parent.pid}")
           return false
         end
@@ -119,7 +118,7 @@ module Node# < ActiveFedora::Base
 
       next_sibling = self.class.find(next_sib)
       if (next_sibling.prev_sib != prev_sib) && (next_sibling.prev_sib != pid)
-        logger.error("#{pid}:  invalid prev_sib #{prev_sib}")
+        logger.error("#{self.class.name} #{pid}:  invalid prev_sib #{prev_sib}")
         errors.add(:prev_sib, "invalid prev_sib #{prev_sib}")
         return false
       end
@@ -130,7 +129,7 @@ module Node# < ActiveFedora::Base
     unless (unset?(parent))
       # NOT OK if parent does not exist.
       if (my_parent.nil?)
-        logger.error("#{pid}:  parent #{parent} does not exist")
+        logger.error("#{self.class.name} #{pid}:  parent #{parent} does not exist")
         errors.add(:parent, 'parent node does not exist')
         return false
       end
@@ -141,7 +140,7 @@ module Node# < ActiveFedora::Base
       my_child = self.class.find(child)
       # NOT OK if child does not exist.
       if (my_child.nil?)
-        logger.error("#{pid}:  child #{child} does not exist")
+        logger.error("#{self.class.name} #{pid}:  child #{child} does not exist")
         errors.add(:child, 'child node does not exist')
         return false
       end
@@ -150,13 +149,14 @@ module Node# < ActiveFedora::Base
       # NOT OK if child has another parent.
       # TODO How to re-parent?
       if (my_child.parent != pid)
-        logger.error("#{pid}:  child #{my_child.pid} has another parent:  #{my_child.parent}")
+        logger.error("#{self.class.name} #{pid}:  child #{my_child.pid} has another parent:  #{my_child.parent}")
         errors.add(:child, 'child has another parent')
         return false
       end
     end
 
     # Persist myself.
+    logger.info("Saving #{self.class.name} #{pid}")
     begin
       return false if ! super()
     rescue RestClient::BadRequest => e
@@ -171,7 +171,7 @@ module Node# < ActiveFedora::Base
       prev_sibling = self.class.find(prev_sib)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
-      logger.debug("Saving #{pid}:  prev_sib is #{prev_sib}")
+      logger.debug("Saving #{self.class.name} #{pid}:  prev_sib is #{prev_sib}")
     end
 
     # Link myself to next sibling.
@@ -179,7 +179,7 @@ module Node# < ActiveFedora::Base
       next_sibling = self.class.find(next_sib)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
-      logger.debug("Saving #{pid}:  next_sib is #{next_sib}")
+      logger.debug("Saving #{self.class.name} #{pid}:  next_sib is #{next_sib}")
     end
 
     # Link myself to my parent as a child.
@@ -203,7 +203,7 @@ module Node# < ActiveFedora::Base
     end
 
     # Success!
-    logger.info("Saved #{pid}")
+    logger.info("Saved #{self.class.name} #{pid}")
     true
   end
 
@@ -216,7 +216,7 @@ module Node# < ActiveFedora::Base
   def delete
     # Check for children.
     unless (children.empty?)
-      logger.error("deleting #{pid}:  would leave orphans #{children.inspect}")
+      logger.error("deleting #{self.class.name} #{pid}:  would leave orphans #{children.inspect}")
       raise OrphanError, children.inspect
     end
 
@@ -224,13 +224,13 @@ module Node# < ActiveFedora::Base
     begin
       prev_sibling = self.class.find(prev_sib) if (!unset?(prev_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
-      logger.error("deleting #{pid}, missing prev_sib: #{e}")
+      logger.error("deleting #{self.class.name} #{pid}, missing prev_sib: #{e}")
     end
 
     begin
       next_sibling = self.class.find(next_sib) if (!unset?(next_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
-      logger.error("deleting #{pid}, missing next_sib: #{e}")
+      logger.error("deleting #{self.class.name} #{pid}, missing next_sib: #{e}")
     end
 
     # Unlink from previous sibling.
@@ -249,7 +249,7 @@ module Node# < ActiveFedora::Base
     begin
       my_parent = self.class.find(parent) unless (unset?(parent))
     rescue ActiveFedora::ObjectNotFoundError => e
-      logger.error("deleting #{pid}, missing parent #{parent}: #{e}")
+      logger.error("deleting #{self.class.name} #{pid}, missing parent #{parent}: #{e}")
     end
 
     # Unlink from parent.
@@ -260,8 +260,9 @@ module Node# < ActiveFedora::Base
       my_parent.save(unchecked: 1)
     end
 
-    logger.info("Deleting #{pid}")
+    logger.info("Deleting #{self.class.name} #{pid}")
     super
+    logger.info("Deleted #{self.class.name} #{pid}")
   end
 
   # Method returns ordered children and false
