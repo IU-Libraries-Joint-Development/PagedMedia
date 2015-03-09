@@ -53,15 +53,15 @@ task :deploy_devel do
 
 end
 
-RSpec::Core::RakeTask.new(:load_paged_fixtures) do |t|
-  ENV['RAILS_ENV'] = 'development'
-  t.pattern = Dir.glob('app/script/load*.rb')
-end
 
 namespace :pmp do
   require "#{Rails.root}/lib/tasks/batch_import"
+  desc "Process XLSX manifests"
+  task :process_batches => :environment do |task, args|
+    PMP::Ingest::Tasks::process_batches
+  end
   desc "Import batch manifests"
-  task :import_batches => :environment do |task, args|
-    import_batch
+  task :ingest_batches => :environment do |task, args|
+    PMP::Ingest::Tasks::ingest_batches
   end
 end

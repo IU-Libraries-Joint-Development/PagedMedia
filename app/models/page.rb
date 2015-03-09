@@ -29,8 +29,9 @@ class Page < ActiveFedora::Base
   def image_file=(file)
     ds = @datastreams['pageImage']
     ds.content = file
-    ds.mimeType = file.content_type
-    ds.dsLabel = file.original_filename
+    # mimeType automatically set
+    # FIXME: workaround for deprecated original_filename
+    ds.dsLabel = file.inspect.sub /.*\/(.*)\>/, '\1'
   end
 
   # Getter for the image
@@ -47,8 +48,8 @@ class Page < ActiveFedora::Base
   def ocr_file=(file)
     ds = @datastreams['pageOCR']
     ds.content = file
-    ds.mimeType = file.content_type
-    ds.dsLabel = file.original_filename
+    # mimeType automatically set
+    ds.dsLabel = file.inspect.sub /.*\/(.*)\>/, '\1'
   end
 
   # Getter for the pageOCR file datastream
@@ -66,7 +67,7 @@ class Page < ActiveFedora::Base
     ds = @datastreams['pageXML']
     ds.content = file
     ds.mimeType = 'application/xml'
-    ds.dsLabel = file.original_filename
+    ds.dsLabel = file.inspect.sub /.*\/(.*)\>/, '\1'
   end
 
   # Getter for the XML datastream
