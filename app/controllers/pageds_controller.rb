@@ -12,6 +12,7 @@ class PagedsController < ApplicationController
   # GET /pageds/1.json
   def show
     @ordered = JSON.parse(find_pages())
+    add_breadcrumb @paged.title, @paged
   end
 
   def validate

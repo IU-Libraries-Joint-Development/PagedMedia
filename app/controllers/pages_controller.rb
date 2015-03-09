@@ -6,6 +6,7 @@ class PagesController < ApplicationController
   def index
     @pages = Page.all
     session[:came_from] = :page
+    add_breadcrumb "Browse Pages"
   end
 
   # GET /pages/1
@@ -15,6 +16,7 @@ class PagesController < ApplicationController
     if @page.paged_id
       paged = Paged.find(@page.paged_id)
       add_breadcrumb paged.title, paged
+      add_breadcrumb @page.logical_number, @page
     end
     
   end
@@ -23,10 +25,17 @@ class PagesController < ApplicationController
   def new
     @page = Page.new
     session[:came_from] = :page
+    add_breadcrumb "Create Page"
   end
 
   # GET /pages/1/edit
   def edit
+    if @page.paged_id
+      paged = Paged.find(@page.paged_id)
+      add_breadcrumb paged.title, paged
+    end
+    add_breadcrumb @page.logical_number, @page
+    add_breadcrumb "Edit"
   end
 
   # POST /pages

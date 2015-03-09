@@ -1,6 +1,13 @@
-<h1>Editing page</h1>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
 
-<%= render 'form' %>
+<div id="content" class="span9">
+  <%= render_breadcrumbs %>
+  <h1>Page: Edit </h1>
+  
+  <%= render 'form' %>
 
-<%= link_to 'Show', @page %> |
-<%= link_to 'Back', pages_path %>
+  <%= link_to 'Show', @page %> |
+  <%= link_to 'Back', pages_path %>
+</div>

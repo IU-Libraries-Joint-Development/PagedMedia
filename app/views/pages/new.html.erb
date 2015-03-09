@@ -1,5 +1,12 @@
-<h1>New page</h1>
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
 
-<%= render 'form' %>
-
-<%= link_to 'Back', pages_path %>
+<div id="content" class="span9">
+  <%= render_breadcrumbs %>
+  <h1>New page</h1>
+  
+  <%= render 'form' %>
+  
+  <%= link_to 'Back', pages_path %>
+</div>
