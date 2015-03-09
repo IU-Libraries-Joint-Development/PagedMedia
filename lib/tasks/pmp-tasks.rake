@@ -53,10 +53,6 @@ task :deploy_devel do
 
 end
 
-RSpec::Core::RakeTask.new(:load_paged_fixtures) do |t|
-  ENV['RAILS_ENV'] = 'development'
-  t.pattern = Dir.glob('app/script/load*.rb')
-end
 
 namespace :pmp do
   require "#{Rails.root}/lib/tasks/batch_import"
