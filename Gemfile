@@ -72,3 +72,6 @@ end
 # for Google spreadsheets. It can handle * OpenOffice * Excel *
 # Google spreadsheets * Excelx * LibreOffice * CSV
 gem "roo"
+
+# Use Breadcrumbs On Rails for adding breadcrumbs
+gem "breadcrumbs_on_rails"

@@ -1,3 +1,40 @@
 // Place all the styles related to the Pages controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+/*
+ * Paged Edit and Create forms
+ * (should match styles for paged forms)
+ */
+
+form#new_page ol li,
+form.edit_page ol li{
+  list-style: none;
+}
+
+form#new_page label,
+form.edit_page label,
+span.form_label{
+  float: left;
+  font-size: 13px;
+  font-weight: bold;
+  width: 175px;
+}
+
+form#new_page input[type="file"],
+form.edit_page input[type="file"]{
+  height:inherit;
+  line-height:inherit;
+}
+
+form#new_page span.form_field,
+form.edit_page span.form_field{
+  display:block;
+  padding-bottom: 15px;
+}
+
+.page_submit{
+  padding-top:25px;
+  padding-left:150px;
+}
