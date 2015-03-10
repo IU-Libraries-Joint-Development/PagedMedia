@@ -11,7 +11,7 @@
         <th>Links</th>
       </tr>
       <% ordered.each do |page| %>
-        <% my_page = Page.find(page) %>
+        <% my_page = Page.find(page['id']) %>
         <tr>
           <td>
             <%= link_to image_tag(
@@ -22,8 +22,8 @@
                   page_path(page["id"])
             %>
           </td>
-          <td class='logical_numbers'><%= my_page[logical_number] %></td>
-          <td><%= my_page.id %></td>
+          <td class='logical_numbers'><%= page['logical_number'] %></td>
+          <td><%= my_page.pid %></td>
           <td><%= my_page.prev_sib %></td>
           <td><%= my_page.next_sib %></td>
           <td>

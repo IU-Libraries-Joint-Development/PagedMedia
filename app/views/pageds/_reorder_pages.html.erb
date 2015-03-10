@@ -6,7 +6,7 @@
       <ul id="sortable_pages">
       <% @ordered.each do |page| %>
         <li id="<%= page["id"] %>" class="ui-state-default ui-sortable-handle">
-          <%= Page.find(page).logical_number %>. <%= page %>
+          <%= Page.find(page['id']).logical_number %>. <%= page %>
         </li>
       <% end %>
       </ul>
