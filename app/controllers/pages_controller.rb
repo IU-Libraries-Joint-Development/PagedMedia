@@ -13,8 +13,8 @@ class PagesController < ApplicationController
   # GET /pages/1.json
   def show
     session[:came_from] = :page
-    if @page.paged_id
-      paged = Paged.find(@page.paged_id)
+    if @page.parent
+      paged = Paged.find(@page.parent)
       add_breadcrumb paged.title, paged
       add_breadcrumb @page.logical_number, @page
     end
@@ -30,8 +30,8 @@ class PagesController < ApplicationController
 
   # GET /pages/1/edit
   def edit
-    if @page.paged_id
-      paged = Paged.find(@page.paged_id)
+    if @page.parent
+      paged = Paged.find(@page.parent)
       add_breadcrumb paged.title, paged
     end
     add_breadcrumb @page.logical_number, @page
