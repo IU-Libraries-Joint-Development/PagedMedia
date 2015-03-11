@@ -1,10 +1,11 @@
-# A node in a tree of containers.  Sibling Nodes maintain local order through
-# the prev_sib and next_sib references, which contain PIDs of Nodes.  A child
-# Node remembers its parent by PID.  A parent Node has an array of its childrens'
-# PIDs.
+# A mixin providing navigational behavior in a tree of containers.  Sibling
+# Nodes maintain local order through the prev_sib and next_sib references, which
+# contain PIDs of Nodes.  A child Node remembers its parent by PID as its
+# 'parent' attribute.  A parent Node has an array of its childrens' PIDs in the
+# 'children' attribute.
 #
 # A Node may have no children (if it is a leaf node, such as a Page) or no
-# parent (if it is at the top of the tree.
+# parent (if it is at the top of the tree).
 #--
 # Copyright 2014 Indiana University
 
@@ -16,9 +17,13 @@ module Node# < ActiveFedora::Base
 
       has_metadata 'nodeMetadata', type: NodeMetadata, label: 'PMP generic node metadata'
 
+      # PID of my sibling immediately "before" me
       has_attributes :prev_sib, datastream: 'nodeMetadata', multiple: false
+      # PID of my sibling which is immediately "after" me
       has_attributes :next_sib, datastream: 'nodeMetadata', multiple: false
+      # PID of my parent node, if any
       has_attributes :parent, datastream: 'nodeMetadata', multiple: false
+      # PIDs of my child Nodes
       has_attributes :children, datastream: 'nodeMetadata', multiple: true
 
       # skip_sibling_validation both skips the custom validation and runs an unchecked save
@@ -59,9 +64,9 @@ module Node# < ActiveFedora::Base
   #
   # The general plan is to:
   #
-  #  1) sanity-check all "family" relationships;
-  #  2) persist this object;
-  #  3) update this object's relatives with relationships to this object.
+  # 1. sanity-check all "family" relationships;
+  # 2. persist this object;
+  # 3. update this object's relatives with relationships to this object.
   #
   # In that way, this object should be available to its relatives in its new
   # state for *their* sanity-checking as they persist themselves after update.
@@ -69,7 +74,7 @@ module Node# < ActiveFedora::Base
   # should be no need to undo this object's state change due to problems with
   # relatives.
   #
-  # 'foo.save(unchecked: 1)' bypasses integrity checks.  Don't!  It's for this
+  # '<tt>foo.save(unchecked: 1)</tt>' bypasses integrity checks.  Don't!  It's for this
   # method's internal use.
   def save(opts={})
 
