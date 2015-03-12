@@ -36,7 +36,10 @@
     <% if @ordered[0] %>
       <%= image_tag(@ordered[0]["ds_url"], height: "100", width: "100" ) %>
     <% end %>
-    <%= button_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank", :method => :get %>
+    <%# button_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank", :method => :get %>
+    <div>
+      <%= link_to "<button>View in BookReader</button>".html_safe, bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank", class: "button_link" %>
+    </div>
   </div>
   
   <div style="clear:both;"></div>
