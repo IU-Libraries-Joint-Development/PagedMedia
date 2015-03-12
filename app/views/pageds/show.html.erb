@@ -26,16 +26,20 @@
         <% end %>
       </li>
     </ul>
+    <div>
+      <%= button_to 'Update', edit_paged_path(@paged), :method => :get %>
+    </div>
   </div>
   
   <!-- Cover Image -->
-  <div style="float:left; padding-left:50px;">
-    <%= image_tag(@ordered[0]["ds_url"], height: "64", width: "64" ) %>
+  <div style="float:left; padding-left:50px; text-align:center;">
+    <% if @ordered[0] %>
+      <%= image_tag(@ordered[0]["ds_url"], height: "100", width: "100" ) %>
+    <% end %>
+    <%= button_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank", :method => :get %>
   </div>
   
-  <div style="clear:both;">
-    <%= button_to 'Update', edit_paged_path(@paged), :method => :get %>
-  </div>
+  <div style="clear:both;"></div>
   
   <%# link_to 'View in BookReader', bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"%> 
   <%# link_to 'Edit', edit_paged_path(@paged) %> 
