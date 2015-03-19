@@ -1,7 +1,8 @@
 # Despite its name, this is a functional test of pageds_controller *and its supporting cast*.
 describe 'For page listing' do
   let!(:test_paged) { FactoryGirl.create :paged, :with_pages }
-  let(:page3) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number }[2] } 
+  let(:page3) { test_paged.pages.sort { |a, b| a.logical_number <=> b.logical_number }[2] }
+  let(:test_pageless) { FactoryGirl.create :paged }
 
   context "when pages are listed" do  
     specify "they should be ordered according to prev and next page ids" do
@@ -49,6 +50,13 @@ describe 'For page listing' do
     specify "an error message should display" do
       visit validate_paged_path(test_paged.pid)
       expect(page).to have_css('div.alert-error')
+    end
+  end
+  
+  context "when no pages are included in listing" do
+    specify "page should still display" do
+      visit validate_paged_path(test_pageless.pid)
+      expect(page).to have_content(test_pageless.title)
     end
   end
 

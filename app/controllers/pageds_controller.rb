@@ -35,7 +35,8 @@ class PagedsController < ApplicationController
 
   # GET /pageds/1/edit
   def edit
-    add_breadcrumb "Edit Paged Media", new_paged_path
+    add_breadcrumb @paged.title, @paged
+    add_breadcrumb "Edit"
   end
 
   # POST /pageds
