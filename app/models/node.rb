@@ -11,7 +11,11 @@
 
 module Node# < ActiveFedora::Base
 
+  VALID_PARENT_CLASSES = []
+
   def self.included(including_class)
+    including_class.const_set(:VALID_PARENT_CLASSES, VALID_PARENT_CLASSES) unless including_class.const_defined?(:VALID_PARENT_CLASSES)
+
     including_class.class_eval do
       include Hydra::AccessControls::Permissions
 
@@ -41,7 +45,7 @@ module Node# < ActiveFedora::Base
   # one must be non-nil.
   def validate_has_required_siblings
     return if parent.nil?
-    my_parent = self.class.find(parent)
+    my_parent = ActiveFedora::Base.find(parent, cast: true)
 
     # Parent has no children yet, so this node can't have siblings
     if (my_parent.children.size == 0)
@@ -53,11 +57,14 @@ module Node# < ActiveFedora::Base
     # At least one child of my parent already exists.  Must have at least one
     # sibling unless the one child is this one (we are updating, not creating).
     if (unset?(prev_sib) && unset?(next_sib) &&
-        ((my_parent.children.size > 1) || (self.class.find(my_parent.children.first).pid != pid)))
+        ((my_parent.children.size > 1) || (ActiveFedora::Base.find(my_parent.children.first, cast: true).pid != pid)))
       errors[:base] << 'must have one or both siblings if parent has children'
     end
   end
 
+  def valid_parent_classes
+    self.class.const_get(:VALID_PARENT_CLASSES)
+  end
 
   # Link this node into the "family tree".
   # These saves should be in a transaction, but does Fedora do transactions?
@@ -83,7 +90,7 @@ module Node# < ActiveFedora::Base
     end
 
     # Get a copy of my supposed parent.
-    my_parent = self.class.find(parent) unless parent.nil?
+    my_parent = ActiveFedora::Base.find(parent, cast: true) unless parent.nil?
 
     # Check that prev_sib is a child of my parent.
     unless (unset?(prev_sib))
@@ -99,7 +106,7 @@ module Node# < ActiveFedora::Base
         end
       end
 
-      prev_sibling = self.class.find(prev_sib)
+      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
       if (prev_sibling.next_sib != next_sib) && (prev_sibling.next_sib != pid)
         logger.error("#{self.class.name} #{pid}:  invalid next_sib #{next_sib}")
         errors.add(:next_sib, "invalid next_sib #{next_sib}")
@@ -121,7 +128,7 @@ module Node# < ActiveFedora::Base
         end
       end
 
-      next_sibling = self.class.find(next_sib)
+      next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
       if (next_sibling.prev_sib != prev_sib) && (next_sibling.prev_sib != pid)
         logger.error("#{self.class.name} #{pid}:  invalid prev_sib #{prev_sib}")
         errors.add(:prev_sib, "invalid prev_sib #{prev_sib}")
@@ -137,23 +144,31 @@ module Node# < ActiveFedora::Base
         logger.error("#{self.class.name} #{pid}:  parent #{parent} does not exist")
         errors.add(:parent, 'parent node does not exist')
         return false
+      elsif !(my_parent.class.in? valid_parent_classes)
+	logger.error("#{self.class.name} #{pid}:  parent #{parent} class (#{my_parent.class}) is not in valid class list: #{valid_parent_classes})")
+
+	errors.add(:parent, 'parent node is invalid class')
+	return false
       end
     end
 
     # Check my children.
     children.each do |child|
-      my_child = self.class.find(child)
+      begin
+        my_child = ActiveFedora::Base.find(child, cast: true)
+      rescue
+        my_child = nil
+      end
       # NOT OK if child does not exist.
       if (my_child.nil?)
         logger.error("#{self.class.name} #{pid}:  child #{child} does not exist")
         errors.add(:child, 'child node does not exist')
         return false
-      end
       # OK to already be this child's parent.
       # OK if child has no parent.
       # NOT OK if child has another parent.
       # TODO How to re-parent?
-      if (my_child.parent != pid)
+      elsif (my_child.parent != pid)
         logger.error("#{self.class.name} #{pid}:  child #{my_child.pid} has another parent:  #{my_child.parent}")
         errors.add(:child, 'child has another parent')
         return false
@@ -173,7 +188,7 @@ module Node# < ActiveFedora::Base
 
     # Link myself to previous sibling.
     if (!unset?(prev_sib))
-      prev_sibling = self.class.find(prev_sib)
+      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
       logger.debug("Saving #{self.class.name} #{pid}:  prev_sib is #{prev_sib}")
@@ -181,7 +196,7 @@ module Node# < ActiveFedora::Base
 
     # Link myself to next sibling.
     if (!unset?(next_sib))
-      next_sibling = self.class.find(next_sib)
+      next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
       logger.debug("Saving #{self.class.name} #{pid}:  next_sib is #{next_sib}")
@@ -200,8 +215,12 @@ module Node# < ActiveFedora::Base
 
     # Link my children to me as parent.
     children.each do |child|
-      my_child = self.class.find(child)
-      if (unset?(my_child.parent))
+      begin
+        my_child = ActiveFedora::Base.find(child, cast: true)
+      rescue
+        my_child = nil
+      end
+      if (my_child && unset?(my_child.parent))
         my_child.parent = pid
         my_child.save(unchecked: 1)
       end
@@ -227,13 +246,13 @@ module Node# < ActiveFedora::Base
 
     # Load my siblings, if any.
     begin
-      prev_sibling = self.class.find(prev_sib) if (!unset?(prev_sib))
+      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true) if (!unset?(prev_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{self.class.name} #{pid}, missing prev_sib: #{e}")
     end
 
     begin
-      next_sibling = self.class.find(next_sib) if (!unset?(next_sib))
+      next_sibling = ActiveFedora::Base.find(next_sib, cast: true) if (!unset?(next_sib))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{self.class.name} #{pid}, missing next_sib: #{e}")
     end
@@ -252,7 +271,7 @@ module Node# < ActiveFedora::Base
 
     # Load my parent, if any.
     begin
-      my_parent = self.class.find(parent) unless (unset?(parent))
+      my_parent = ActiveFedora::Base.find(parent, cast: true) unless (unset?(parent))
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{self.class.name} #{pid}, missing parent #{parent}: #{e}")
     end
@@ -281,7 +300,7 @@ module Node# < ActiveFedora::Base
     child_ids = Array.new
     self.children.each do |child|
       child_ids << child
-      my_child = self.class.find(child)
+      my_child = ActiveFedora::Base.find(child, cast: true)
       next if (!my_child.prev_sib.nil?) && (my_child.prev_sib != '')
       # Check for multiple first children
       if !first_child
@@ -310,7 +329,7 @@ module Node# < ActiveFedora::Base
         elsif child_ids.include?(np_id)
           # Find next child
           my_children << np_id
-          next_child = self.class.find(np_id)
+          next_child = ActiveFedora::Base.find(np_id, cast: true)
         else
           # Node has no parent
           error = "Node not Found in Listing - " + np_id.to_s
@@ -327,6 +346,113 @@ module Node# < ActiveFedora::Base
     # Return unordered list if error occurs
     return [self.children, error] if error
     return [ordered_children.collect! {|child| child.pid}, error]
+  end
+
+  # Returns an array of hashes.  Each hash contains the :id, :index,
+  # :logical_number, and :ds_url of one of this object's page children.
+  def page_list
+    pages = []
+    fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
+    self.order_children[0].each_with_index do |child_pid, index|
+      child = ActiveFedora::Base.find(child_pid, cast: true)
+      if child.class == Page
+        pages.push({:id => child.pid, :index => index.to_s, :logical_number => child.logical_number, :ds_url => fedora_url + child.image_datastream.url})
+      else
+        pages += child.page_list
+      end
+    end
+    pages
+  end
+
+  # Returns an array of hashes.  Each hash contains the :id, :index,
+  # :logical_number, and :ds_url of one of this object's paged children.
+  def paged_list
+    pageds = []
+    if self.class.in? [Collection]
+      self.order_children[0].each_with_index do |child_pid, index|
+        child = ActiveFedora::Base.find(child_pid, cast: true)
+	if child.class == Paged
+	  pageds.push({id: child.pid, index: index.to_s, title: child.title })
+	else
+	  pageds += child.paged_list
+	end
+      end
+    end
+    pageds
+  end
+
+  # Returns pid of paged ancestor
+  def parent_paged
+    if self.parent and self.class.in? [Page, Section]
+      paged = ActiveFedora::Base.find(parent, cast: true)
+      if paged.class == Paged
+        parent
+      else
+        paged.parent_paged
+      end
+    else
+      nil
+    end
+  end
+
+  # Returns an array of hashes.  Each hash contains the :id and :name
+  # of one of this object's section ancestors.
+  def supersections
+    sections = []
+    if self.parent and self.class.in? [Page, Section]
+      section = ActiveFedora::Base.find(parent, cast: true)
+      if section.class == Section
+        sections.unshift({ id: section.pid, name: section.name })
+	sections = section.supersections + sections
+      end
+    end
+    sections
+  end
+
+  # Returns an array of hashes.  Each hash contains the :id and :name
+  # of one of this object's section children.
+  def subsections
+    sections = []
+    if self.class.in? [Paged, Section]
+      self.order_children[0].each do |child_pid|
+        section = ActiveFedora::Base.find(child_pid, cast: true)
+        if section.class == Section
+          sections.push({ id: section.pid, name: section.name })
+          sections += section.subsections
+        end
+      end
+    end
+    sections
+  end
+
+  # Returns an array of hashes.  Each hash contains the :id and :name
+  # of one of this object's collection ancestors.
+  def supercollections
+    collections = []
+    if self.parent and self.class.in? [Paged, Collection]
+      collection = ActiveFedora::Base.find(parent, cast: true)
+      if collection.class == Collection
+        collections.unshift({ id: collection.pid, name: collection.name })
+        collections = collection.supercollections + collections
+      end
+    end
+    collections
+  end
+
+  # Returns an array of hashes.  Each hash contains the :id and :name
+  # of one of this object's collection children.
+  def subcollections
+    collections = []
+    if self.class.in? [Collection]
+      self.order_children[0].each do |child_pid|
+        collection = ActiveFedora::Base.find(child_pid, cast: true)
+	if section.class == Collection
+	  collections.push({ id: collection.pid, name: collection.name })
+	  collections += collection.subcollections
+	end
+      end
+    end
+    collections
   end
 
 end

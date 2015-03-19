@@ -114,4 +114,17 @@ describe Page do
     return [ page1, page2, page3 ]
   end
 
+  # Node mix-in shared examples
+
+  # Node traits, specific to this class
+  describe "#valid_parent_classes" do
+    subject(:class_array) { page.valid_parent_classes }
+    specify "equals [Paged, Section]" do
+      expect(class_array.size).to eq 2
+      expect(class_array).to include Paged
+      expect(class_array).to include Section
+    end
+  end
+
+
 end

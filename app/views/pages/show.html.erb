@@ -44,11 +44,10 @@
     <% end %>
   </p>
   
-  <% if @page.parent %>
+  <% if @paged %>
   <p>
     <strong>Page from:</strong>
-    <%= my_parent = Paged.find(@page.parent) %>
-    <%= link_to my_parent.title, "/pageds/" + my_parent.pid %>
+    <%= link_to @paged.title, paged_path(@paged) %>
   </p>
   <% end %>
   

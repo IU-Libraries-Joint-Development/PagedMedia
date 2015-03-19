@@ -3,6 +3,7 @@
 # Copyright 2014 Indiana University.
 
 class Paged < ActiveFedora::Base
+  VALID_PARENT_CLASSES = [Collection]
   include Node
 
   has_file_datastream 'pagedXML'
@@ -17,6 +18,7 @@ class Paged < ActiveFedora::Base
   has_attributes :type, datastream: 'descMetadata', multiple: false
   has_attributes :paged_struct, datastream: 'descMetadata', multiple: true
 
+  before_save :update_paged_struct
 
   # Setter for the XML datastream
   def xml_file=(file)
@@ -35,18 +37,6 @@ class Paged < ActiveFedora::Base
     @datastreams['pagedXML']
   end
 
-  # Returns an array of hashes.  Each hash contains the :id, :index,
-  # :logical_number, and :ds_url of one of this object's children.
-  def page_list
-    pages = []
-    fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
-    self.order_children[0].each_with_index do |page, index|
-      my_page = Page.find(page)
-      pages.push({:id => my_page.pid, :index => index.to_s, :logical_number => my_page.logical_number, :ds_url => fedora_url + my_page.image_datastream.url})
-    end
-    pages
-  end
-
   def to_solr(solr_doc={}, opts={})
     pages = self.page_list
     super(solr_doc, opts)
@@ -54,6 +44,17 @@ class Paged < ActiveFedora::Base
     solr_doc[Solrizer.solr_name('pages', 'ssm')] = pages # multivalue field as ruby hash
     solr_doc[Solrizer.solr_name('item_id', 'si')] = self.pid
     return solr_doc
+  end
+
+  def update_paged_struct(delimiter = '--')
+    new_struct = []
+    self.supercollections.reverse_each do |collection|
+      new_struct.unshift(collection[:name])
+    end
+    new_struct.each_with_index do |value, index|
+      new_struct[index] = new_struct[index - 1] + delimiter + value unless index == 0
+    end
+    self.paged_struct = new_struct
   end
 
 end

@@ -157,6 +157,8 @@ class PagedsController < ApplicationController
     else
       pages = {:id => params[:id], :error => 'No pages'}
     end
+    #FIXME: keep?
+    pages ||= "[]"
     return pages
   end
 
