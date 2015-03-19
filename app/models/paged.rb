@@ -35,6 +35,8 @@ class Paged < ActiveFedora::Base
     @datastreams['pagedXML']
   end
 
+  # Returns an array of hashes.  Each hash contains the :id, :index,
+  # :logical_number, and :ds_url of one of this object's children.
   def page_list
     pages = []
     fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
