@@ -2,6 +2,7 @@ PagedMedia::Application.routes.draw do
   resources :pages
 
   resources :pageds do
+    resources :sections, shallow: true
     patch :reorder, on: :member
     get :page, on: :member
     get :pages, on: :member
@@ -9,6 +10,8 @@ PagedMedia::Application.routes.draw do
     get :validate, on: :member
     get :view, on: :member, controller: "catalog", action: "view"
   end
+
+  resources :collections
 
   root :to => "catalog#index"
   Blacklight.add_routes(self)

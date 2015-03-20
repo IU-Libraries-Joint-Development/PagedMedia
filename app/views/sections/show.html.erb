@@ -1,0 +1,19 @@
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
+
+<div id="content" class="span9">
+  <%= render_breadcrumbs %>
+  <p id="notice"><%= notice %></p>
+
+  <h2><%= @section.name %></h2>
+
+  <div class="pmp_section_info">
+    <ul>
+      <li>Name: <%= @section.name %></li>
+    </ul>
+    <div>
+      <%= button_to 'Update', edit_section_path(@section), :method => :get %>
+    </div>
+  </div>
+</div>

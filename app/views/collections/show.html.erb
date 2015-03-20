@@ -1,0 +1,19 @@
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
+
+<div id="content" class="span9">
+  <%= render_breadcrumbs %>
+  <p id="notice"><%= notice %></p>
+
+  <h2><%= @collection.name %></h2>
+
+  <div class="pmp_collection_info">
+    <ul>
+      <li>Name: <%= @collection.name %></li>
+    </ul>
+    <div>
+      <%= button_to 'Update', edit_collection_path(@collection), :method => :get %>
+    </div>
+  </div>
+</div>
