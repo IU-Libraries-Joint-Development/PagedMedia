@@ -1,5 +1,6 @@
 <div id="paged_pages">
   <h3><%= paged.title %></h3>
+  <p><strong>Number of pages : </strong><%= paged.children.size %></p>
   <% session[:came_from] = :paged %>
   <div id="pages">
     <table border="1">
@@ -10,8 +11,9 @@
         <th>Links</th>
       </tr>
       <% ordered.each do |page| %>
-      <tr>
-        <td>
+        <% my_page = Page.find(page['id']) %>
+        <tr>
+          <td>
             <%= link_to image_tag(
                     page["ds_url"],
                     height: "64",
@@ -19,22 +21,24 @@
                   ),
                   page_path(page["id"])
             %>
-        </td>
-        <td class='logical_numbers'><%= page["logical_number"] %></td>
-        <td><%= page["id"] =%></td>
-        <td>
-          <div style="float:left;">
-          <%= button_to 'View', page_path(page["id"]), :method => :get, :style => "display:inline;" %> 
-          </div>
-          <div style="float:left;">
-          <%= button_to 'Edit', edit_page_path(page["id"]), :method => :get, :style => "display:inline;" %> 
-          </div>
-          <div style="float:left;">
-          <%= button_to 'Delete', page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } %>
-          </div>
-        </td>
+          </td>
+          <td class='logical_numbers'><%= page['logical_number'] %></td>
+          <td><%= my_page.pid %></td>
+          <td><%= my_page.prev_sib %></td>
+          <td><%= my_page.next_sib %></td>
+          <td>
+            <div style="float:left;">
+              <%= button_to 'View', page_path(page["id"]), :method => :get, :style => "display:inline;" %>
+            </div>
+            <div style="float:left;">
+              <%= button_to 'Edit', edit_page_path(page["id"]), :method => :get, :style => "display:inline;" %>
+            </div>
+            <div style="float:left;">
+              <%= button_to 'Delete', page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } %>
+            </div>
+          </td>
 
-      </tr>
+        </tr>
       <% end %>
     </table>
   </div>

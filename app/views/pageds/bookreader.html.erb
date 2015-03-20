@@ -8,7 +8,7 @@
     <%= stylesheet_link_tag "BookReaderDemo" %>
     <script type="text/javascript">
        var paged_id = '<%= @paged.pid %>';
-       var total_pages = <%= @paged.pages.size %>;
+       var total_pages = <%= @paged.children.size %>;
     </script>
 
     <script type="text/javascript" src="http://www.archive.org/includes/jquery-1.4.2.min.js"></script>
@@ -21,7 +21,7 @@
 
     <%= javascript_include_tag "BookReader.js" %>
 </head>
-<body style="background-color: ##939598;">
+<body style="background-color: #939598;">
 
 <div id="BookReader">
     Internet Archive BookReader Demo    <br/>
@@ -33,7 +33,7 @@
     </noscript>
 </div>
 <div id="foo">
-  <%= @paged.pid %>
+  <%= @paged %>
 </div>
 
 <%= javascript_include_tag "BookReaderJSSimple.js" %>

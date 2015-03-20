@@ -22,8 +22,8 @@
       <% @pages.each do |page| %>
         <tr>
           <td><%= page.logical_number %></td>
-          <td><%= page.prev_page %></td>
-          <td><%= page.next_page %>
+          <td><%= page.prev_sib %></td>
+          <td><%= page.next_sib %>
           <td><%= link_to 'Show', page %></td>
           <td><%= link_to 'Edit', edit_page_path(page) %></td>
           <td><%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %></td>

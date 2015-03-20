@@ -3,7 +3,6 @@ describe CatalogController do
   let!(:newspaper_without_pages) { FactoryGirl.create :paged, :newspaper }
   let!(:newspaper_with_pages) { FactoryGirl.create :paged, :newspaper, :with_pages }
 
-
   describe "#view" do
     let(:get_args) { {id: "SET_FOR_CONTEXT" } }
     let(:get_view) { get :view, get_args }
