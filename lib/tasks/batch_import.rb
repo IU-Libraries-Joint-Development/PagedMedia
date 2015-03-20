@@ -40,7 +40,7 @@ module PMP
                 puts "ABORTING: Unable to open/parse manifest file: #{manifest_filename}."
                 manifest = nil
               end
-	      print "Found manifest file: #{manifest_filename}\n"
+              print "Found manifest file: #{manifest_filename}\n"
               Helpers::import_manifest(subdir, manifest) unless manifest.nil?
             end
           else
@@ -69,10 +69,10 @@ module PMP
       def Helpers.paged_hash(options = {}) 
         { 'descMetadata' => { 'title' => options['title'],
                               'creator' => options['creator'],
-			      'type' => options['type'],
-			      'publisher' => options['publisher'],
-			      'publisher_place' => options['publisher_place'],
-			      'paged_struct' => options['paged_struct'] || []
+                              'type' => options['type'],
+                              'publisher' => options['publisher'],
+                              'publisher_place' => options['publisher_place'],
+                              'paged_struct' => options['paged_struct'] || []
                             },
           'content' => { 'pagedXML' => options['pagedXML']},
           'pages' => options['pages'] || []
@@ -82,7 +82,7 @@ module PMP
       def Helpers.page_hash(options = {})
         { 'descMetadata' => { 'logical_number' => options['logical_number'],
                               'text' => options['text'],
-			      'page_struct' => options['page_struct'] || []
+                              'page_struct' => options['page_struct'] || []
                             },
           'content' => { 'pageImage' => options['pageImage'],
                          'pageOCR' => options['pageOCR'],
@@ -131,11 +131,11 @@ module PMP
             2.upto(page_sheet.last_row).each do |page|
               hashed_page = Hash[(page_sheet.row(1).zip(page_sheet.row(page)))]
               hashed_page['page_struct'] = structure_array(hashed_page['is_part_of'])
-	      hashed_page.delete('is_part_of')
+              hashed_page.delete('is_part_of')
               if hashed_page['batch_id'] == hashed_row['batch_id']
                 manifest_yaml['pageds'][-1]['pages'] << page_hash(hashed_page) if hashed_page['batch_id'] == hashed_row['batch_id']
-	        print "."
-	      end
+                print "."
+              end
             end
             print "#{manifest_yaml['pageds'][-1]['pages'].size} pages parsed.\n"
             manifest.default_sheet = 'Paged'
@@ -211,15 +211,15 @@ module PMP
             print "Processing #{page_count.to_s} pages:"
             #TODO: check page count matches pages provided?
             pages = []
-            prev_page = nil
+            prev_sib = nil
             (0...page_count).each do |index|
-              page_attributes = { paged_id: paged.pid, skip_sibling_validation: true }
-              page_attributes[:prev_page] = prev_page.pid if prev_page
+              page_attributes = { parent: paged.pid, skip_sibling_validation: true }
+              page_attributes[:prev_sib] = prev_sib.pid if prev_sib
               pages_yaml[index]["descMetadata"].each_pair do |key, value|
                 page_attributes[key.to_sym] = value
               end
               begin
-	        page = Page.new(page_attributes)
+                page = Page.new(page_attributes)
               rescue
                 puts "ABORTING: invalid page attributes:"
                 puts page_attributes.inspect
@@ -228,49 +228,51 @@ module PMP
               if pages_yaml[index]["content"]
                 pageImage = pages_yaml[index]["content"]["pageImage"]
                 begin
-	          page.image_file = File.open(Rails.root + subdir + "content/" + pageImage) if pageImage
+                  page.image_file = File.open(Rails.root + subdir + "content/" + pageImage) if pageImage
                 rescue
                   puts "ABORTING: Error opening image file: #{pageImage}"
                   break
                 end
                 pageOCR = pages_yaml[index]["content"]["pageOCR"]
                 begin
-	          page.ocr_file = File.open(Rails.root + subdir + "content/" + pageOCR) if pageOCR
+                  page.ocr_file = File.open(Rails.root + subdir + "content/" + pageOCR) if pageOCR
                 rescue
                   puts "ABORTING: Error opening OCR file: #{pageOCR}"
                   break
                 end
                 pageXML = pages_yaml[index]["content"]["pageXML"]
                 begin
-	          page.xml_file = File.open(Rails.root + subdir + "content/" + pageXML) if pageXML
+                  page.xml_file = File.open(Rails.root + subdir + "content/" + pageXML) if pageXML
                 rescue
                   puts "ABORTING: Error opening XML file: #{pageXML}"
                   break
                 end
-	      end
-	      if page.save(unchecked: true)
-	        page.reload
-	        pages << page
-                unless prev_page.nil?
-                  prev_page.next_page = page.pid
-                  unless prev_page.save(unchecked: true)
+              end
+              if page.save(unchecked: true)
+                page.reload
+                pages << page
+                unless prev_sib.nil?
+                  prev_sib.next_sib = page.pid
+                  unless prev_sib.save(unchecked: true)
                     puts "ABORT: problems re-saving prior page"
-                    puts prev_page.errors.messages
+                    puts prev_sib.errors.messages
                     pages = []
                     break
                   end
                 end
-                prev_page = page
-	        print "."
-	      else
-	        puts "ABORT: problems saving page"
-	        puts page.errors.messages
-	        #TODO: destroy pages, paged?
-	        pages = []
-	        break
-	      end
+                prev_sib = page
+                print "."
+              else
+                puts "ABORT: problems saving page"
+                puts page.errors.messages
+                #TODO: destroy pages, paged?
+                pages = []
+                break
+              end
             end
             print "\nUpdating paged index.\n"
+            paged.children = pages.map { |page| page.pid }
+            paged.save(unchecked: true)
             paged.reload
             paged.update_index
             print "Done.\n\n"
