@@ -300,19 +300,60 @@ module PMP
                 end
               end
               if page.save(unchecked: true)
-                page.reload
-                pages << page
-                #TODO: FIXME: don't set next sib if section change
-                unless prev_sib.nil?
-                  prev_sib.next_sib = page.pid
-                  unless prev_sib.save(unchecked: true)
-                    puts "ABORT: problems re-saving prior page"
-                    puts prev_sib.errors.messages
+
+                # Process Sections
+                # TODO: require uniue names for sections, at least within scope of parent.  If only unique in parent scope, non-unique names will need fully qualified section path to assure proper ingest.
+                # TODO: refactor page_struct to undo redundancy with unpacking, reconsolidating structure
+                page_struct = pages_yaml[index]["descMetadata"]["page_struct"]
+                if page_struct.any?
+                  parent_section = paged
+                  print "Processing Sections: "
+                  array_from_struct(page_struct).each do |name|
+                    search_existing = Section.where(name: name, parent: parent_section.pid).to_a
+                    if search_existing.any?
+                      section = search_existing.first
+                      print "\"#{name}\" found.  "
+                    else
+                      section = Section.new(name: name, parent: parent_section.pid, prev_sib: prev_sib ? prev_sib.pid : nil)
+                      section.prev_sib = parent_section.children.last if parent_section && parent_section.children.any?
+                      if section.save
+                        print "\"#{name}\" created.  "
+      
+                      else
+                        puts "ABORTING: problem saving Section"
+                        puts section.errors.messages
+                        return
+                      end
+                    end
+                    parent_section = section
+		    prev_sib = section
+                  end
+                  print "\n"
+                  page.parent = parent_section.pid
+                  page.prev_sib = parent_section.children.last
+                  if page.save
+                    print "Page updated with Section association.\n"
+                  else
+                    puts "ABORTING: problem saving Section association on Page"
+                    puts page.errors.messages
+                    return
+                  end
+                else
+                  print "No Sections to process.\n"
+
+                  #TODO: FIXME: don't set next sib if section change
+                  unless page.save
+                    puts "ABORT: problems saving page"
+                    puts page.errors.messages
                     pages = []
                     break
                   end
+                  prev_sib = page
                 end
-                prev_sib = page
+                page.reload
+		page.update_index
+		page.save
+                pages << page
                 print "."
               else
                 puts "ABORT: problems saving page"
@@ -324,8 +365,8 @@ module PMP
             end
             print "\nUpdating paged index.\n"
             # TODO: FIXME: change to page/section mix; same for sections?
-            paged.children = pages.map { |page| page.pid }
-            paged.save(unchecked: true)
+            #paged.children = pages.map { |page| page.pid }
+            #paged.save(unchecked: true)
             paged.reload
             paged.update_index
             print "Done.\n\n"

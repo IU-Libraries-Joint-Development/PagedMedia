@@ -345,15 +345,17 @@ module Node# < ActiveFedora::Base
 
   # Returns an array of hashes.  Each hash contains the :id, :index,
   # :logical_number, and :ds_url of one of this object's page children.
-  def page_list
+  def page_list(index = 0)
     pages = []
     fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
-    self.order_children[0].each_with_index do |child_pid, index|
+    self.order_children[0].each do |child_pid|
       child = ActiveFedora::Base.find(child_pid, cast: true)
       if child.class == Page
         pages.push({:id => child.pid, :index => index.to_s, :logical_number => child.logical_number, :ds_url => fedora_url + child.image_datastream.url})
+	index += 1
       else
-        pages += child.page_list
+        pages += child.page_list(index)
+	index = pages.size
       end
     end
     pages
