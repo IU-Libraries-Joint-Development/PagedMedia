@@ -98,6 +98,14 @@ module PMP
         end
         result
       end
+
+      def Helpers.array_from_struct(struct, delimiter = '--')
+        result = []
+	if struct.any?
+	  result = struct.last.split(delimiter)
+	end
+	result
+      end
       
       def Helpers.convert_manifest(subdir, manifest)
         # validate paged, abort otherwise
@@ -201,6 +209,46 @@ module PMP
             puts paged.errors.messages
             return
           end
+
+	  # Process Collections
+	  # TODO: require uniue names for collections, at least within scope of parent.  If only unique in parent scope, non-unique names will need fully qualified collection path to assure proper ingest.
+	  # TODO: refactor paged_struct to undo redundancy with unpacking, reconsolidating structure
+	  paged_struct = paged_yaml["descMetadata"]["paged_struct"]
+	  if paged_struct.any?
+	    parent_collection = nil
+	    print "Processing Collections: "
+	    array_from_struct(paged_struct).each do |name|
+	      search_existing = Collection.where(name: name, parent: (parent_collection ? parent_collection.pid : nil)).to_a
+	      if search_existing.any?
+	        collection = search_existing.first
+		print "\"#{name}\" found.  "
+	      else
+	        collection = Collection.new(name: name, parent: (parent_collection ? parent_collection.pid : nil))
+		collection.prev_sib = parent_collection.children.last if parent_collection && parent_collection.children.any?
+	        if collection.save
+	          print "\"#{name}\" created.  "
+  
+                else
+	          puts "ABORTING: problem saving Collection"
+		  puts collection.errors.messages
+		  return
+		end
+	      end
+	      parent_collection = collection
+	    end
+	    print "\n"
+	    paged.parent = parent_collection.pid
+	    paged.prev_sib = parent_collection.children.last
+	    if paged.save
+	      print "Paged object updated with Collection association.\n"
+	    else
+	      puts "ABORTING: problem saving Collection association on Paged Object"
+	      puts paged.errors.messages
+	      return
+	    end
+	  else
+	    print "No Collections to process.\n"
+	  end
       
           pages_yaml = paged_yaml["pages"]
           if pages_yaml.nil? or pages_yaml.empty?
@@ -213,7 +261,10 @@ module PMP
             pages = []
             prev_sib = nil
             (0...page_count).each do |index|
+              #TODO: create/find sections, set association
+              #TODO: require unique section name within parent scope?
               page_attributes = { parent: paged.pid, skip_sibling_validation: true }
+              #TODO: blank prev_sib if in new section
               page_attributes[:prev_sib] = prev_sib.pid if prev_sib
               pages_yaml[index]["descMetadata"].each_pair do |key, value|
                 page_attributes[key.to_sym] = value
@@ -251,6 +302,7 @@ module PMP
               if page.save(unchecked: true)
                 page.reload
                 pages << page
+                #TODO: FIXME: don't set next sib if section change
                 unless prev_sib.nil?
                   prev_sib.next_sib = page.pid
                   unless prev_sib.save(unchecked: true)
@@ -271,6 +323,7 @@ module PMP
               end
             end
             print "\nUpdating paged index.\n"
+            # TODO: FIXME: change to page/section mix; same for sections?
             paged.children = pages.map { |page| page.pid }
             paged.save(unchecked: true)
             paged.reload
