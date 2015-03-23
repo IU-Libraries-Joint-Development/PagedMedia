@@ -36,27 +36,22 @@ module Node# < ActiveFedora::Base
     end
   end
 
-  # A link is "unset" if it is nil or an empty String
-  def unset?(attribute)
-    attribute.nil? || attribute.empty?
-  end
-
   # If the parent is empty, sibling pointers should be nil, otherwise at least
   # one must be non-nil.
   def validate_has_required_siblings
-    return if parent.nil?
+    return if parent.blank?
     my_parent = ActiveFedora::Base.find(parent, cast: true)
 
     # Parent has no children yet, so this node can't have siblings
     if (my_parent.children.size == 0)
-      errors.add(:prev_sib, 'prev_sib must be empty') if !unset?(prev_sib)
-      errors.add(:next_sib, 'next_sib must be empty') if !unset?(next_sib)
+      errors.add(:prev_sib, 'prev_sib must be empty') unless prev_sib.blank?
+      errors.add(:next_sib, 'next_sib must be empty') unless next_sib.blank?
       return
     end
 
     # At least one child of my parent already exists.  Must have at least one
     # sibling unless the one child is this one (we are updating, not creating).
-    if (unset?(prev_sib) && unset?(next_sib) &&
+    if (prev_sib.blank? && next_sib.blank? &&
         ((my_parent.children.size > 1) || (ActiveFedora::Base.find(my_parent.children.first, cast: true).pid != pid)))
       errors[:base] << 'must have one or both siblings if parent has children'
     end
@@ -90,11 +85,11 @@ module Node# < ActiveFedora::Base
     end
 
     # Get a copy of my supposed parent.
-    my_parent = ActiveFedora::Base.find(parent, cast: true) unless parent.nil?
+    my_parent = ActiveFedora::Base.find(parent, cast: true) unless parent.blank?
 
     # Check that prev_sib is a child of my parent.
-    unless (unset?(prev_sib))
-      if (parent.nil?)
+    unless prev_sib.blank?
+      if (parent.blank?)
         logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
         errors.add(:prev_sib, 'Unowned node cannot have siblings')
         return false
@@ -115,8 +110,8 @@ module Node# < ActiveFedora::Base
     end
 
     # Check that next_sib is a child of my parent.
-    unless (unset?(next_sib))
-      if (parent.nil?)
+    unless next_sib.blank?
+      if (parent.blank?)
         logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
         errors.add(:next_sib, 'Unowned node cannot have siblings')
         return false
@@ -138,9 +133,9 @@ module Node# < ActiveFedora::Base
 
     # Check my parentage.
     # OK to already be parent's child.
-    unless (unset?(parent))
+    unless parent.blank?
       # NOT OK if parent does not exist.
-      if (my_parent.nil?)
+      if (my_parent.blank?)
         logger.error("#{self.class.name} #{pid}:  parent #{parent} does not exist")
         errors.add(:parent, 'parent node does not exist')
         return false
@@ -187,7 +182,7 @@ module Node# < ActiveFedora::Base
     end
 
     # Link myself to previous sibling.
-    if (!unset?(prev_sib))
+    unless prev_sib.blank?
       prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
       prev_sibling.next_sib = pid
       prev_sibling.save(unchecked: 1)
@@ -195,7 +190,7 @@ module Node# < ActiveFedora::Base
     end
 
     # Link myself to next sibling.
-    if (!unset?(next_sib))
+    unless next_sib.blank?
       next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
       next_sibling.prev_sib = pid
       next_sibling.save(unchecked: 1)
@@ -203,7 +198,7 @@ module Node# < ActiveFedora::Base
     end
 
     # Link myself to my parent as a child.
-    unless (unset?(parent))
+    unless parent.blank?
       unless (my_parent.children.include?(pid))
         # This is really weird.  Multi-valued attributes have the usual array
         # operators but some of them do nothing.  The only way to augment one is
@@ -220,7 +215,7 @@ module Node# < ActiveFedora::Base
       rescue
         my_child = nil
       end
-      if (my_child && unset?(my_child.parent))
+      if (my_child && my_child.parent.blank?)
         my_child.parent = pid
         my_child.save(unchecked: 1)
       end
@@ -246,13 +241,13 @@ module Node# < ActiveFedora::Base
 
     # Load my siblings, if any.
     begin
-      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true) if (!unset?(prev_sib))
+      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true) unless prev_sib.blank?
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{self.class.name} #{pid}, missing prev_sib: #{e}")
     end
 
     begin
-      next_sibling = ActiveFedora::Base.find(next_sib, cast: true) if (!unset?(next_sib))
+      next_sibling = ActiveFedora::Base.find(next_sib, cast: true) unless next_sib.blank?
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{self.class.name} #{pid}, missing next_sib: #{e}")
     end
@@ -271,7 +266,7 @@ module Node# < ActiveFedora::Base
 
     # Load my parent, if any.
     begin
-      my_parent = ActiveFedora::Base.find(parent, cast: true) unless (unset?(parent))
+      my_parent = ActiveFedora::Base.find(parent, cast: true) unless parent.blank?
     rescue ActiveFedora::ObjectNotFoundError => e
       logger.error("deleting #{self.class.name} #{pid}, missing parent #{parent}: #{e}")
     end
@@ -383,7 +378,7 @@ module Node# < ActiveFedora::Base
 
   # Returns pid of paged ancestor
   def parent_paged
-    if self.parent and self.class.in? [Page, Section]
+    if !self.parent.blank? and self.class.in? [Page, Section]
       paged = ActiveFedora::Base.find(parent, cast: true)
       if paged.class == Paged
         parent
@@ -399,7 +394,7 @@ module Node# < ActiveFedora::Base
   # of one of this object's section ancestors.
   def supersections
     sections = []
-    if self.parent and self.class.in? [Page, Section]
+    if !self.parent.blank? and self.class.in? [Page, Section]
       section = ActiveFedora::Base.find(parent, cast: true)
       if section.class == Section
         sections.unshift({ id: section.pid, name: section.name })
@@ -429,7 +424,7 @@ module Node# < ActiveFedora::Base
   # of one of this object's collection ancestors.
   def supercollections
     collections = []
-    if self.parent and self.class.in? [Paged, Collection]
+    if !self.parent.blank? and self.class.in? [Paged, Collection]
       collection = ActiveFedora::Base.find(parent, cast: true)
       if collection.class == Collection
         collections.unshift({ id: collection.pid, name: collection.name })
