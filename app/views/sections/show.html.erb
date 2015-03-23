@@ -12,6 +12,7 @@
     <ul>
       <li>Name: <%= @section.name %></li>
     </ul>
+    <%= render 'nodes/node_display_fields', node: @section %>
     <div>
       <%= button_to 'Update', edit_section_path(@section), :method => :get %>
     </div>

@@ -28,6 +28,10 @@
 
   <br>
 
-  <%= button_to 'New Section', new_paged_section_path(@paged), :class=> "button", :method=> :get %>
+  <% if @paged %>
+    <%= button_to 'New Section', new_paged_section_path(@paged), :class=> "button", :method=> :get %>
+  <% else %>
+    <%= button_to 'New Section', new_section_path, :class=> "button", :method=> :get %>
+  <% end %>
 
 </div>

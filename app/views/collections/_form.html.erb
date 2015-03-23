@@ -18,6 +18,8 @@
     </li>
   </ol>
 
+  <%= render 'nodes/node_form_fields', f: f %>
+
   <div class="actions collection_submit">
     <% if !@collection.new? %>
       <%= f.submit "Update" %>

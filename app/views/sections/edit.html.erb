@@ -9,6 +9,10 @@
   <%= render 'form' %>
   
   <%= link_to 'Show', @section %> |
-  <%= link_to 'Back', paged_sections_path(@section.parent) %>
+  <% unless @section.parent.blank? or @section.parent != @section.parent_paged %>
+    <%= link_to 'Back', paged_sections_path(@section.parent) %>
+  <% else %>
+    <%= link_to 'Back', sections_path %>
+  <% end %>
 </div>
 

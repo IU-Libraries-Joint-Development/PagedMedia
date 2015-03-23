@@ -7,8 +7,12 @@
   <h1>Section: New</h1>
   
   <%= render 'form' %>
-  
-  <%= link_to 'Back', paged_sections_path(@paged) %>
+
+  <% if @paged %>  
+    <%= link_to 'Back', paged_sections_path(@paged) %>
+  <% else %>
+    <%= link_to 'Back', sections_path %>
+  <% end %>
 
 </div>
 

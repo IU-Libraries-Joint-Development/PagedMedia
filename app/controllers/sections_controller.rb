@@ -3,14 +3,22 @@ class SectionsController < ApplicationController
   before_action :set_paged, only: [:index, :new, :create]
 
   def index
-    @sections = Section.where(parent: @paged.pid)
+    if @paged
+      @sections = Section.where(parent: @paged.pid)
+    else
+      @sections = Section.all
+    end
   end
 
   def show
   end
 
   def new
-    @section = Section.new(parent: @paged.pid)
+    if @paged
+      @section = Section.new(parent: @paged.pid)
+    else
+      @section = Section.new
+    end
   end
 
   def edit
@@ -56,7 +64,7 @@ class SectionsController < ApplicationController
     end
 
     def set_paged
-      @paged = Paged.find(params[:paged_id])
+      @paged = Paged.find(params[:paged_id]) if params[:paged_id]
     end
 
     def section_params

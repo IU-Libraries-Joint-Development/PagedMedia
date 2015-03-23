@@ -12,6 +12,7 @@
     <ul>
       <li>Name: <%= @collection.name %></li>
     </ul>
+    <%= render 'nodes/node_display_fields', node: @collection %>
     <div>
       <%= button_to 'Update', edit_collection_path(@collection), :method => :get %>
     </div>

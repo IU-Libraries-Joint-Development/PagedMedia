@@ -3,17 +3,33 @@ require "spec_helper"
 describe SectionsController do
   describe "routing" do
 
-    describe "nested methods" do
-      it "routes to #index" do
-        get("/pageds/1/sections").should route_to("sections#index", paged_id: "1")
+    describe "optionally nested methods" do
+
+      describe "routes to #index" do
+        specify "for a paged" do
+          get("/pageds/1/sections").should route_to("sections#index", paged_id: "1")
+        end
+        specify "for all sections" do
+          get("/sections").should route_to("sections#index")
+        end
       end
   
-      it "routes to #new" do
-        get("/pageds/1/sections/new").should route_to("sections#new", paged_id: "1")
+      describe "routes to #new" do
+        specify "for a paged" do
+          get("/pageds/1/sections/new").should route_to("sections#new", paged_id: "1")
+        end
+        specify "for all sections" do
+          get("/sections/new").should route_to("sections#new")
+        end
       end
   
-      it "routes to #create" do
-        post("/pageds/1/sections").should route_to("sections#create", paged_id: "1")
+      describe "routes to #create" do
+        specify "for a paged" do
+          post("/pageds/1/sections").should route_to("sections#create", paged_id: "1")
+        end
+        specify "for all sections" do
+          post("/sections").should route_to("sections#create")
+        end
       end
     end
 
