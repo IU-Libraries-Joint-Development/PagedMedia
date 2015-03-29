@@ -4,6 +4,7 @@
 
 class Page < ActiveFedora::Base
   VALID_PARENT_CLASSES = [Paged, Section]
+  VALID_CHILD_CLASSES = []
   include Node
 
   has_metadata 'descMetadata', type: PageMetadata
@@ -71,6 +72,17 @@ class Page < ActiveFedora::Base
     @datastreams['pageXML']
   end
 
+  def self.fedora_url
+    @fedora_url ||= ActiveFedora.fedora_config.credentials[:url] + '/'
+  end
+
+  # Additional values to include in hash used by descendent/ancestry list methods
+  def additional_hash_values
+    #FIXME: stash fedora_url and re-use
+    #fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
+    {logical_number: logical_number, ds_url: self.class.fedora_url + image_datastream.url}
+  end
+
   def to_solr(solr_doc={}, opts={})
     super(solr_doc, opts)
     if (!parent.nil?)
@@ -82,7 +94,7 @@ class Page < ActiveFedora::Base
   def update_page_struct(delimiter = '--')
     new_struct = []
     new_struct.unshift(logical_number) if logical_number
-    self.supersections.reverse_each do |section|
+    self.list_ancestors(Section).reverse_each do |section|
       new_struct.unshift(section[:name])
     end
     new_struct.each_with_index do |value, index|

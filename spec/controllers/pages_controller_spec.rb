@@ -4,6 +4,8 @@ describe PagesController do
   let!(:test_page) { FactoryGirl.create :page }
   let!(:test_paged) { FactoryGirl.create :paged }
 
+  let(:other_page) { FactoryGirl.create :page }
+
   describe '#index' do
     before(:each) { get :index }
     it 'sets @pages' do
@@ -72,12 +74,12 @@ describe PagesController do
         end
       end
       context 'with a parent' do
-        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
-        include_examples "creates a page", false
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page, parent: test_paged.pid) }
+        include_examples "creates a page", true
       end
       context 'without a parent' do
-        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page, parent: test_paged.pid) }
-        include_examples "creates a page", true 
+        let(:post_create) { post :create, page: FactoryGirl.attributes_for(:page) }
+        include_examples "creates a page", false 
       end
     end
     context 'with invalid params' do
@@ -93,57 +95,64 @@ describe PagesController do
   end
 
   describe '#update' do
-    context 'when came from paged' do
-      before(:each) { session[:came_from] = :paged }
-      context 'with parent paged' do
-        before(:each) do
-          test_page.parent = test_paged.pid
-          test_page.save
-          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
-        end
-        it 'redirects to parent paged' do
-          expect(response).to redirect_to paged_path(test_paged.pid)
-        end
-      end
-      context 'without a parent paged' do
-        before(:each) do
-          test_page.parent = nil
-          test_page.save
-          put :update, id: test_page.id, page: { logical_number: test_page.logical_number + " updated" }
-        end
-        it 'redirects to paged_url' do
-          expect(response).to redirect_to pageds_path
-        end
-      end
-    end
+    let(:updated_number) { test_page.logical_number + " updated" }
     context 'with valid params' do
-      let!(:original_number) { test_page.logical_number } 
-      before(:each) { put :update, id: test_page.pid, page: { logical_number: test_page.logical_number + " updated" } }
-      it 'assigns @page' do
-        expect(assigns(:page)).to eq test_page
+      let(:put_update) { put :update, id: test_page.id, page: { logical_number: updated_number } }
+      shared_examples 'successful update' do
+        it 'assigns @page' do
+          expect(assigns(:page)).to eq test_page
+        end
+        it 'updates values' do
+          expect(test_page.logical_number).not_to eq updated_number
+          test_page.reload
+          expect(test_page.logical_number).to eq updated_number
+        end
+        it 'flashes success' do
+          expect(flash[:notice]).to match(/success/i)
+        end
       end
-      it 'updates values' do
-        expect(test_page.logical_number).to eq original_number
-        test_page.reload
-        expect(test_page.logical_number).not_to eq original_number
+      context 'when came from paged' do
+        before(:each) { session[:came_from] = :paged }
+        context 'with parent paged' do
+          before(:each) do
+            test_page.parent = test_paged.pid
+            test_page.save!
+            put_update
+          end
+          it 'redirects to parent paged' do
+            expect(response).to redirect_to paged_path(test_paged.pid)
+          end
+          include_examples 'successful update'
+        end
+        context 'without a parent paged' do
+          before(:each) do
+            test_page.parent = nil
+            test_page.save!
+            put_update
+          end
+          it 'redirects to paged_url' do
+            expect(response).to redirect_to pageds_path
+          end
+          include_examples 'successful update'
+        end
       end
-      it 'flashes success' do
-        expect(flash[:notice]).to match(/success/i)
-      end
-      it 'redirects to updated page' do
-        expect(response).to redirect_to test_page
+      context 'when not coming from paged' do
+        before(:each) do
+          session[:came_from] = nil
+          put_update
+        end
+        it 'redirects to the page' do
+          expect(response).to redirect_to test_page
+        end
+        include_examples 'successful update' 
       end
     end
     context 'with invalid params' do
-      context 'with invalid params' do
-        before(:each) do
-          first_page = FactoryGirl.create :page, parent: test_paged.pid
-          test_paged.reload
-          put :update, id: test_page.pid, page: { logical_number: test_page.logical_number + " updated", parent: test_paged.pid }
-        end
-        it 'renders the edit template' do
-          expect(response).to render_template(:edit)
-        end
+      before(:each) do
+        put :update, id: test_page.pid, page: { logical_number: updated_number, prev_sib: other_page.pid }
+      end
+      it 'renders the edit template' do
+        expect(response).to render_template(:edit)
       end
     end
   end

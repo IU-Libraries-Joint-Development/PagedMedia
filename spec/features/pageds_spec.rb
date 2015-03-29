@@ -1,7 +1,7 @@
 # Despite its name, this is a functional test of pageds_controller *and its supporting cast*.
 describe 'Pageds features' do
   let!(:test_paged) { FactoryGirl.create :paged, :with_pages }
-  let(:page3) { Page.find(test_paged.page_list[2][:id]) }
+  let(:page3) { Page.find(test_paged.list_descendents(Page)[2][:id]) }
   let(:test_pageless) { FactoryGirl.create :paged }
 
   context "when pages are listed" do  

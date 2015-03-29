@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
   before_action :set_page, only: [:show, :edit, :update, :destroy]
-  before_action :set_paged, only: [:show]
+  before_action :set_paged, only: [:show, :edit, :update]
 
   # GET /pages
   # GET /pages.json
@@ -14,13 +14,10 @@ class PagesController < ApplicationController
   # GET /pages/1.json
   def show
     session[:came_from] = :page
-    my_parent = @page.parent_paged
-    if my_parent
-      paged = Paged.find(my_parent)
-      add_breadcrumb paged.title, paged
+    if @paged
+      add_breadcrumb @paged.title, paged
       add_breadcrumb @page.logical_number, @page
     end
-    
   end
 
   # GET /pages/new
@@ -32,9 +29,7 @@ class PagesController < ApplicationController
 
   # GET /pages/1/edit
   def edit
-    my_parent = @page.parent_paged
-    if my_parent
-      paged = Paged.find(my_parent)
+    if @paged
       add_breadcrumb paged.title, paged
     end
     add_breadcrumb @page.logical_number, @page
@@ -45,6 +40,7 @@ class PagesController < ApplicationController
   # POST /pages.json
   def create
     @page = Page.new(page_params)
+    set_paged
 
     respond_to do |format|
       @page.image_file = params[:image_file] if params.has_key?(:image_file)
@@ -52,11 +48,9 @@ class PagesController < ApplicationController
       @page.xml_file = params[:xml_file] if params.has_key?(:xml_file)
       @page.parent = params[:parent] if params.has_key?(:parent)
       if @page.save
-        my_parent = @page.parent_paged
-        if my_parent
-          paged = Paged.find(my_parent)
-          paged.update_index
-          format.html { redirect_to paged_path(my_parent), notice: 'Page was successfully created.'}
+        if @paged
+          @paged.update_index
+          format.html { redirect_to paged_path(@paged), notice: 'Page was successfully created.'}
         else
           format.html { redirect_to @page, notice: 'Page was successfully created.' }
           format.json { render action: 'show', status: :created, location: @page }
@@ -75,8 +69,8 @@ class PagesController < ApplicationController
       if @page.update(page_params)
         format.html do
           if (:paged == session.delete(:came_from))
-            if @page.parent_paged
-              return_url = paged_url(@page.parent_paged)
+            if @paged
+              return_url = paged_url(@paged)
             else
               return_url = pageds_path
             end
@@ -110,8 +104,7 @@ class PagesController < ApplicationController
     end
 
     def set_paged
-      my_parent = @page.parent_paged
-      @paged = Paged.find(my_parent) if my_parent
+      @paged = @page.ancestor_object_of_class(Paged)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

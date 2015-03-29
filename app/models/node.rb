@@ -9,12 +9,14 @@
 #--
 # Copyright 2014 Indiana University
 
-module Node# < ActiveFedora::Base
+module Node
 
   VALID_PARENT_CLASSES = []
+  VALID_CHILD_CLASSES = []
 
   def self.included(including_class)
     including_class.const_set(:VALID_PARENT_CLASSES, VALID_PARENT_CLASSES) unless including_class.const_defined?(:VALID_PARENT_CLASSES)
+    including_class.const_set(:VALID_CHILD_CLASSES, VALID_CHILD_CLASSES) unless including_class.const_defined?(:VALID_CHILD_CLASSES)
 
     including_class.class_eval do
       include Hydra::AccessControls::Permissions
@@ -33,6 +35,14 @@ module Node# < ActiveFedora::Base
       # skip_sibling_validation both skips the custom validation and runs an unchecked save
       attr_accessor :skip_sibling_validation
       validate :validate_has_required_siblings, unless: :skip_sibling_validation
+
+      def self.valid_parent_classes
+        const_get(:VALID_PARENT_CLASSES)
+      end
+
+      def self.valid_child_classes
+        const_get(:VALID_CHILD_CLASSES)
+      end
     end
   end
 
@@ -59,6 +69,10 @@ module Node# < ActiveFedora::Base
 
   def valid_parent_classes
     self.class.const_get(:VALID_PARENT_CLASSES)
+  end
+
+  def valid_child_classes
+    self.class.const_get(:VALID_CHILD_CLASSES)
   end
 
   # Link this node into the "family tree".
@@ -139,6 +153,7 @@ module Node# < ActiveFedora::Base
         logger.error("#{self.class.name} #{pid}:  parent #{parent} does not exist")
         errors.add(:parent, 'parent node does not exist')
         return false
+      # NOT OK if parent class cannot be parent for this child
       elsif !(my_parent.class.in? valid_parent_classes)
 	logger.error("#{self.class.name} #{pid}:  parent #{parent} class (#{my_parent.class}) is not in valid class list: #{valid_parent_classes})")
 
@@ -284,39 +299,41 @@ module Node# < ActiveFedora::Base
     logger.info("Deleted #{self.class.name} #{pid}")
   end
 
-  # Method returns ordered children and false
-  # Or unordered children and an error message
-  def order_children()
+
+  # Method returns ordered children objects array and false
+  # Or incomplete ordered children objects array and an error message
+  # FIXME: how should we do error-checking in methods that call this?
+  def order_child_objects()
     ordered_children = Array.new
     error = false
     # Get first child and all child ids
     first_child = false
     next_child = false
     child_ids = Array.new
+    # Check for multiple first children
     self.children.each do |child|
       child_ids << child
       my_child = ActiveFedora::Base.find(child, cast: true)
-      next if (!my_child.prev_sib.nil?) && (my_child.prev_sib != '')
-      # Check for multiple first children
-      if !first_child
+      next unless my_child.prev_sib.blank?
+      unless first_child
         first_child = my_child
       else
         error = "Multiple First Children"
-        return [self.children, error]
+        return [ordered_children, error]
       end
     end
+    # Check for no first child
     if first_child
       next_child = first_child
     else
-      # Check for no first child
       error = "No First Child Found"
-      return [self.children, error]
+      return [ordered_children, error]
     end
     my_children = Array.new
     while next_child do
       ordered_children << next_child
       np_id = next_child.next_sib
-      if  np_id != nil && np_id != ''
+      unless np_id.blank?
         if my_children.include?(np_id)
           # Check for infinite loop
           error = "Infinite loop of children"
@@ -338,118 +355,115 @@ module Node# < ActiveFedora::Base
     if !error && ordered_children.count < self.children.count
       error = "Children Missing From List"
     end
+    return [ordered_children, error]
+  end
+
+  # Method returns ordered children pids array and false
+  # Or unordered children pids array and an error message
+  def order_children()
+    ordered_children = order_child_objects
     # Return unordered list if error occurs
-    return [self.children, error] if error
-    return [ordered_children.collect! {|child| child.pid}, error]
+    return [self.children, ordered_children[1]] if ordered_children[1]
+    return [ordered_children[0].collect! {|child| child.pid}, false]
   end
 
-  # Returns an array of hashes.  Each hash contains the :id, :index,
-  # :logical_number, and :ds_url of one of this object's page children.
-  def page_list(index = 0)
-    pages = []
-    fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
-    self.order_children[0].each do |child_pid|
-      child = ActiveFedora::Base.find(child_pid, cast: true)
-      if child.class == Page
-        pages.push({:id => child.pid, :index => index.to_s, :logical_number => child.logical_number, :ds_url => fedora_url + child.image_datastream.url})
-	index += 1
-      else
-        pages += child.page_list(index)
-	index = pages.size
+  # Returns values hash used in descendent/ancestry list methods
+  def to_hash(**values)
+    {id: self.pid}.merge(additional_hash_values).merge(values)
+  end
+
+  # Additional values to include in hash used by descendent/ancestry list methods
+  # Override in a model to provide model-specific values
+  def additional_hash_values
+    {}
+  end
+
+  # Returns an array of descendent objects, NOT searching children of matching nodes
+  # If no class_filter is passed, all immediate descendents will match, so only children are returned
+  # If filtering on a class, a given line of descendents is searched until a match is found
+  def list_descendent_objects(class_filter = nil)
+    descendent_list = []
+    self.order_child_objects[0].each do |child|
+      if class_filter.nil? || child.class == class_filter
+        descendent_list << child
+      elsif child.children.any?
+        descendent_list += child.list_descendent_objects(class_filter)
       end
     end
-    pages
+    descendent_list
   end
 
-  # Returns an array of hashes.  Each hash contains the :id, :index,
-  # :logical_number, and :ds_url of one of this object's paged children.
-  def paged_list
-    pageds = []
-    if self.class.in? [Collection]
-      self.order_children[0].each_with_index do |child_pid, index|
-        child = ActiveFedora::Base.find(child_pid, cast: true)
-	if child.class == Paged
-	  pageds.push({id: child.pid, index: index.to_s, title: child.title })
-	else
-	  pageds += child.paged_list
-	end
-      end
+  # As for list_descendent_objects, but returns array of object hashes with index value added
+  def list_descendents(class_filter = nil)
+    descendent_list = []
+    list_descendent_objects(class_filter).each_with_index do |object, index|
+      descendent_list << object.to_hash(index: index)
     end
-    pageds
+    descendent_list
   end
 
-  # Returns pid of paged ancestor
-  def parent_paged
-    if !self.parent.blank? and self.class.in? [Page, Section]
-      paged = ActiveFedora::Base.find(parent, cast: true)
-      if paged.class == Paged
-        parent
-      else
-        paged.parent_paged
-      end
-    else
-      nil
-    end
-  end
-
-  # Returns an array of hashes.  Each hash contains the :id and :name
-  # of one of this object's section ancestors.
-  def supersections
-    sections = []
-    if !self.parent.blank? and self.class.in? [Page, Section]
-      section = ActiveFedora::Base.find(parent, cast: true)
-      if section.class == Section
-        sections.unshift({ id: section.pid, name: section.name })
-	sections = section.supersections + sections
-      end
-    end
-    sections
-  end
-
-  # Returns an array of hashes.  Each hash contains the :id and :name
-  # of one of this object's section children.
-  def subsections
-    sections = []
-    if self.class.in? [Paged, Section]
-      self.order_children[0].each do |child_pid|
-        section = ActiveFedora::Base.find(child_pid, cast: true)
-        if section.class == Section
-          sections.push({ id: section.pid, name: section.name })
-          sections += section.subsections
+  # Returns array of descendent objects, matching by class, AND their matching children
+  # If no class_filter is passed, all descendents will match, so the entire descendent tree is returned
+  # If filtering on a class, a matching child will be listed, as well as all of its matching descendents, recursively
+  def list_descendent_objects_recursive(class_filter = nil)
+    descendent_list = []
+    if class_filter.nil? || class_filter.in?(valid_child_classes)
+      self.order_child_objects[0].each do |child|
+        if class_filter.nil? || child.class == class_filter
+          descendent_list << child
+          descendent_list += child.list_descendent_objects_recursive(class_filter) if child.children.any?
         end
       end
     end
-    sections
+    descendent_list
   end
 
-  # Returns an array of hashes.  Each hash contains the :id and :name
-  # of one of this object's collection ancestors.
-  def supercollections
-    collections = []
-    if !self.parent.blank? and self.class.in? [Paged, Collection]
-      collection = ActiveFedora::Base.find(parent, cast: true)
-      if collection.class == Collection
-        collections.unshift({ id: collection.pid, name: collection.name })
-        collections = collection.supercollections + collections
-      end
-    end
-    collections
+  # As for list_descendent_objects_recursive, but returns array of object hashes
+  def list_descendents_recursive(class_filter = nil)
+    list_descendent_objects_recursive(class_filter).collect { |x| x.to_hash }
   end
 
-  # Returns an array of hashes.  Each hash contains the :id and :name
-  # of one of this object's collection children.
-  def subcollections
-    collections = []
-    if self.class.in? [Collection]
-      self.order_children[0].each do |child_pid|
-        collection = ActiveFedora::Base.find(child_pid, cast: true)
-	if section.class == Collection
-	  collections.push({ id: collection.pid, name: collection.name })
-	  collections += collection.subcollections
-	end
+  # Returns ancestor object of specified class, searching ancestry until first match is found
+  # If no class_filter is passed, immediate parent is returned
+  # If filtering on a class, ancestry line is searched until a match is found
+  def ancestor_object_of_class(class_filter = nil)
+    if parent.blank?
+      nil
+    else
+      ancestor = ActiveFedora::Base.find(parent, cast: true)
+      if class_filter.nil? || ancestor.class == class_filter
+        ancestor
+      else
+        ancestor.ancestor_object_of_class(class_filter)
       end
     end
-    collections
+  end
+
+  # As for ancestor_object_of_class, but returns only the pid
+  def ancestor_of_class(class_filter = nil)
+    ancestor = ancestor_object_of_class(class_filter)
+    ancestor ? ancestor.pid : nil
+  end
+
+  # Returns array with hash values for each ancestor of (optionally) specified class
+  # If no class_filter is specified, all ancestors are returned
+  # If filtering on a class, search stops as soon as an ancestor fails to match
+  # Array values start with oldest included ancestor
+  def list_ancestor_objects(class_filter = nil)
+    ancestor_list = []
+    unless parent.blank? || (class_filter && !class_filter.in?(valid_parent_classes))
+      ancestor = ActiveFedora::Base.find(parent, cast: true)
+      if class_filter.nil? || ancestor.class == class_filter
+        ancestor_list.unshift(ancestor)
+        ancestor_list = ancestor.list_ancestor_objects(class_filter) + ancestor_list if ancestor.parent
+      end
+    end
+    ancestor_list
+  end
+
+  # As for list_ancestor_objects, but returns array of hash values
+  def list_ancestors(class_filter = nil)
+    list_ancestor_objects(class_filter).collect { |x| x.to_hash }
   end
 
 end

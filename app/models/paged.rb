@@ -4,6 +4,7 @@
 
 class Paged < ActiveFedora::Base
   VALID_PARENT_CLASSES = [Collection]
+  VALID_CHILD_CLASSES = [Section, Page]
   include Node
 
   has_file_datastream 'pagedXML'
@@ -37,8 +38,13 @@ class Paged < ActiveFedora::Base
     @datastreams['pagedXML']
   end
 
+  # Additional values to include in hash used by descendent/ancestry list methods
+  def additional_hash_values
+    {title: title}
+  end
+
   def to_solr(solr_doc={}, opts={})
-    pages = self.page_list
+    pages = self.list_descendents(Page)
     super(solr_doc, opts)
     solr_doc[Solrizer.solr_name('pages', 'ss')] = pages.to_json # single value field as json
     solr_doc[Solrizer.solr_name('pages', 'ssm')] = pages # multivalue field as ruby hash
@@ -48,7 +54,7 @@ class Paged < ActiveFedora::Base
 
   def update_paged_struct(delimiter = '--')
     new_struct = []
-    self.supercollections.reverse_each do |collection|
+    self.list_ancestors(Collection).reverse_each do |collection|
       new_struct.unshift(collection[:name])
     end
     new_struct.each_with_index do |value, index|
