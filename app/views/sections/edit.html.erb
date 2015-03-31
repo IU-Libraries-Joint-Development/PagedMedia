@@ -1,0 +1,18 @@
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
+
+<div id="content" class="span9">
+  <%= render_breadcrumbs %>
+  <h1>Section: Edit</h1>
+  
+  <%= render 'form' %>
+  
+  <%= link_to 'Show', @section %> |
+  <% unless @section.parent.blank? || @section.parent != @section.ancestor_of_class(Paged) %>
+    <%= link_to 'Back', paged_sections_path(@section.parent) %>
+  <% else %>
+    <%= link_to 'Back', sections_path %>
+  <% end %>
+</div>
+

@@ -41,5 +41,16 @@ describe Paged do
     # This will attempt to use Fedora and will fail if not available during tests
     expect(paged.save).to be_true
   end
+
+  # Node mix-in shared examples
+
+  # Node traits, specific to this class
+  describe "#valid_parent_classes" do
+    subject(:class_array) { paged.valid_parent_classes }
+    specify "equals [Collection]" do
+      expect(class_array.size).to eq 1
+      expect(class_array).to include Collection
+    end
+  end
   
 end

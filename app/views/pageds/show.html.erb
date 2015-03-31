@@ -26,6 +26,7 @@
         <% end %>
       </li>
     </ul>
+    <%= render 'nodes/node_display_fields', node: @paged %>
     <div>
       <%= button_to 'Update', edit_paged_path(@paged), :method => :get %>
     </div>

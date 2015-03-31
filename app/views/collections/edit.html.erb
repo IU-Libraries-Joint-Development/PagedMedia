@@ -1,0 +1,14 @@
+<div id="sidebar" class="span3">
+  <%= render partial: 'shared/side_navbar' %>
+</div>
+
+<div id="content" class="span9">
+  <%= render_breadcrumbs %>
+  <h1>Collection: Edit</h1>
+  
+  <%= render 'form' %>
+  
+  <%= link_to 'Show', @collection %> |
+  <%= link_to 'Back', collections_path %>
+</div>
+

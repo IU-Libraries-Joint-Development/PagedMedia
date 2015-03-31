@@ -1,0 +1,30 @@
+<%= form_for(@collection) do |f| %>
+  <% if @collection.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@collection.errors.count, "error") %> prohibited this collection from being saved:</h2>
+
+      <ul>
+      <% @collection.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <ol>
+    <li class='field'>
+      <%= f.label :name %>
+      <%= f.text_field :name %>
+    </li>
+  </ol>
+
+  <%= render 'nodes/node_form_fields', f: f %>
+
+  <div class="actions collection_submit">
+    <% if !@collection.new? %>
+      <%= f.submit "Update" %>
+    <% else %>
+      <%= f.submit "Create" %>
+    <% end %>
+  </div>
+<% end %>

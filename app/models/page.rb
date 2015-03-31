@@ -3,7 +3,8 @@
 # Copyright 2014 Indiana University
 
 class Page < ActiveFedora::Base
-
+  VALID_PARENT_CLASSES = [Paged, Section]
+  VALID_CHILD_CLASSES = []
   include Node
 
   has_metadata 'descMetadata', type: PageMetadata
@@ -15,6 +16,8 @@ class Page < ActiveFedora::Base
   has_attributes :logical_number, datastream: 'descMetadata',  multiple: false
   has_attributes :text,  datastream: 'descMetadata', multiple: false
   has_attributes :page_struct, datastream: 'descMetadata', multiple: true
+
+  before_save :update_page_struct
 
   # Setter for the image
   def image_file=(file)
@@ -52,7 +55,6 @@ class Page < ActiveFedora::Base
     @datastreams['pageOCR']
   end
 
-
   # Setter for the XML datastream
   def xml_file=(file)
     ds = @datastreams['pageXML']
@@ -70,6 +72,16 @@ class Page < ActiveFedora::Base
     @datastreams['pageXML']
   end
 
+  def self.fedora_url
+    @fedora_url ||= ActiveFedora.fedora_config.credentials[:url] + '/'
+  end
+
+  # Additional values to include in hash used by descendent/ancestry list methods
+  def additional_hash_values
+    #FIXME: stash fedora_url and re-use
+    #fedora_url = ActiveFedora.fedora_config.credentials[:url] + '/'
+    {logical_number: logical_number, ds_url: self.class.fedora_url + image_datastream.url}
+  end
 
   def to_solr(solr_doc={}, opts={})
     super(solr_doc, opts)
@@ -77,5 +89,17 @@ class Page < ActiveFedora::Base
       solr_doc[Solrizer.solr_name('item_id', 'si')] = parent
     end
     return solr_doc
+  end
+
+  def update_page_struct(delimiter = '--')
+    new_struct = []
+    new_struct.unshift(logical_number) if logical_number
+    self.list_ancestors(Section).reverse_each do |section|
+      new_struct.unshift(section[:name])
+    end
+    new_struct.each_with_index do |value, index|
+      new_struct[index] = new_struct[index - 1] + delimiter + value unless index == 0
+    end
+    self.page_struct = new_struct
   end
 end

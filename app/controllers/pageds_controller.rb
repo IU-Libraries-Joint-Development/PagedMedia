@@ -157,6 +157,8 @@ class PagedsController < ApplicationController
     else
       pages = {:id => params[:id], :error => 'No pages'}
     end
+    #FIXME: keep?
+    pages ||= "[]"
     return pages
   end
 
@@ -168,7 +170,7 @@ class PagedsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def paged_params
-      params.require(:paged).permit(:type, :title, :creator, :publisher, :publisher_place, :issued, :xml_file)
+      params.require(:paged).permit(:type, :title, :creator, :publisher, :publisher_place, :issued, :xml_file, :prev_sib, :next_sib, :parent, :children)
     end
 
     def reorder_params

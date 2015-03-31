@@ -63,13 +63,25 @@ describe PagedsController do
       end
     end
     context 'with invalid params' do
-      pending '(untestable until invalid paged parameters exist)'
+      let(:post_create) { post :create, paged: FactoryGirl.attributes_for(:paged, prev_sib: test_paged.pid) }
+      it 'assigns an unpersisted @paged' do
+        post_create
+        expect(assigns(:paged)).to be_a Paged
+        expect(assigns(:paged)).not_to be_persisted
+      end
+      it 'does not create a new object' do
+        expect{ post_create }.not_to change(Paged, :count)
+      end
+      it 'renders the new template' do
+        post_create
+        expect(response).to render_template :new
+      end
     end
   end
 
   describe '#update' do
+    let!(:original_title) { test_paged.title }
     context 'with valid params' do
-      let!(:original_title) { test_paged.title }
       before(:each) { put :update, id: test_paged.id, paged: { title: test_paged.title + " updated" } }
       it 'assigns @paged' do
         expect(assigns(:paged)).to eq test_paged
@@ -87,7 +99,18 @@ describe PagedsController do
       end
     end
     context 'with invalid params' do
-      pending '(untestable until invalid paged parameters exist)'
+      before(:each) { put :update, id: test_paged.id, paged: { title: test_paged.title + " updated", prev_sib: test_paged.id } }
+      it 'does not update values' do
+        expect(test_paged.title).to eq original_title
+        test_paged.reload
+        expect(test_paged.title).to eq original_title
+      end
+      it 'does not flash success' do
+        expect(flash[:notice].to_s).not_to match /success/i
+      end
+      it 'renders the edit template' do
+        expect(response).to render_template :edit
+      end
     end
   end
 

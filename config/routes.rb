@@ -1,7 +1,9 @@
 PagedMedia::Application.routes.draw do
   resources :pages
-
+  resources :collections
+  resources :sections
   resources :pageds do
+    resources :sections, shallow: true
     patch :reorder, on: :member
     get :page, on: :member
     get :pages, on: :member

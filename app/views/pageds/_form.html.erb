@@ -57,6 +57,9 @@
       <%= f.file_field :xml_file %>
     </li>
   </ol>
+
+  <%= render 'nodes/node_form_fields', f: f %>
+
   <div class="actions paged_submit">
     <% if !@paged.new? %>
       <%= f.submit "Update"%>
