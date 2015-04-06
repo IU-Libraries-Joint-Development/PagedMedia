@@ -9,6 +9,17 @@ class Paged < ActiveFedora::Base
 
   has_file_datastream 'pagedXML'
 
+#  has_metadata 'descMetadata', type: PagedMetadataOaiDc
+  has_metadata "descMetadata", type: PagedDescMetadata
+
+  # Single-value fields
+  has_attributes :title, :contributor, :creator, :coverage, :issued, :date, :description,
+                 :identifier, :language, :publisher, :publisher_place,
+                 :rights, :source, :subject, :type, datastream: :descMetadata, multiple: false
+  # Multi-value fields
+  has_attributes :paged_struct, datastream: :descMetadata, multiple: true
+
+=begin
   has_metadata 'descMetadata', type: PagedMetadataOaiDc, label: 'PMP PagedObject descriptive metadata'
 
   has_attributes :title, datastream: 'descMetadata', multiple: false  # TODO update DC.title as well?
@@ -18,7 +29,7 @@ class Paged < ActiveFedora::Base
   has_attributes :issued, datastream: 'descMetadata', multiple: false
   has_attributes :type, datastream: 'descMetadata', multiple: false
   has_attributes :paged_struct, datastream: 'descMetadata', multiple: true
-
+=end
   before_save :update_paged_struct
 
   # Setter for the XML datastream
