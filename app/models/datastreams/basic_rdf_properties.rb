@@ -46,7 +46,9 @@ module BasicRdfProperties
       end
       map.source(in: RDF::DC)
       map.coverage(in: RDF::DC)
-      map.type(in: RDF::DC)
+      map.type(in: RDF::DC) do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end
