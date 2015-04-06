@@ -1,5 +1,5 @@
 class PagedsController < ApplicationController
-  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader, :validate]
+  before_action :set_paged, only: [:show, :edit, :update, :destroy, :bookreader, :validate, :reorder]
 
   # GET /pageds
   # GET /pageds.json
@@ -111,36 +111,10 @@ class PagedsController < ApplicationController
   # PATCH /pageds/1/reorder
   def reorder
     unless params[:reorder_submission].nil? || params[:reorder_submission].blank?
-      page_ids = params[:reorder_submission].to_s.split(',')
-      page_ids ||= []
-      pages = []
-      page_ids.each do |page_id|
-        pages << Page.find(page_id)
-      end
-
-      previous_page = nil
-      pages.each do |page|
-        page.skip_sibling_validation = true
-        page.prev_sib = previous_page
-        previous_page = page.id
-      end
-      next_page = nil
-      pages.reverse_each do |page|
-        page.next_sib = next_page
-        next_page = page.id
-      end
-
-      page_errors = ""
-      pages.each do |page|
-        if !page.save(unchecked: 1)
-          page_errors += "#{page.logical_number}. #{page.id} save error: #{page.errors.messages.to_s} | "
-        end
-      end
-      if page_errors.blank?
-        @paged = Paged.find(params[:id])
-        @paged.update_index 
-      end  
-      flash[:notice] = page_errors unless page_errors.blank?
+      parsed_ids = JSON.parse(params[:reorder_submission])
+      @paged.restructure(parsed_ids)
+      @paged.update_index
+      flash[:notice] = 'Reordered pages... maybe? FIXME'
     else
       flash[:notice] = "No changes to the page order were submitted."
     end

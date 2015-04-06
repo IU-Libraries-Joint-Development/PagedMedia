@@ -466,4 +466,33 @@ module Node
     list_ancestor_objects(class_filter).collect { |x| x.to_hash }
   end
 
+  def restructure(child_hash_array)
+    new_children = child_hash_array.map { |e| e["id"] }
+    new_child_objects = new_children.map { |pid| ActiveFedora::Base.find(pid, cast: true) }
+    if self.children != new_children
+      self.children = new_children
+      self.skip_sibling_validation = true
+      self.save(unchecked: true)
+      prev_child = nil
+      #FIXME: collapse this to a single save
+      new_child_objects.each do |child|
+        unless prev_child.nil?
+          prev_child.next_sib = child.pid
+          prev_child.skip_sibling_validation = true
+          prev_child.save(unchecked: true)
+        end
+        child.parent = self.pid
+        child.prev_sib = (prev_child ? prev_child.pid : nil)
+        child.next_sib = nil
+        child.skip_sibling_validation = true
+        child.save(unchecked: true)
+        prev_child = child
+      end
+    end
+    new_child_objects.each_with_index do |child, index|
+      nested_array = child_hash_array[index]["children"]
+      child.restructure(nested_array) if nested_array
+    end
+  end
+
 end
