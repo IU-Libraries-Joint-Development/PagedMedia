@@ -7,7 +7,7 @@ describe Paged do
   it "should have the specified datastreams" do
     # Check for descMetadata datastream
     expect(paged.datastreams.keys).to include("descMetadata")
-    expect(paged.descMetadata).to be_kind_of PagedMetadataOaiDc
+    expect(paged.descMetadata).to be_kind_of PagedDescMetadata
     # Check for rightsMetadata datastream
     expect(paged.datastreams.keys).to include("rightsMetadata")
     expect(paged.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
