@@ -9,5 +9,9 @@ class PagedDescMetadata < ActiveFedora::NtriplesRDFDatastream
     end
   end
 
+  def prefix(name)
+    return "#{name}".to_sym
+  end
+
 
 end

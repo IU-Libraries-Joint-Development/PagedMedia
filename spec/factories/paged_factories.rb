@@ -14,7 +14,8 @@ FactoryGirl.define do
     creator "Factory Girl"
     publisher "Generic Publisher"
     publisher_place "Metropolis"
-    issued Time.now
+    # FIXME Why couldn't we get Time.now through the RDF::DC validations?
+    issued "2015-04-06"
 
     #Create a test paged object
     factory :test_paged do

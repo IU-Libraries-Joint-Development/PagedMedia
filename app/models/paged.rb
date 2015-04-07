@@ -9,8 +9,7 @@ class Paged < ActiveFedora::Base
 
   has_file_datastream 'pagedXML'
 
-#  has_metadata 'descMetadata', type: PagedMetadataOaiDc
-  has_metadata "descMetadata", type: PagedDescMetadata
+  has_metadata "descMetadata", type: PagedDescMetadata, label: 'PMP PagedObject descriptive metadata'
 
   # Single-value fields
   has_attributes :title, :contributor, :creator, :coverage, :issued, :date, :description,
@@ -30,6 +29,7 @@ class Paged < ActiveFedora::Base
   has_attributes :type, datastream: 'descMetadata', multiple: false
   has_attributes :paged_struct, datastream: 'descMetadata', multiple: true
 =end
+
   before_save :update_paged_struct
 
   # Setter for the XML datastream
