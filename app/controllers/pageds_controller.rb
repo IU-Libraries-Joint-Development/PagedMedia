@@ -112,9 +112,8 @@ class PagedsController < ApplicationController
   def reorder
     unless params[:reorder_submission].nil? || params[:reorder_submission].blank?
       parsed_ids = JSON.parse(params[:reorder_submission])
-      @paged.restructure(parsed_ids)
-      @paged.update_index
-      flash[:notice] = 'Reordered pages... maybe? FIXME'
+      @paged.restructure_children(parsed_ids)
+      flash[:notice] = 'Reordered pages.'
     else
       flash[:notice] = "No changes to the page order were submitted."
     end

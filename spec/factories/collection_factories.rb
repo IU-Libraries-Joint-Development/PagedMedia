@@ -9,5 +9,9 @@ FactoryGirl.define do
       name nil
     end
 
+    trait :unchecked do
+      skip_sibling_validation true
+    end
+
   end
 end

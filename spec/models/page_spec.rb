@@ -4,6 +4,19 @@ describe Page do
 
   let!(:paged) { FactoryGirl.create :test_paged }
   let!(:page) { FactoryGirl.create :page, prev_sib: '', next_sib: '' }
+  let(:valid_page) { FactoryGirl.build :page }
+  let(:unchecked_page) { FactoryGirl.build :page, :unchecked }
+
+  describe "FactoryGirl" do
+    it "provides a valid page" do
+      expect(valid_page).to be_valid
+    end
+    describe "with :unchecked trait" do
+      it "has skip_sibling_validation" do
+        expect(unchecked_page.skip_sibling_validation).to eq true
+      end
+    end
+  end
 
   it "should have the specified datastreams" do
     # Check for descMetadata datastream

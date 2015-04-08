@@ -3,6 +3,51 @@ require 'spec_helper'
 describe Paged do
   
   let(:paged) { FactoryGirl.create :test_paged }
+  let(:valid_paged) { FactoryGirl.build :paged }
+  let(:unchecked_paged) { FactoryGirl.build :paged, :unchecked }
+
+  describe "FactoryGirl" do
+    specify "provides a valid object" do
+      expect(valid_paged).to be_valid
+    end
+    describe "with :unchecked trait" do
+      it "has skip_sibling_validation" do
+        expect(unchecked_paged.skip_sibling_validation).to eq true
+      end
+    end
+    describe "with :with_pages trait:" do
+      specify "creates 5 pages by default" do
+        test_paged = FactoryGirl.create :paged, :with_pages
+	expect(Page.all.size).to eq 5
+      end
+      number_of_pages = 3
+      specify "creates customizable number of pages: #{number_of_pages}" do
+        test_paged = FactoryGirl.create :paged, :with_pages, number_of_pages: number_of_pages
+	expect(Page.all.size).to eq number_of_pages
+      end
+    end
+    describe "with :with_sections trait:" do
+      specify "creates 3 sections by default" do
+        test_paged = FactoryGirl.create :paged, :with_sections
+	expect(Section.all.size).to eq 3
+      end
+      number_of_sections = 5
+      specify "creates customizable number of sections: #{number_of_sections}" do
+        test_paged = FactoryGirl.create :paged, :with_sections, number_of_sections: number_of_sections
+	expect(Section.all.size).to eq number_of_sections
+      end
+    end
+    describe "with :with_sections_with_pages trait:" do
+      let!(:test_paged) { FactoryGirl.create :paged, :with_sections_with_pages }
+      specify "creates 3 sections" do
+        puts test_paged.list_descendents_recursive
+        expect(Section.all.size).to eq 3
+      end
+      specify "creates 9 pages" do
+        expect(Page.all.size).to eq 9
+      end
+    end
+  end
   
   it "should have the specified datastreams" do
     # Check for descMetadata datastream

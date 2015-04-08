@@ -5,13 +5,20 @@ describe Collection do
   let(:collection) { FactoryGirl.create :collection }
   let(:valid_collection) { FactoryGirl.build :collection }
   let(:invalid_collection) { FactoryGirl.build :collection, :invalid }
+  let(:unchecked_collection) { FactoryGirl.build :collection, :unchecked }
 
   describe "FactoryGirl" do
     it "provides a valid valid_object" do
+      puts valid_collection.name
       expect(valid_collection).to be_valid
     end
     it "provides an invalid invalid_object" do
       expect(invalid_collection).to be_invalid
+    end
+    describe "with :unchecked trait" do
+      it "has skip_sibling_validation" do
+        expect(unchecked_collection.skip_sibling_validation).to be true
+      end
     end
   end
 

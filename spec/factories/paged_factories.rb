@@ -21,22 +21,41 @@ FactoryGirl.define do
       title "Test Paged Object"
     end
 
-    # Create paged object with 5 pages
+    trait :unchecked do
+      skip_sibling_validation true
+    end
+
+    # Create paged object with sections (3 by default)
+    trait :with_sections do
+      ignore do
+        number_of_sections 3
+      end
+      after(:create) do |paged, evaluator|
+        FactoryHelpers::NodeHelpers.create_children(paged, Section, evaluator.number_of_sections)
+      end
+    end
+
+    # Create paged object with sections and pages
+    trait :with_sections_with_pages do
+      ignore do
+        number_of_sections 3
+	pages_per_section 3
+      end
+      after(:create) do |paged, evaluator|
+        sections = FactoryHelpers::NodeHelpers.create_children(paged, Section, evaluator.number_of_sections)
+	sections.each do |section|
+	  FactoryHelpers::NodeHelpers.create_children(section, Page, evaluator.pages_per_section)
+	end
+      end
+    end
+
+    # Create paged object with pages (5 by default)
     trait :with_pages do
-      after(:create) do |paged|
-        pages = Array.new
-        (0...5).each do |i|
-          pages[i] = create(:page, :unchecked, parent: paged.pid, logical_number: "Page #{i + 1}", prev_sib: i.zero? ? nil : pages[i - 1].pid)
-        end
-        next_page = nil
-        pages.reverse_each do |page|
-          page.next_sib = next_page.pid if next_page
-          page.skip_sibling_validation = true
-          page.save!(unchecked: true)
-          next_page = page
-        end
-        paged.reload
-        paged.update_index
+      ignore do
+        number_of_pages 5
+      end
+      after(:create) do |paged, evaluator|
+        FactoryHelpers::NodeHelpers.create_children(paged, Page, evaluator.number_of_pages)
       end
     end
 
