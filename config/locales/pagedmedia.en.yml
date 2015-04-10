@@ -1,0 +1,22 @@
+en:
+  pagedmedia:
+    fields:
+      RDF::DC:
+        title: "Title"
+        description: "Description"
+        creator: "Creator"
+        subject: "Subject"
+        contributor: "Contributor"
+        publisher: "Publisher"
+        coverage: "Coverage"
+        source: "Source"
+        based_near: "Location"
+        language: "Language"
+        date_uploaded: "Date Uploaded"
+        date_modified: "Date Modified"
+        date_created: "Date Created"
+        rights: "Rights"
+        human_readable_type: "Resource Type"
+        format: "File Format"
+        identifier: "Identifier"
+
