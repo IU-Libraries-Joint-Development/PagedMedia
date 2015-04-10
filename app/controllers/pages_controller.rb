@@ -15,7 +15,7 @@ class PagesController < ApplicationController
   def show
     session[:came_from] = :page
     if @paged
-      add_breadcrumb @paged.title, paged
+      add_breadcrumb @paged.title, @paged
       add_breadcrumb @page.logical_number, @page
     end
   end
@@ -30,7 +30,7 @@ class PagesController < ApplicationController
   # GET /pages/1/edit
   def edit
     if @paged
-      add_breadcrumb paged.title, paged
+      add_breadcrumb @paged.title, @paged
     end
     add_breadcrumb @page.logical_number, @page
     add_breadcrumb "Edit"
