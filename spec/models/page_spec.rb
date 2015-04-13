@@ -87,29 +87,19 @@ describe Page do
   # Populate paged with three linked pages, and return references to them.
   def make_a_book
     # First page, can have no siblings
-    page1 = FactoryGirl.create(:page, logical_number: '1', prev_sib: '', next_sib: '')
-    page1.parent = paged.pid
-    page1.save!
-    paged.save!
+    page1 = FactoryGirl.create(:page, logical_number: '1', parent: paged.pid,
+      prev_sib: '',
+      next_sib: '')
 
     # Second page, must have at least one sibling
-    page3 = FactoryGirl.create(:page, logical_number: '3', next_sib: '')
-    page1.reload
-    page3.prev_sib = page1.pid
-    paged.reload
-    page3.parent = paged.pid
-    page3.save!
-    paged.save!
+    page3 = FactoryGirl.create(:page, logical_number: '3', parent: paged.pid,
+      prev_sib: page1.pid, # follows first page
+      next_sib: '')
 
     # Third page, inserts itself between first and second
-    page2 = FactoryGirl.create(:page, logical_number: '2')
-    page1.reload
-    page2.prev_sib = page1.pid # follows first page
-    page3.reload
-    page2.next_sib = page3.pid # precedes second page
-    paged.reload
-    page2.parent = paged.pid
-    page2.save!
+    page2 = FactoryGirl.create(:page, logical_number: '2', parent: paged.pid,
+      prev_sib: page1.pid, # follows first page
+      next_sib: page3.pid) # precedes second page
 
     return [ page1, page2, page3 ]
   end
