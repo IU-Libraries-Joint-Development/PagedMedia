@@ -134,16 +134,18 @@ describe SectionsController do
 
   describe "PUT update" do
     describe "with valid params" do
-      before(:each) { put :update, id: section.pid, section: updated_attributes }
       it "updates the requested section" do
         expect(section.name).not_to eq updated_name
+        put :update, id: section.pid, section: updated_attributes
         section.reload
         expect(section.name).to eq updated_name
       end
       it "assigns the requested section as @section" do
+        put :update, id: section.pid, section: updated_attributes
         expect(assigns(:section)).to eq section 
       end
       it "redirects to the section" do
+        put :update, id: section.pid, section: updated_attributes
         expect(response).to redirect_to section
       end
     end
