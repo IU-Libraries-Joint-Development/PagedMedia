@@ -1,22 +1,49 @@
 en:
   pagedmedia:
-    fields:
-      RDF::DC:
-        title: "Title"
-        description: "Description"
-        creator: "Creator"
-        subject: "Subject"
-        contributor: "Contributor"
-        publisher: "Publisher"
-        coverage: "Coverage"
-        source: "Source"
-        based_near: "Location"
-        language: "Language"
-        date_uploaded: "Date Uploaded"
-        date_modified: "Date Modified"
-        date_created: "Date Created"
-        rights: "Rights"
-        human_readable_type: "Resource Type"
-        format: "File Format"
-        identifier: "Identifier"
+    default:
+      fields:
+        RDF::DC:
+          title: "Default Title"
+          description: "Default Description"
+    newspaper:
+      fields:
+        RDF::DC:
+          title: "Newspaper Title"
+          description: "Newspaper Description"
+          creator: "Newspaper Creator"
+          subject: "Subject"
+          contributor: "Contributor"
+          publisher: "Publisher"
+          coverage: "Coverage"
+          source: "Source"
+          based_near: "Location"
+          language: "Language"
+          date_uploaded: "Date Uploaded"
+          date_modified: "Date Modified"
+          date_created: "Date Created"
+          rights: "Rights"
+          human_readable_type: "Resource Type"
+          format: "File Format"
+          identifier: "Identifier"
+    score:
+      fields:
+        RDF::DC:
+          title: "Score Title"
+          description: "Score Description"
+          creator: "Score Creator"
+          subject: "Subject"
+          contributor: "Contributor"
+          publisher: "Publisher"
+          coverage: "Coverage"
+          source: "Source"
+          based_near: "Location"
+          language: "Language"
+          date_uploaded: "Date Uploaded"
+          date_modified: "Date Modified"
+          date_created: "Date Created"
+          rights: "Rights"
+          human_readable_type: "Resource Type"
+          format: "File Format"
+          identifier: "Identifier"
+
 
