@@ -101,14 +101,19 @@ module Node
       return
     end
 
-    # At least one child of my parent already exists, so I must have
-    # at least one sibling, unless the one child is this one (we are updating,
-    # not creating).
-    if (prev_sib.blank? && next_sib.blank? &&
-        ((my_parent.children.size > 1) ||
-        (!pid.blank? && (ActiveFedora::Base.find(my_parent.children.first, cast: true).pid != pid))))
-      errors.add(:base, 'must have one or both siblings if parent has children')
-      return
+    # At least one child of my parent already exists.
+    if (pid.blank?)
+      # I am new so I must have a sibling.
+      if (prev_sib.blank? && next_sib.blank?)
+        errors.add(:base, 'must have one or both siblings if parent has children')
+        return
+      end
+    else
+      # I have been persisted, so I must either have a sibling or be my parent's only child.
+      if (prev_sib.blank? && next_sib.blank? && (my_parent.children.size > 1 || my_parent.children.first != pid))
+        errors.add(:base, 'must have one or both siblings if parent has children')
+        return
+      end
     end
 
     # Check that prev_sib is a child of my parent.
@@ -204,6 +209,7 @@ module Node
 
     if opts.has_key?(:unchecked)
       logger.info("Saved #{self.class.name} #{pid} (unchecked)")
+      logger.debug { self.inspect }
       return true
     end
 
@@ -255,6 +261,7 @@ module Node
 
     # Success!
     logger.info("Saved #{self.class.name} #{pid}")
+    logger.debug { self.inspect }
     true
   end
 
