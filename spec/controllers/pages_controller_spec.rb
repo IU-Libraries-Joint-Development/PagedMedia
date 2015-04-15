@@ -20,12 +20,23 @@ describe PagesController do
   end
 
   describe '#show' do
-    before(:each) { get :show, id: test_page.pid }
-    it 'sets @page' do
-      expect(assigns(:page)).to eq test_page
+    context 'without paged parent' do
+      before(:each) { get :show, id: test_page.pid }
+      it 'sets @page' do
+        expect(assigns(:page)).to eq test_page
+      end
+      it 'renders :show template' do
+        expect(response).to render_template :show
+      end
     end
-    it 'renders :show template' do
-      expect(response).to render_template :show
+    context 'with paged parent' do
+      before(:each) do
+        this_page = FactoryGirl.create :page, parent: test_paged.pid
+        get :show, id: this_page.pid
+      end
+      it 'renders :show template' do
+        expect(response).to render_template :show
+      end
     end
   end
 
