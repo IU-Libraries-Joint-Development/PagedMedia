@@ -33,4 +33,11 @@ PagedMedia::Application.configure do
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
+
+  # Get enough logging to understand what is happening.
+  #config.log_level = :debug
+  #aLogger = ::Logger.new(config.paths['log'].first)
+  #aLogger.datetime_format = '%H:%M:%S'
+  #config.logger = aLogger
+
 end
