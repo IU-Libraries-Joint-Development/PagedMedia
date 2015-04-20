@@ -5,6 +5,7 @@ describe Section do
   let(:section) { FactoryGirl.create :section }
   let(:valid_section) { FactoryGirl.build :section }
   let(:invalid_section) { FactoryGirl.build :section, :invalid }
+  let(:unchecked_section) { FactoryGirl.build :section, :unchecked }
 
   describe "FactoryGirl" do
     it "provides a valid valid_object" do
@@ -12,6 +13,22 @@ describe Section do
     end
     it "provides an invalid invalid_object" do
       expect(invalid_section).to be_invalid
+    end
+    describe "with :unchecked trait" do
+      it "has skip_sibling_validation" do
+        expect(unchecked_section.skip_sibling_validation).to eq true
+      end
+    end
+    describe "with :with_pages trait:" do
+      specify "5 pages by default" do
+        section_with_pages = FactoryGirl.create :section, :with_pages
+	expect(Page.all.size).to eq 5
+      end
+      number_of_pages = 3
+      specify "customizable number of pages: #{number_of_pages}" do
+        section_with_pages = FactoryGirl.create :section, :with_pages, number_of_pages: number_of_pages
+	expect(Page.all.size).to eq number_of_pages
+      end
     end
   end
 

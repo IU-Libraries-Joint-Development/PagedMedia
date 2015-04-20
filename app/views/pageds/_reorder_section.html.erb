@@ -1,0 +1,11 @@
+<li id="<%= child.pid %>" class="ui-state-default ui-sortable-handle" data-id="<%= child.pid %>">
+  <%= child.class.to_s %>: <%= child.class == Page ? child.logical_number : child.name %> (<%= child.pid %>)
+  <% if child.class == Section %>
+    <ol>
+      <%# FIXME: handle empty section %>
+      <% child.order_child_objects[0].each do |grandchild| %>
+        <%= render partial: 'reorder_section', locals: { child: grandchild } %>
+      <% end %>
+    </ol>
+  <% end %>
+</li>

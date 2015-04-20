@@ -14,6 +14,14 @@ $(document).on "click", ".show_add_page_form", ->
       $("#cancel_add_page").toggle()
       return false
 
-jQuery ->
-  $("#sortable_pages").sortable update: (event, ui) ->
-    $("#reorder_submission").val $("#sortable_pages").sortable("toArray")
+$ ->
+  group = $('ol.sortable_pages').sortable(
+    group: 'sortable_pages'
+    onDrop: (item, container, _super) ->
+      data = group.sortable('serialize').get()
+      jsonString = JSON.stringify(data, null, ' ')
+      document.getElementById('reorder_submission').value = jsonString
+      _super item, container
+      return
+  )
+  return
