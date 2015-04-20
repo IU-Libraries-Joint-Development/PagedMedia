@@ -83,16 +83,18 @@ describe CollectionsController do
 
   describe "PUT update" do
     describe "with valid params" do
-      before(:each) { put :update, id: collection.pid, collection: updated_attributes }
       it "updates the requested collection" do
         expect(collection.name).not_to eq updated_name
+        put :update, id: collection.pid, collection: updated_attributes
         collection.reload
         expect(collection.name).to eq updated_name
       end
       it "assigns the requested collection as @collection" do
+        put :update, id: collection.pid, collection: updated_attributes
         expect(assigns(:collection)).to eq collection 
       end
       it "redirects to the collection" do
+        put :update, id: collection.pid, collection: updated_attributes
         expect(response).to redirect_to collection
       end
     end

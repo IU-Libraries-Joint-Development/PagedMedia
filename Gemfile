@@ -49,6 +49,7 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+# gem 'byebug', group: [:development, :test]
 
 gem "bootstrap-sass"
 gem "devise"

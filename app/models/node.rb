@@ -14,6 +14,14 @@ module Node
   VALID_PARENT_CLASSES = []
   VALID_CHILD_CLASSES = []
 
+  def valid_parent_classes
+    self.class.const_get(:VALID_PARENT_CLASSES)
+  end
+
+  def valid_child_classes
+    self.class.const_get(:VALID_CHILD_CLASSES)
+  end
+
   def self.included(including_class)
     including_class.const_set(:VALID_PARENT_CLASSES, VALID_PARENT_CLASSES) unless including_class.const_defined?(:VALID_PARENT_CLASSES)
     including_class.const_set(:VALID_CHILD_CLASSES, VALID_CHILD_CLASSES) unless including_class.const_defined?(:VALID_CHILD_CLASSES)
@@ -32,9 +40,11 @@ module Node
       # PIDs of my child Nodes
       has_attributes :children, datastream: 'nodeMetadata', multiple: true
 
-      # skip_sibling_validation both skips the custom validation and runs an unchecked save
+      # skip_sibling_validation skips the custom validation
       attr_accessor :skip_sibling_validation
-      validate :validate_has_required_siblings, unless: :skip_sibling_validation
+
+      validate :validate_linkage, unless: :skip_sibling_validation
+      validate :validate_children
 
       def self.valid_parent_classes
         const_get(:VALID_PARENT_CLASSES)
@@ -46,33 +56,123 @@ module Node
     end
   end
 
-  # If the parent is empty, sibling pointers should be nil, otherwise at least
-  # one must be non-nil.
-  def validate_has_required_siblings
-    return if parent.blank?
+  # Check linkage with siblings and parent.  These are done together because
+  # both depend on knowing the parent, and we economize on an expensive find().
+  def validate_linkage
+    # If there is no parent, then this node can't have siblings and we can't
+    # check descent
+    if parent.blank?
+      unless prev_sib.blank?
+        logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
+        errors.add(:prev_sib, 'Unowned node cannot have siblings')
+      end
+
+      unless next_sib.blank?
+        logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
+        errors.add(:next_sib, 'Unowned node cannot have siblings')
+      end
+
+      return
+    end
+
     my_parent = ActiveFedora::Base.find(parent, cast: true)
 
-    # Parent has no children yet, so this node can't have siblings
+    # Check my parentage.
+    # NOT OK if parent does not exist.
+    if (my_parent.blank?)
+      logger.error("#{self.class.name} #{pid}:  parent #{parent} does not exist")
+      errors.add(:parent, 'parent node does not exist')
+      return
+    end
+
+    # OK to already be parent's child.
+
+    # NOT OK if parent class cannot be parent for this child
+    if !(my_parent.class.in? valid_parent_classes)
+      logger.error("#{self.class.name} #{pid}:  parent #{parent} class (#{my_parent.class}) is not in valid class list: #{valid_parent_classes})")
+      errors.add(:parent, 'parent node is invalid class')
+      return
+    end
+
+    # If parent has no children yet, then this node can't have siblings
     if (my_parent.children.size == 0)
       errors.add(:prev_sib, 'prev_sib must be empty') unless prev_sib.blank?
       errors.add(:next_sib, 'next_sib must be empty') unless next_sib.blank?
       return
     end
 
-    # At least one child of my parent already exists.  Must have at least one
-    # sibling unless the one child is this one (we are updating, not creating).
-    if (prev_sib.blank? && next_sib.blank? &&
-        ((my_parent.children.size > 1) || (ActiveFedora::Base.find(my_parent.children.first, cast: true).pid != pid)))
-      errors[:base] << 'must have one or both siblings if parent has children'
+    # At least one child of my parent already exists.
+    if (pid.blank?)
+      # I am new so I must have a sibling.
+      if (prev_sib.blank? && next_sib.blank?)
+        errors.add(:base, 'must have one or both siblings if parent has children')
+        return
+      end
+    else
+      # I have been persisted, so I must either have a sibling or be my parent's only child.
+      if (prev_sib.blank? && next_sib.blank? && (my_parent.children.size > 1 || my_parent.children.first != pid))
+        errors.add(:base, 'must have one or both siblings if parent has children')
+        return
+      end
     end
+
+    # Check that prev_sib is a child of my parent.
+    unless prev_sib.blank?
+      unless (my_parent.children.include?(prev_sib))
+        logger.error("#{self.class.name} #{pid}:  #{prev_sib} not a child of #{my_parent.pid}")
+        errors.add(:prev_sib, "#{prev_sib} not a child of #{my_parent.pid}")
+        return
+      end
+
+      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
+      if (prev_sibling.next_sib != next_sib) && (!pid.blank? && (prev_sibling.next_sib != pid))
+        logger.error("#{self.class.name} #{pid}:  invalid next_sib #{next_sib}")
+        errors.add(:next_sib, "invalid next_sib #{next_sib}")
+        return
+      end
+    end
+
+    # Check that next_sib is a child of my parent.
+    unless next_sib.blank?
+      unless (my_parent.children.include?(next_sib))
+        logger.error("#{self.class.name} #{pid}:  #{next_sib} not a child of #{my_parent.pid}")
+        errors.add(:next_sib, "#{next_sib} not a child of #{my_parent.pid}")
+        return
+      end
+
+      next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
+      if (next_sibling.prev_sib != prev_sib) && (!pid.blank? && (next_sibling.prev_sib != pid))
+        logger.error("#{self.class.name} #{pid}:  invalid prev_sib #{prev_sib}")
+        errors.add(:prev_sib, "invalid prev_sib #{prev_sib}")
+        return
+      end
+    end
+
   end
 
-  def valid_parent_classes
-    self.class.const_get(:VALID_PARENT_CLASSES)
-  end
-
-  def valid_child_classes
-    self.class.const_get(:VALID_CHILD_CLASSES)
+  # Ensure that my declared children exist and do not declare another parent.
+  def validate_children
+    children.each do |child|
+      begin
+        my_child = ActiveFedora::Base.find(child, cast: true)
+      rescue
+        my_child = nil
+      end
+      # NOT OK if child does not exist.
+      if (my_child.nil?)
+        logger.error("#{self.class.name} #{pid}:  child #{child} does not exist")
+        errors.add(:child, 'child node does not exist')
+        return
+      # OK to already be this child's parent.
+      # OK if child has no parent.
+      # NOT OK if child has another parent.
+      # TODO How to re-parent?
+      elsif (!pid.blank? && (my_child.parent != pid))
+        logger.error("#{self.class.name} #{pid}:  child #{my_child.pid} has another parent:  #{my_child.parent}")
+        errors.add(:child, 'child has another parent')
+        return
+      end
+    end
   end
 
   # Link this node into the "family tree".
@@ -80,7 +180,7 @@ module Node
   #
   # The general plan is to:
   #
-  # 1. sanity-check all "family" relationships;
+  # 1. sanity-check all "family" relationships (see validations);
   # 2. persist this object;
   # 3. update this object's relatives with relationships to this object.
   #
@@ -94,97 +194,6 @@ module Node
   # method's internal use.
   def save(opts={})
 
-    if (opts.has_key?(:unchecked))
-      return super()
-    end
-
-    # Get a copy of my supposed parent.
-    my_parent = ActiveFedora::Base.find(parent, cast: true) unless parent.blank?
-
-    # Check that prev_sib is a child of my parent.
-    unless prev_sib.blank?
-      if (parent.blank?)
-        logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
-        errors.add(:prev_sib, 'Unowned node cannot have siblings')
-        return false
-      else
-        unless (my_parent.children.include?(prev_sib))
-          logger.error("#{self.class.name} #{pid}:  #{prev_sib} not a child of #{my_parent.pid}")
-          errors.add(:prev_sib, "#{prev_sib} not a child of #{my_parent.pid}")
-          return false
-        end
-      end
-
-      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
-      if (prev_sibling.next_sib != next_sib) && (prev_sibling.next_sib != pid)
-        logger.error("#{self.class.name} #{pid}:  invalid next_sib #{next_sib}")
-        errors.add(:next_sib, "invalid next_sib #{next_sib}")
-        return false
-      end
-    end
-
-    # Check that next_sib is a child of my parent.
-    unless next_sib.blank?
-      if (parent.blank?)
-        logger.error("#{self.class.name} #{pid}:  unowned node cannot have siblings")
-        errors.add(:next_sib, 'Unowned node cannot have siblings')
-        return false
-      else
-        unless (my_parent.children.include?(next_sib))
-          logger.error("#{self.class.name} #{pid}:  #{next_sib} not a child of #{my_parent.pid}")
-          errors.add(:next_sib, "#{next_sib} not a child of #{my_parent.pid}")
-          return false
-        end
-      end
-
-      next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
-      if (next_sibling.prev_sib != prev_sib) && (next_sibling.prev_sib != pid)
-        logger.error("#{self.class.name} #{pid}:  invalid prev_sib #{prev_sib}")
-        errors.add(:prev_sib, "invalid prev_sib #{prev_sib}")
-        return false
-      end
-    end
-
-    # Check my parentage.
-    # OK to already be parent's child.
-    unless parent.blank?
-      # NOT OK if parent does not exist.
-      if (my_parent.blank?)
-        logger.error("#{self.class.name} #{pid}:  parent #{parent} does not exist")
-        errors.add(:parent, 'parent node does not exist')
-        return false
-      # NOT OK if parent class cannot be parent for this child
-      elsif !(my_parent.class.in? valid_parent_classes)
-	logger.error("#{self.class.name} #{pid}:  parent #{parent} class (#{my_parent.class}) is not in valid class list: #{valid_parent_classes})")
-
-	errors.add(:parent, 'parent node is invalid class')
-	return false
-      end
-    end
-
-    # Check my children.
-    children.each do |child|
-      begin
-        my_child = ActiveFedora::Base.find(child, cast: true)
-      rescue
-        my_child = nil
-      end
-      # NOT OK if child does not exist.
-      if (my_child.nil?)
-        logger.error("#{self.class.name} #{pid}:  child #{child} does not exist")
-        errors.add(:child, 'child node does not exist')
-        return false
-      # OK to already be this child's parent.
-      # OK if child has no parent.
-      # NOT OK if child has another parent.
-      # TODO How to re-parent?
-      elsif (my_child.parent != pid)
-        logger.error("#{self.class.name} #{pid}:  child #{my_child.pid} has another parent:  #{my_child.parent}")
-        errors.add(:child, 'child has another parent')
-        return false
-      end
-    end
-
     # Persist myself.
     logger.info("Saving #{self.class.name} #{pid}")
     begin
@@ -196,30 +205,44 @@ module Node
       return false
     end
 
-    # Link myself to previous sibling.
-    unless prev_sib.blank?
-      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
-      prev_sibling.next_sib = pid
-      prev_sibling.save(unchecked: 1)
-      logger.debug("Saving #{self.class.name} #{pid}:  prev_sib is #{prev_sib}")
-    end
+    reload # To get pid
 
-    # Link myself to next sibling.
-    unless next_sib.blank?
-      next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
-      next_sibling.prev_sib = pid
-      next_sibling.save(unchecked: 1)
-      logger.debug("Saving #{self.class.name} #{pid}:  next_sib is #{next_sib}")
+    if opts.has_key?(:unchecked)
+      logger.info("Saved #{self.class.name} #{pid} (unchecked)")
+      logger.debug { self.inspect }
+      return true
     end
 
     # Link myself to my parent as a child.
+    # Must come before sibling linkage, because they check their parentage.
     unless parent.blank?
+      my_parent = ActiveFedora::Base.find(parent, cast: true)
       unless (my_parent.children.include?(pid))
         # This is really weird.  Multi-valued attributes have the usual array
         # operators but some of them do nothing.  The only way to augment one is
         # to augment a copy and assign the result back.  ?!?!
         my_parent.children = my_parent.children << pid
         my_parent.save(unchecked: 1)
+      end
+    end
+
+    # Link myself to previous sibling.
+    unless prev_sib.blank?
+      prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
+      if (prev_sibling.pid != pid)
+        prev_sibling.next_sib = pid
+        prev_sibling.save(unchecked: 1)
+        logger.debug("Saving #{self.class.name} #{pid}:  prev_sib is #{prev_sib}")
+      end
+    end
+
+    # Link myself to next sibling.
+    unless next_sib.blank?
+      next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
+      if (next_sibling.pid != pid)
+        next_sibling.prev_sib = pid
+        next_sibling.save(unchecked: 1)
+        logger.debug("Saving #{self.class.name} #{pid}:  next_sib is #{next_sib}")
       end
     end
 
@@ -230,7 +253,7 @@ module Node
       rescue
         my_child = nil
       end
-      if (my_child && my_child.parent.blank?)
+      if (my_child && my_child.parent.blank? && (my_child.parent != pid))
         my_child.parent = pid
         my_child.save(unchecked: 1)
       end
@@ -238,6 +261,7 @@ module Node
 
     # Success!
     logger.info("Saved #{self.class.name} #{pid}")
+    logger.debug { self.inspect }
     true
   end
 
@@ -270,13 +294,15 @@ module Node
     # Unlink from previous sibling.
     if (prev_sibling)
       prev_sibling.next_sib = next_sibling ? next_sibling.pid : nil
-      prev_sibling.save(unchecked: 1)
+      prev_sibling.skip_sibling_validation = true
+      prev_sibling.save
     end
 
     # Unlink from next sibling.
     if (next_sibling)
       next_sibling.prev_sib = prev_sibling ? prev_sibling.pid : nil
-      next_sibling.save(unchecked: 1)
+      next_sibling.skip_sibling_validation = true
+      next_sibling.save
     end
 
     # Load my parent, if any.
