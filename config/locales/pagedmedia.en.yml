@@ -1,11 +1,7 @@
 en:
   pagedmedia:
-    default:
-      fields:
-        RDF::DC:
-          title: "Default Title"
-          description: "Default Description"
     newspaper:
+      label: "Newspaper"
       fields:
         RDF::DC:
           title: "Newspaper Title"
@@ -26,6 +22,7 @@ en:
           format: "File Format"
           identifier: "Identifier"
     score:
+      label: "Musical Score"
       fields:
         RDF::DC:
           title: "Score Title"
@@ -45,5 +42,11 @@ en:
           human_readable_type: "Resource Type"
           format: "File Format"
           identifier: "Identifier"
+    default:
+      label: "Generic Media"
+      fields:
+        RDF::DC:
+          title: "Default Title"
+          description: "Default Description"
 
 
