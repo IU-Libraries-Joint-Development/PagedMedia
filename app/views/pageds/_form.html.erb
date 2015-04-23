@@ -11,15 +11,18 @@
     </div>
   <% end %>
   
+  
   <ol>
     <li>
       <%= f.label :type %>
       <%= f.select(:type) do %>
-        <option value='' disabled selected>Select type</option>
+        <% if !@paged.type %>
+          <option value='' disabled selected>Select type</option>
+        <% end %>
         <% if i18n_set? 'pagedmedia' %>
           <% I18n.t('pagedmedia').each do |ctype, cinfo| %>
-            <% if @paged.type.has_content? %>
-              
+            <% if @paged.type && @paged.type.to_s == ctype.to_s %>
+              <%= content_tag(:option, cinfo[:label] , value: ctype, selected: 'selected') %>
             <% else %>
               <%= content_tag(:option, cinfo[:label] , value: ctype) %>
             <% end %>
