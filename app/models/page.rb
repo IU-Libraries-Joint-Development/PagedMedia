@@ -7,15 +7,24 @@ class Page < ActiveFedora::Base
   VALID_CHILD_CLASSES = []
   include Node
 
-  has_metadata 'descMetadata', type: PageMetadata
+  has_metadata "descMetadata", type: PageDescMetadata, label: 'PMP PageObject descriptive metadata'
+  has_metadata 'pageMetadata', type: PageMetadata
 
   has_file_datastream 'pageImage'
   has_file_datastream 'pageOCR'
   has_file_datastream 'pageXML'
-
-  has_attributes :logical_number, datastream: 'descMetadata',  multiple: false
-  has_attributes :text,  datastream: 'descMetadata', multiple: false
-  has_attributes :page_struct, datastream: 'descMetadata', multiple: true
+  
+  # Single-value fields
+  has_attributes :title, :contributor, :creator, :coverage, :issued, :date, :description,
+                 :identifier, :language, :publisher, :publisher_place,
+                 :rights, :source, :subject, :type,
+                 :text, :logical_number,
+                 datastream: :descMetadata, multiple: false
+  has_attributes :logical_number, datastream: 'pageMetadata',  multiple: false
+  has_attributes :text,  datastream: 'pageMetadata', multiple: false
+  
+  #Multiple-value fields
+  has_attributes :page_struct, datastream: 'pageMetadata', multiple: true
 
   before_save :update_page_struct
 
