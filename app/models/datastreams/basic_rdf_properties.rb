@@ -27,8 +27,9 @@ module BasicRdfProperties
       end
 
       map.created(in: RDF::DC)
+#      map.issued(in: RDF::DC)
       map.issued(in: RDF::DC) do |index|
-        index.type :date
+#        index.type :date
         index.as :stored_searchable
       end
       map.date(in: RDF::DC) do |index|

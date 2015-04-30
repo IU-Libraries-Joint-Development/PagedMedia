@@ -3,7 +3,6 @@
 # Copyright 2014 Indiana University.
 
 class Paged < ActiveFedora::Base
-  include ActiveModel::Validations # required if not already included in class
   include Hydra::Validations
 
   validates :issued,

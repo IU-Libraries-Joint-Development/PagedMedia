@@ -36,7 +36,7 @@
     </li>
     <li class="field">
       <%= f.label "Date of Publication" %>
-      <%= f.date_field :issued, placeholder: 'yyyy-mm-dd' %>
+      <%= f.date_field :issued, placeholder: 'yyyy-mm-dd', value: Date.parse(@paged.issued) %>
     </li>
   
     <% if !@paged.new? %>
