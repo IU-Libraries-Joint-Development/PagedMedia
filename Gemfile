@@ -6,7 +6,6 @@ gem 'blacklight-hierarchy', :git => "https://github.com/aploshay/blacklight-hier
 
 # This is a Hydra head
 gem 'hydra', '~> 6.1'
-gem 'hydra-validations'
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'

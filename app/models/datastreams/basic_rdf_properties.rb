@@ -25,11 +25,8 @@ module BasicRdfProperties
       map.publisher_place(in: RDF::DC, to: "Location") do |index|
           index.as :stored_searchable, :facetable
       end
-
       map.created(in: RDF::DC)
-#      map.issued(in: RDF::DC)
       map.issued(in: RDF::DC) do |index|
-#        index.type :date
         index.as :stored_searchable
       end
       map.date(in: RDF::DC) do |index|
