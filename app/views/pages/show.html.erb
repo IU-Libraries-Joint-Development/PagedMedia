@@ -19,7 +19,7 @@
       </li>
       <% end %>
       
-      <% if i18n_set? 'pagemedia.' + @paged.type + '.fields' %>
+      <% if @paged && (i18n_set? 'pagemedia.' + @paged.type + '.fields') %>
         <% vocabs =  I18n.t 'pagemedia.' + @paged.type + '.fields' %>
       <% else %>
         <% vocabs =  I18n.t 'pagemedia.default.fields' %>
