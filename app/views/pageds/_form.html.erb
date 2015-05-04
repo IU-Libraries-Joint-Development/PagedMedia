@@ -10,12 +10,25 @@
       </ul>
     </div>
   <% end %>
-
+  
+  
   <ol>
     <li>
       <%= f.label :type %>
-      <%# f.text_field :type %>
-      <%= f.select(:type, ["Newspaper", "Musical Score", "Book"], prompt: 'Select type') %>
+      <%= f.select(:type) do %>
+        <% if !@paged.type %>
+          <option value='' disabled selected>Select type</option>
+        <% end %>
+        <% if i18n_set? 'pagedmedia' %>
+          <% I18n.t('pagedmedia').each do |ctype, cinfo| %>
+            <% if @paged.type && @paged.type.to_s == ctype.to_s %>
+              <%= content_tag(:option, cinfo[:label] , value: ctype, selected: 'selected') %>
+            <% else %>
+              <%= content_tag(:option, cinfo[:label] , value: ctype) %>
+            <% end %>
+          <%end %>
+        <% end %>
+      <% end %>
     </li>
     <li>
       <%= f.label :title %>
