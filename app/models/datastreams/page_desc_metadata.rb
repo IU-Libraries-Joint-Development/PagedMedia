@@ -4,7 +4,7 @@ class PageDescMetadata < ActiveFedora::NtriplesRDFDatastream
 
   # Define custom properties not in basic vocabulary definitions
   map_predicates do |map|
-    map.paged_struct(in: RDF::DC, to: "isPartOf") do |index|
+    map.page_struct(in: RDF::DC, to: "isPartOf") do |index|
       index.as :facetable
     end
   end
