@@ -3,6 +3,12 @@
 # Copyright 2014 Indiana University.
 
 class Paged < ActiveFedora::Base
+
+  validates :issued,
+  format: { with: /\A(19|20)\d\d([- \/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])\z/,
+    message: "Date format must be yyyy-mm-dd",
+    allow_blank: true }
+  
   VALID_PARENT_CLASSES = [Collection]
   VALID_CHILD_CLASSES = [Section, Page]
   include Node
@@ -17,18 +23,6 @@ class Paged < ActiveFedora::Base
                  :rights, :source, :subject, :type, datastream: :descMetadata, multiple: false
   # Multi-value fields
   has_attributes :paged_struct, datastream: :descMetadata, multiple: true
-
-=begin
-  has_metadata 'descMetadata', type: PagedMetadataOaiDc, label: 'PMP PagedObject descriptive metadata'
-
-  has_attributes :title, datastream: 'descMetadata', multiple: false  # TODO update DC.title as well?
-  has_attributes :creator, datastream: 'descMetadata', multiple: false
-  has_attributes :publisher, datastream: 'descMetadata', multiple: false
-  has_attributes :publisher_place, datastream: 'descMetadata', multiple: false
-  has_attributes :issued, datastream: 'descMetadata', multiple: false
-  has_attributes :type, datastream: 'descMetadata', multiple: false
-  has_attributes :paged_struct, datastream: 'descMetadata', multiple: true
-=end
 
   before_save :update_paged_struct
 
