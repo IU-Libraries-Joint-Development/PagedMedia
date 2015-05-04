@@ -1,0 +1,21 @@
+en:
+  pagemedia:
+    newspaper:
+      fields:
+        RDF::DC:
+          title: "Newspaper Title"
+          description: "Newspaper Description"
+          creator: "Newspaper Creator"
+          subject: "Subject"
+    score:
+      fields:
+        RDF::DC:
+          title: "Score Title"
+          description: "Score Description"
+          creator: "Score Creator"
+          subject: "Subject"
+    default:
+      fields:
+        RDF::DC:
+          title: "Default Title"
+          description: "Default Description"

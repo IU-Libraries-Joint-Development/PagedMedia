@@ -10,12 +10,30 @@
       </ul>
     </div>
   <% end %>
-
+  
   <ol>
     <li>
       <%= f.label :logical_number %>
       <%= f.text_field :logical_number %>
     </li>
+    
+    <!-- Display all available Metadata fields according to local file -->
+    <% if @paged && (i18n_set? 'pagemedia.' + @paged.type + '.fields') %>
+      <% vocabs =  I18n.t 'pagemedia.' + @paged.type + '.fields' %>
+    <% else %>
+      <% vocabs =  I18n.t 'pagemedia.default.fields' %>
+    <% end %>
+    <% vocabs.each do |vocab, fields| %>
+      <% fields.each do |key, value| %>
+        <% if (@page.respond_to? key) %>
+          <li>
+            <%= f.label value %>
+            <%= f.text_field key %>
+          </li>
+        <% end %>
+      <% end %>
+    <% end %>
+    
     <li>
       <%= f.label 'Previous page:' %>
       <%= f.text_field :prev_sib %>
