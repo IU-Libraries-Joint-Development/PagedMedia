@@ -44,7 +44,7 @@ module Node
       attr_accessor :skip_sibling_validation
 
       validate :validate_linkage, unless: :skip_sibling_validation
-      validate :validate_children
+      validate :validate_children, unless: :skip_sibling_validation
 
       def self.valid_parent_classes
         const_get(:VALID_PARENT_CLASSES)
@@ -295,14 +295,14 @@ module Node
     if (prev_sibling)
       prev_sibling.next_sib = next_sibling ? next_sibling.pid : nil
       prev_sibling.skip_sibling_validation = true
-      prev_sibling.save
+      prev_sibling.save(unchecked: 1)
     end
 
     # Unlink from next sibling.
     if (next_sibling)
       next_sibling.prev_sib = prev_sibling ? prev_sibling.pid : nil
       next_sibling.skip_sibling_validation = true
-      next_sibling.save
+      next_sibling.save(unchecked: 1)
     end
 
     # Load my parent, if any.
