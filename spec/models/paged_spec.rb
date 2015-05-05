@@ -40,7 +40,6 @@ describe Paged do
     describe "with :with_sections_with_pages trait:" do
       let!(:test_paged) { FactoryGirl.create :paged, :with_sections_with_pages }
       specify "creates 3 sections" do
-        puts test_paged.list_descendents_recursive
         expect(Section.all.size).to eq 3
       end
       specify "creates 9 pages" do
