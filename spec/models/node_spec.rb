@@ -61,6 +61,71 @@ describe Node, type: :model do
       expect(page3.prev_sib).to eql(page1.pid)
       expect(page3.next_sib).to be_empty
     end
+
+    describe 'allows reparenting action' do
+      let!(:book_a) { FactoryGirl.create :paged, :with_pages, title: "Book A", number_of_pages: 3 }
+      let!(:a_pages) { book_a.order_child_objects[0] }
+      let!(:book_b) { FactoryGirl.create :paged, :with_pages, title: "Book B", number_of_pages: 3 }
+      let!(:b_pages) { book_b.order_child_objects[0] }
+      context 'removing a parent' do
+        before(:each) do
+          p2 = a_pages[1]
+          p2.parent = nil; p2.prev_sib = nil; p2.next_sib = nil
+          p2.save!
+        end
+        it 'updates the old parent' do
+          book_a.reload
+          expect(book_a.children).to eq [a_pages[0].pid, a_pages[2].pid]
+        end
+        it 'updates the old next_sib' do
+          p3 = a_pages.last
+          p3.reload
+          expect(p3.prev_sib).to eq a_pages.first.pid
+        end
+        it 'updates the old prev_sib' do
+          p1 = a_pages.first
+          p1.reload
+          expect(p1.next_sib).to eq a_pages.last.pid
+        end
+      end
+      context 'changing a parent' do
+        before(:each) do
+          p2 = a_pages[1]
+          p2.parent = book_b.pid; p2.prev_sib = b_pages[1].pid; p2.next_sib = b_pages[2].pid
+          p2.save!
+        end
+        #FIXME: use shared examples for unlinking
+        it 'updates the old parent' do
+          book_a.reload
+          expect(book_a.children).to eq [a_pages[0].pid, a_pages[2].pid]
+        end
+        it 'updates the old next_sib' do
+          p3 = a_pages.last
+          p3.reload
+          expect(p3.prev_sib).to eq a_pages.first.pid
+        end
+        it 'updates the old prev_sib' do
+          p1 = a_pages.first
+          p1.reload
+          expect(p1.next_sib).to eq a_pages.last.pid
+        end
+        it 'updates the new parent' do
+          book_b.reload
+          expect(book_b.children).to eq b_pages.map{|e| e.pid} + [a_pages[1].pid]
+        end
+        it 'updates the new prev_sib' do
+          p2 = b_pages[1]
+          p2.reload
+          expect(p2.next_sib).to eq a_pages[1].pid
+        end
+        it 'updates tne new next_sib' do
+          p3 = b_pages[2]
+          p3.reload
+          expect(p3.prev_sib).to eq a_pages[1].pid
+        end
+      end
+
+    end
   end
 
   # Populate paged with three linked pages, and return references to them.
