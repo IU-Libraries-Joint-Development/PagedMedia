@@ -1,9 +1,12 @@
 require 'json'
+require 'helpers/mock_page.rb'
+require 'helpers/mock_paged.rb'
+include ModelMocks
 
 describe PagedsController, type: :controller do
   let(:ordered_pages) { [1,2,3,4,5] }
   before(:each) do
-    @test_paged = Paged.new
+    @test_paged = MockPaged.new
     @test_pages = []
     prev = nil
     5.times do |i|
@@ -18,46 +21,70 @@ describe PagedsController, type: :controller do
   end
 
   describe '#index' do
-    render_views
-    before(:each) { get :index }
+
     it 'sets @pageds' do
-      expect(assigns(:pageds)).to eq [test_paged]
+      allow(Paged).to receive(:all).and_return(MockPaged.all)
+
+      get :index
+      expect(assigns(:pageds)).to eq MockPaged.all
     end
     it 'renders :index template' do
+      allow(Paged).to receive(:all).and_return(MockPaged.all)
+
+      get :index
       expect(response).to render_template :index
     end
   end
 
   describe '#show' do
-    render_views
-    before(:each) { get :show, id: test_paged.pid }
+#    render_views
+
     it 'sets @paged' do
-      expect(assigns(:paged)).to eq test_paged
+      expect(Paged).to receive(:find).and_return(@test_paged)
+
+      get :show, id: @test_paged.pid
+      expect(assigns(:paged)).to eq @test_paged
     end
+
     it 'renders :show template' do
+      expect(Paged).to receive(:find).and_return(@test_paged)
+
+      get :show, id: @test_paged.pid
       expect(response).to render_template :show
     end
   end
 
   describe '#new' do
-    render_views
-    before(:each) { get :new }
+
     it 'sets @paged' do
-      expect(assigns(:paged)).to be_a_new Paged
+      expect(Paged).to receive(:new).and_return(@test_paged)
+
+      get :new
+      expect(assigns(:paged)).to be_a_new MockPaged
       expect(assigns(:paged)).not_to be_persisted
     end
+
     it 'renders :new template' do
+      allow(Paged).to receive(:new).and_return(@test_paged)
+
+      get :new
       expect(response).to render_template :new
     end
   end
 
   describe '#edit' do
-    render_views
-    before(:each) { get :edit, id: test_paged.pid }
+
     it 'sets @paged' do
-      expect(assigns(:paged)).to eq test_paged
+      expect(Paged).to receive(:find).and_return(@test_paged)
+
+      get :edit, id: @test_paged.pid
+      expect(assigns(:paged)).to eq @test_paged
     end
+
     it 'renders :edit template' do
+      expect(Paged).to receive(:find).and_return(@test_paged)
+
+      get :edit, id: @test_paged.pid
       expect(response).to render_template :edit
     end
   end
@@ -80,7 +107,7 @@ describe PagedsController, type: :controller do
     end
     context 'with invalid params' do
       render_views
-      let(:post_create) { post :create, paged: FactoryGirl.attributes_for(:paged, prev_sib: test_paged.pid) }
+      let(:post_create) { post :create, paged: FactoryGirl.attributes_for(:paged, prev_sib: @test_paged.pid) }
       it 'assigns an unpersisted @paged' do
         post_create
         expect(assigns(:paged)).to be_a Paged
@@ -97,35 +124,44 @@ describe PagedsController, type: :controller do
   end
 
   describe '#update' do
-    let!(:original_title) { test_paged.title }
+    let!(:original_title) { @test_paged.title }
+
     context 'with valid params' do
-      before(:each) { put :update, id: test_paged.id, paged: { title: test_paged.title + " updated" } }
+      before(:each) { put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated" } }
+
       it 'assigns @paged' do
-        expect(assigns(:paged)).to eq test_paged
+        expect(assigns(:paged)).to eq @test_paged
       end
+
       it 'updates values' do
-        expect(test_paged.title).to eq original_title
+        expect(@test_paged.title).to eq original_title
         test_paged.reload
-        expect(test_paged.title).not_to eq original_title
+        expect(@test_paged.title).not_to eq original_title
       end
+
       it 'flashes success' do
         expect(flash[:notice]).to match(/success/i)
       end
+
       it 'redirects to updated paged' do
         expect(response).to redirect_to test_paged
       end
     end
+
     context 'with invalid params' do
       render_views
-      before(:each) { put :update, id: test_paged.id, paged: { title: test_paged.title + " updated", prev_sib: test_paged.id } }
+      before(:each) { put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated", prev_sib: @test_paged.id } }
+
       it 'does not update values' do
-        expect(test_paged.title).to eq original_title
+        expect(@test_paged.title).to eq original_title
         test_paged.reload
-        expect(test_paged.title).to eq original_title
+        expect(@test_paged.title).to eq original_title
       end
+
       it 'does not flash success' do
         expect(flash[:notice].to_s).not_to match(/success/i)
       end
+
       it 'renders the edit template' do
         expect(response).to render_template :edit
       end
@@ -146,7 +182,7 @@ describe PagedsController, type: :controller do
     end
     context 'when a Paged has children' do
       it 'raises an exception' do
-        expect{ delete :destroy, id: test_paged.pid }.to raise_error(OrphanError)
+        expect{ delete :destroy, id: @test_paged.pid }.to raise_error(OrphanError)
       end
     end
   end
@@ -154,7 +190,7 @@ describe PagedsController, type: :controller do
   describe '#pages' do
     it 'should return pid and image ds uri given an index integer' do
       index = 1
-      get :pages, id: test_paged.pid, index: index
+      get :pages, id: @test_paged.pid, index: index
       parsed = JSON.parse response.body
       expect(parsed['id']).to eq ordered_pages[index]
       expect(parsed['index']).to eq index.to_s
@@ -163,14 +199,13 @@ describe PagedsController, type: :controller do
   end
 
   describe '#reorder' do
-#    before(:each) { patch :reorder, id: test_pid, reorder_submission: reorder_submission }
 
     context 'with no reorder values provided' do
       let(:test_pid) { test_paged.pid }
       let(:reorder_submission) { nil }
 
       it 'flashes "No change"' do
-        patch :reorder, id: test_pid, reorder_submission: reorder_submission
+        patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
         expect(flash[:notice]).to match(/No change/i)
       end
 
@@ -257,56 +292,16 @@ describe PagedsController, type: :controller do
 
   describe '#bookreader' do
     render_views
-    before(:each) { get :bookreader, id: test_paged.id }
     it 'assigns @paged' do
-      expect(assigns(:paged)).to eq test_paged
+      allow(Paged).to receive(:find).and_return(@test_paged)
+      get :bookreader, id: @test_paged.id
+      expect(assigns(:paged)).to eq @test_paged
     end
     it 'renders :bookreader template' do
+      allow(Paged).to receive(:find).and_return(@test_paged)
+      get :bookreader, id: @test_paged.id
       expect(response).to render_template :bookreader
     end
   end
 
-end
-
-# RSpec::Mocks just doesn't do what I need, so do it the jmockit way (sort of).
-class MockPage < Page
-  @my_id = nil
-  @prev_sib = nil
-  @next_sib = nil
-
-  def pid
-    id
-  end
-
-  def id
-    @my_id
-  end
-
-  def id=(new_id)
-    @my_id = new_id
-  end
-
-  def prev_sib
-    @prev_sib
-  end
-
-  def prev_sib=(p)
-    @prev_sib = p
-  end
-
-  def next_sib
-    @next_sib
-  end
-
-  def next_sib=(n)
-    @next_sib = n
-  end
-
-  def valid?
-    true
-  end
-
-  def save(*)
-    true
-  end
 end
