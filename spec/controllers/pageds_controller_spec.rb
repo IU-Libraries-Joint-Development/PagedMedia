@@ -37,7 +37,6 @@ describe PagedsController, type: :controller do
   end
 
   describe '#show' do
-#    render_views
 
     it 'sets @paged' do
       expect(Paged).to receive(:find).and_return(@test_paged)
@@ -90,32 +89,39 @@ describe PagedsController, type: :controller do
   end
 
   describe '#create' do
+
     context 'with valid params' do
       let(:post_create) { post :create, paged: FactoryGirl.attributes_for(:paged) }
+
       it 'assigns @paged' do
         post_create
         expect(assigns(:paged)).to be_a Paged
         expect(assigns(:paged)).to be_persisted
       end
+
       it 'saves the new object' do
         expect{ post_create }.to change(Paged, :count).by(1)
       end
+
       it 'redirects to the object' do
         post_create
         expect(response).to redirect_to assigns(:paged)
       end
     end
+
     context 'with invalid params' do
-      render_views
       let(:post_create) { post :create, paged: FactoryGirl.attributes_for(:paged, prev_sib: @test_paged.pid) }
+
       it 'assigns an unpersisted @paged' do
         post_create
         expect(assigns(:paged)).to be_a Paged
         expect(assigns(:paged)).not_to be_persisted
       end
+
       it 'does not create a new object' do
         expect{ post_create }.not_to change(Paged, :count)
       end
+
       it 'renders the new template' do
         post_create
         expect(response).to render_template :new
@@ -127,61 +133,81 @@ describe PagedsController, type: :controller do
     let!(:original_title) { @test_paged.title }
 
     context 'with valid params' do
-      before(:each) { put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated" } }
 
       it 'assigns @paged' do
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated" }
         expect(assigns(:paged)).to eq @test_paged
       end
 
       it 'updates values' do
         expect(@test_paged.title).to eq original_title
-        test_paged.reload
-        expect(@test_paged.title).not_to eq original_title
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        expect(@test_paged).to receive(:update).with({ 'title' => @test_paged.title + ' updated'})
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + ' updated' }
       end
 
       it 'flashes success' do
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated" }
         expect(flash[:notice]).to match(/success/i)
       end
 
       it 'redirects to updated paged' do
-        expect(response).to redirect_to test_paged
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated" }
+        expect(response).to redirect_to @test_paged
       end
     end
 
     context 'with invalid params' do
-      render_views
-      before(:each) { put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated", prev_sib: @test_paged.id } }
 
       it 'does not update values' do
         expect(@test_paged.title).to eq original_title
-        test_paged.reload
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated", prev_sib: @test_paged.id }
         expect(@test_paged.title).to eq original_title
       end
 
       it 'does not flash success' do
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        expect(@test_paged).to receive(:update).and_return(false)
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated", prev_sib: @test_paged.id }
         expect(flash[:notice].to_s).not_to match(/success/i)
       end
 
       it 'renders the edit template' do
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        expect(@test_paged).to receive(:update).and_return(false)
+        put :update, id: @test_paged.id, paged: { title: @test_paged.title + " updated", prev_sib: @test_paged.id }
         expect(response).to render_template :edit
       end
     end
   end
 
   describe '#destroy' do
+
     context 'when a Paged has no children' do
-      let!(:empty_paged) { FactoryGirl.create(:paged) }
-      let(:delete_destroy) { delete :destroy, id: empty_paged.pid }
+
       it 'destroys a Paged' do
-        expect{ delete_destroy }.to change(Paged, :count).by(-1)
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        expect{ delete :destroy, id: @test_paged.id }.to change(MockPaged, :count).by(-1)
       end
+
       it 'redirects to pageds index' do
-        delete_destroy
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        expect(@test_paged).to receive(:destroy)
+        delete :destroy, id: @test_paged.id
         expect(response).to redirect_to pageds_path
       end
     end
+
     context 'when a Paged has children' do
+
       it 'raises an exception' do
+        allow(Paged).to receive(:find).and_return(@test_paged)
+        expect(@test_paged).to receive(:destroy).and_raise(OrphanError)
+
         expect{ delete :destroy, id: @test_paged.pid }.to raise_error(OrphanError)
       end
     end
@@ -189,6 +215,8 @@ describe PagedsController, type: :controller do
 
   describe '#pages' do
     it 'should return pid and image ds uri given an index integer' do
+      expect(Paged).to receive(:find).with(@test_paged.pid).and_return(@test_paged)
+      #allow(ActiveFedora::SolrService).to receive_message_chain(:instance, :conn, :select).and_return('')
       index = 1
       get :pages, id: @test_paged.pid, index: index
       parsed = JSON.parse response.body
@@ -210,8 +238,8 @@ describe PagedsController, type: :controller do
       end
 
       it 'redirects to :edit' do
+        patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
         expect(response).to redirect_to action: :edit
-        patch :reorder, id: test_pid, reorder_submission: reorder_submission
       end
     end
 
@@ -226,7 +254,7 @@ describe PagedsController, type: :controller do
         end
 
         it 'redirects to :edit' do
-          patch :reorder, id: test_paged.pid, reorder_submission: reorder_submission
+          patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
           expect(response).to redirect_to action: :edit
         end
       end
@@ -262,9 +290,7 @@ describe PagedsController, type: :controller do
           it 'reorders pages' do
             expect(Page).to receive(:find).at_least(:once) {|pid| @test_pages[pid.to_i-1]}
             allow(Paged).to receive(:find).and_return(@test_paged)
-            allow_any_instance_of(Paged).to receive(:valid?).and_return(true)
-            allow_any_instance_of(Paged).to receive(:save).and_return(true)
-            allow_any_instance_of(Paged).to receive(:update_index)
+
             patch :reorder, id: 0, reorder_submission: reorder_submission
             # Check link order
             ['2','3','4','5',nil].each_with_index {|p,i| expect(@test_pages[i].prev_sib).to eq(p)}
@@ -285,6 +311,14 @@ describe PagedsController, type: :controller do
         it 'reparents page' do
           complex_paged.reload
           expect(complex_paged.order_children[0]).to eq reorder_array.map { |h| h["id"] }
+        end
+
+        it 'redirects to :edit' do
+          expect(Page).to receive(:find).at_least(:once) {|pid| @test_pages[pid.to_i-1]}
+          expect(Paged).to receive(:find).and_return(@test_paged)
+  
+          patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
+          expect(response).to redirect_to action: :edit
         end
       end
     end

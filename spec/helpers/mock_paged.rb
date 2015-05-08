@@ -29,9 +29,13 @@ module ModelMocks
 
     # Class methods
 
+    def MockPaged.all; @@instances.values; end
+
+    def MockPaged.count; @@instances.length; end
+
     def MockPaged.find(id); @@instances[id]; end
 
-    def MockPaged.all; @@instances.values; end
+    def MockPaged.model_name; ActiveModel::Name.new(ModelMocks::MockPaged, nil, 'Paged'); end
 
     # Instance methods
 
@@ -59,17 +63,19 @@ module ModelMocks
 
     def skip_sibling_validation=; end
 
-    # ActiveRecord methods
+    # ActiveRecord instance methods
 
-    def count; @@instances.length; end
-
-    def valid?; true; end
+    def destroy; @@instances.delete(@my_id); end
 
     def new_record?; !@persisted; end
 
     def persisted?; @persisted; end
 
     def save(*); @persisted = true; true; end
+
+    def update(*); true; end
+
+    def valid?; true; end
 
   end
 

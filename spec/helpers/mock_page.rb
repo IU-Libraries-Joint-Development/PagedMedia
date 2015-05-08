@@ -37,6 +37,8 @@ module ModelMocks
   
     def next_sib=(n); @next_sib = n; end
 
+    def update(*); true; end
+
     def valid?; true; end
 
     def save(*); true; end
