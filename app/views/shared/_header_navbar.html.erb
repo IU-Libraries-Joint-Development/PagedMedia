@@ -5,11 +5,14 @@
   <div id="pmp-navbar-inner" class="navbar-inner">
     <div class="container"> 
       <div class="row">
-        <div id="pmp-title" class="span6">
+        <div id="pmp-title" class="span4">
           <%= link_to application_name, root_path, :class => "brand-name" %>
         </div>
-        <div class="span6 clearfix" id="searchbar">         
+        <div class="span5 clearfix" id="searchbar">         
           <%= render_search_bar  %>
+        </div>
+        <div class="span3" id="userutils">
+          <%= render :partial=>'/shared/user_util_links' %>                  
         </div>
       </div>
     </div>
