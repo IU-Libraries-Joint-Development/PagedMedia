@@ -152,8 +152,8 @@ describe PagedsController do
       it 'flashes "No change"' do
         expect(flash[:notice]).to match(/No change/i)
       end
-      it 'redirects to :show' do
-        expect(response).to redirect_to action: :show
+      it 'redirects to :edit' do
+        expect(response).to redirect_to action: :edit
       end
     end
     context 'with valid reorder values' do
@@ -164,8 +164,8 @@ describe PagedsController do
           test_paged.reload
           expect(test_paged.order_children[0]).to eq ordered_pages.reverse
         end
-        it 'redirects to :show' do
-          expect(response).to redirect_to action: :show
+        it 'redirects to :edit' do
+          expect(response).to redirect_to action: :edit
         end
       end
       context 'with sections and pages' do

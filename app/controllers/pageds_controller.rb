@@ -35,6 +35,7 @@ class PagedsController < ApplicationController
 
   # GET /pageds/1/edit
   def edit
+    @ordered = JSON.parse(find_pages())
     add_breadcrumb @paged.title, @paged
     add_breadcrumb "Edit"
   end
@@ -117,7 +118,7 @@ class PagedsController < ApplicationController
     else
       flash[:notice] = "No changes to the page order were submitted."
     end
-    redirect_to action: :show
+    redirect_to action: :edit
   end
 
   private
