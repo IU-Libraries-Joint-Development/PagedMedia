@@ -1,12 +1,15 @@
 require 'json'
 require 'helpers/mock_page.rb'
 require 'helpers/mock_paged.rb'
+require 'helpers/mock_solr_service.rb'
 include ModelMocks
+include ServiceMocks
 
 describe PagedsController, type: :controller do
-  let(:ordered_pages) { [1,2,3,4,5] }
+  let(:ordered_pages) { ['1', '2', '3', '4', '5'] }
   before(:each) do
     @test_paged = MockPaged.new
+
     @test_pages = []
     prev = nil
     5.times do |i|
@@ -18,6 +21,17 @@ describe PagedsController, type: :controller do
       @test_paged.children << pid
       prev = pid
     end
+
+    @mock_solr_service = MockSolrService.instance
+    indexed = []
+    @test_pages.each do |page|
+      indexed << {
+        'id' => page.id,
+        'ds_url' => page.id + '/datastreams/pageImage/content',
+        'logical_number' => page.id
+        }
+    end
+    @mock_solr_service.index = indexed
   end
 
   describe '#index' do
@@ -40,6 +54,7 @@ describe PagedsController, type: :controller do
 
     it 'sets @paged' do
       expect(Paged).to receive(:find).and_return(@test_paged)
+      allow(ActiveFedora::SolrService).to receive(:instance).and_return(@mock_solr_service)
 
       get :show, id: @test_paged.pid
       expect(assigns(:paged)).to eq @test_paged
@@ -47,6 +62,7 @@ describe PagedsController, type: :controller do
 
     it 'renders :show template' do
       expect(Paged).to receive(:find).and_return(@test_paged)
+      allow(ActiveFedora::SolrService).to receive(:instance).and_return(@mock_solr_service)
 
       get :show, id: @test_paged.pid
       expect(response).to render_template :show
@@ -215,8 +231,8 @@ describe PagedsController, type: :controller do
 
   describe '#pages' do
     it 'should return pid and image ds uri given an index integer' do
-      expect(Paged).to receive(:find).with(@test_paged.pid).and_return(@test_paged)
-      #allow(ActiveFedora::SolrService).to receive_message_chain(:instance, :conn, :select).and_return('')
+      allow(ActiveFedora::SolrService).to receive(:instance).and_return(@mock_solr_service)
+
       index = 1
       get :pages, id: @test_paged.pid, index: index
       parsed = JSON.parse response.body

@@ -36,9 +36,16 @@ module ServiceMocks
       end
 
       def select(**args)
-        selected = {'response' => {'num_found' => nil, 'docs' => [ {'pages_ss' => nil} ] } }
-        selected['response']['num_found'] = -1 # TODO Count them
-        selected['response']['docs'][0]['pages_ss'] = @index_content
+        selected = {
+          'response' => {
+            'numFound' => @index_content.length,
+            'docs' => [
+              {
+                'pages_ss' => @index_content.to_json
+              }
+            ]
+          }
+        }
         return selected
       end
 
