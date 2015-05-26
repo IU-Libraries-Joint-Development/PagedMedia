@@ -1,3 +1,5 @@
+# Copyright 2014, 2015 Indiana University
+
 require 'json'
 require 'helpers/mock_page.rb'
 require 'helpers/mock_paged.rb'
@@ -91,6 +93,7 @@ describe PagedsController, type: :controller do
 
     it 'sets @paged' do
       expect(Paged).to receive(:find).and_return(@test_paged)
+      allow(ActiveFedora::SolrService).to receive(:instance).and_return(@mock_solr_service)
 
       get :edit, id: @test_paged.pid
       expect(assigns(:paged)).to eq @test_paged
@@ -98,8 +101,10 @@ describe PagedsController, type: :controller do
 
     it 'renders :edit template' do
       expect(Paged).to receive(:find).and_return(@test_paged)
+      allow(ActiveFedora::SolrService).to receive(:instance).and_return(@mock_solr_service)
 
       get :edit, id: @test_paged.pid
+
       expect(response).to render_template :edit
     end
   end
@@ -245,31 +250,33 @@ describe PagedsController, type: :controller do
   describe '#reorder' do
 
     context 'with no reorder values provided' do
-      let(:test_pid) { test_paged.pid }
-      let(:reorder_submission) { nil }
 
       it 'flashes "No change"' do
-        patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
+        allow(Paged).to receive(:find).and_return(@test_paged)
+
+        patch :reorder, id: @test_paged.pid, reorder_submission: nil
         expect(flash[:notice]).to match(/No change/i)
       end
 
       it 'redirects to :edit' do
-        patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
+        allow(Paged).to receive(:find).and_return(@test_paged)
+
+        patch :reorder, id: @test_paged.pid, reorder_submission: nil
         expect(response).to redirect_to action: :edit
       end
     end
 
     context 'with valid reorder values' do
       context 'with pages, only' do
-        let(:test_pid) { test_paged.pid }
         let(:reorder_submission) { ordered_pages.reverse.map { |pid| { "id" => pid } }.to_json }
 
         it 'reorders pages' do
-          test_paged.reload
-          expect(test_paged.order_children[0]).to eq ordered_pages.reverse
+          expect(@test_paged.order_children[0]).to eq ordered_pages.reverse
         end
 
         it 'redirects to :edit' do
+          allow(Paged).to receive(:find).and_return(@test_paged)
+
           patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
           expect(response).to redirect_to action: :edit
         end
