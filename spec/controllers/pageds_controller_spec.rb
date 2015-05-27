@@ -267,18 +267,13 @@ describe PagedsController, type: :controller do
     end
 
     context 'with valid reorder values' do
-
       let(:reorder_submission) { ordered_pages.reverse.map { |pid| { "id" => pid } }.to_json }
 
       it 'reorders pages' do
-        #expect(Page).to receive(:find).at_least(:once) {|pid| @test_pages[pid.to_i-1]}
         allow(Paged).to receive(:find).and_return(@test_paged)
 
         expect(@test_paged).to receive("restructure_children").with(JSON.parse(reorder_submission))
         patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
-        # Check link order
-#        ['2','3','4','5',nil].each_with_index {|p,i| expect(@test_pages[i].prev_sib).to eq(p)}
-#        [nil,'1','2','3','4'].each_with_index {|p,i| expect(@test_pages[i].next_sib).to eq(p)}
       end
 
       it 'redirects to :edit' do
@@ -291,7 +286,6 @@ describe PagedsController, type: :controller do
   end
 
   describe '#bookreader' do
-    render_views
     it 'assigns @paged' do
       allow(Paged).to receive(:find).and_return(@test_paged)
       get :bookreader, id: @test_paged.id
