@@ -115,16 +115,22 @@ describe PagedsController, type: :controller do
       let(:post_create) { post :create, paged: FactoryGirl.attributes_for(:paged) }
 
       it 'assigns @paged' do
+        expect(Paged).to receive(:new).and_return(@test_paged)
+
         post_create
-        expect(assigns(:paged)).to be_a Paged
-        expect(assigns(:paged)).to be_persisted
+        expect(assigns(:paged)).to be_a MockPaged
       end
 
       it 'saves the new object' do
-        expect{ post_create }.to change(Paged, :count).by(1)
+        expect(Paged).to receive(:new).and_return(MockPaged.new)
+
+        post_create
+        expect(assigns(:paged)).to be_persisted
       end
 
       it 'redirects to the object' do
+        expect(Paged).to receive(:new).and_return(@test_paged)
+
         post_create
         expect(response).to redirect_to assigns(:paged)
       end
