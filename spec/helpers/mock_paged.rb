@@ -59,6 +59,8 @@ module ModelMocks
 
     def next_sib=(n); @next_sib = n; end
 
+    def restructure_children(struct); end
+
     def update_index; end
 
     def skip_sibling_validation=; end

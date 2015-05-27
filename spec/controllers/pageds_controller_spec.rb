@@ -267,82 +267,25 @@ describe PagedsController, type: :controller do
     end
 
     context 'with valid reorder values' do
-      context 'with pages, only' do
-        let(:reorder_submission) { ordered_pages.reverse.map { |pid| { "id" => pid } }.to_json }
 
-        it 'reorders pages' do
-          expect(@test_paged.order_children[0]).to eq ordered_pages.reverse
-        end
+      let(:reorder_submission) { ordered_pages.reverse.map { |pid| { "id" => pid } }.to_json }
 
-        it 'redirects to :edit' do
-          allow(Paged).to receive(:find).and_return(@test_paged)
+      it 'reorders pages' do
+        #expect(Page).to receive(:find).at_least(:once) {|pid| @test_pages[pid.to_i-1]}
+        allow(Paged).to receive(:find).and_return(@test_paged)
 
-          patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
-          expect(response).to redirect_to action: :edit
-        end
+        expect(@test_paged).to receive("restructure_children").with(JSON.parse(reorder_submission))
+        patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
+        # Check link order
+#        ['2','3','4','5',nil].each_with_index {|p,i| expect(@test_pages[i].prev_sib).to eq(p)}
+#        [nil,'1','2','3','4'].each_with_index {|p,i| expect(@test_pages[i].next_sib).to eq(p)}
       end
 
-      context 'with sections and pages' do
-        let!(:complex_paged) { FactoryGirl.create(:paged, :unchecked, :with_sections_with_pages) }
-      	let!(:original_order) { complex_paged.order_child_objects[0].map { |section| { "id" => section.pid, "children" => section.order_children[0].map { |pid| { "id" => pid } } } } }
-        let(:test_pid) { complex_paged.pid }
+      it 'redirects to :edit' do
+        allow(Paged).to receive(:find).and_return(@test_paged)
 
-        context 'reordering sections' do
-      	  let(:reorder_submission) { original_order.reverse.to_json }
-	        it 'reorders sections' do
-            complex_paged.reload
-	          expect(complex_paged.order_children[0]).to eq original_order.map { |h| h["id"] }.reverse
-      	  end
-      	end
-
-        context 'reparenting sections' do
-          let(:reorder_submission) do
-            [{ "id" => original_order[0]["id"], "children" => original_order[0]["children"] + [original_order[1]]},
-             { "id" => original_order[2]["id"], "children" => original_order[2]["children"]}].to_json
-          end
-
-          it 'reparents section' do
-            complex_paged.reload
-            expect(complex_paged.order_child_objects[0].first.order_children[0].last).to eq original_order[1]["id"]
-          end
-        end
-
-        context 'reordering pages' do
-          let(:reorder_submission) { ordered_pages.reverse.join(',') }
-
-          it 'reorders pages' do
-            expect(Page).to receive(:find).at_least(:once) {|pid| @test_pages[pid.to_i-1]}
-            allow(Paged).to receive(:find).and_return(@test_paged)
-
-            patch :reorder, id: 0, reorder_submission: reorder_submission
-            # Check link order
-            ['2','3','4','5',nil].each_with_index {|p,i| expect(@test_pages[i].prev_sib).to eq(p)}
-            [nil,'1','2','3','4'].each_with_index {|p,i| expect(@test_pages[i].next_sib).to eq(p)}
-          end
-        end
-      end
-
-      context 'reparenting pages' do
-        let(:reorder_array) do
-          [{ "id" => original_order[0]["id"], "children" => original_order[0]["children"] - [original_order[0]["children"].last]},
-           { "id" => original_order[0]["children"].last["id"]},
-           { "id" => original_order[1]["id"], "children" => original_order[1]["children"]},
-           { "id" => original_order[2]["id"], "children" => original_order[2]["children"]}]
-        end
-        let(:reorder_submission) { reorder_array.to_json }
-
-        it 'reparents page' do
-          complex_paged.reload
-          expect(complex_paged.order_children[0]).to eq reorder_array.map { |h| h["id"] }
-        end
-
-        it 'redirects to :edit' do
-          expect(Page).to receive(:find).at_least(:once) {|pid| @test_pages[pid.to_i-1]}
-          expect(Paged).to receive(:find).and_return(@test_paged)
-  
-          patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
-          expect(response).to redirect_to action: :edit
-        end
+        patch :reorder, id: @test_paged.pid, reorder_submission: reorder_submission
+        expect(response).to redirect_to action: :edit
       end
     end
   end
