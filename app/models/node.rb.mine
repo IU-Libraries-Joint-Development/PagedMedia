@@ -329,7 +329,7 @@ module Node
       prev_sibling.next_sib = next_sibling ? next_sibling.pid : nil
       prev_sibling.skip_sibling_validation = true
       prev_sibling.skip_linkage_update = true
-      prev_sibling.save     
+      
     end
 
     # Unlink from next sibling.

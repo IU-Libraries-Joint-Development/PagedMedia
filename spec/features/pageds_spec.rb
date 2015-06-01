@@ -19,7 +19,8 @@ describe 'Pageds features' do
       # Remove page 3's prev_sib
       page3.prev_sib = ''
       page3.skip_sibling_validation = true
-      page3.save!(unchecked: true)
+      page3.skip_linkage_update = true
+      page3.save
     end
     specify "an error message should display" do
       visit validate_paged_path(test_paged.pid)
@@ -32,7 +33,8 @@ describe 'Pageds features' do
       # Point page 3's next_sib to itself
       page3.next_sib = page3.pid
       page3.skip_sibling_validation = true
-      page3.save!(unchecked: true)
+      page3.skip_linkage_update = true
+      page3.save
     end
     specify "an error message should display" do
       visit validate_paged_path(test_paged.pid)
@@ -45,7 +47,8 @@ describe 'Pageds features' do
       # Point page 3's next_sib to nothing
       page3.next_sib = ''
       page3.skip_sibling_validation = true
-      page3.save!(unchecked: true)
+      page3.skip_linkage_update = true
+      page3.save
     end
     specify "an error message should display" do
       visit validate_paged_path(test_paged.pid)
