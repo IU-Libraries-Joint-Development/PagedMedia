@@ -10,13 +10,15 @@ module FactoryHelpers
       children.reverse_each do |child|
         if next_child
 	  child.next_sib = next_child.pid
-	  child.save!(unchecked: true)
+          child.skip_linkage_update = true
+	  child.save
 	end
 	next_child = child
       end
       parent.children = children.map { |c| c.pid }
       parent.skip_sibling_validation = true
-      parent.save!(unchecked: true)
+      parent.skip_linkage_update = true
+      parent.save
       parent.update_index
       children
     end
