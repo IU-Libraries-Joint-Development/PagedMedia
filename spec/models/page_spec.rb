@@ -14,8 +14,8 @@ describe Page do
 
     describe "with :unchecked trait" do
 
-      it "has skip_sibling_validation" do
-        expect(unchecked_page.skip_sibling_validation).to eq true
+      it "has skip_linkage_validation" do
+        expect(unchecked_page.skip_linkage_validation).to eq true
       end
 
     end

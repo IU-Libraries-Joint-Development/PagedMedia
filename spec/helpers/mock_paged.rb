@@ -63,7 +63,7 @@ module ModelMocks
 
     def update_index; end
 
-    def skip_sibling_validation=; end
+    def skip_linkage_validation=; end
 
     # ActiveRecord instance methods
 
