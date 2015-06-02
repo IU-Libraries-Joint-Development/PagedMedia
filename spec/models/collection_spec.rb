@@ -16,8 +16,8 @@ describe Collection do
       expect(invalid_collection).to be_invalid
     end
     describe "with :unchecked trait" do
-      it "has skip_sibling_validation" do
-        expect(unchecked_collection.skip_sibling_validation).to be true
+      it "has skip_linkage_validation" do
+        expect(unchecked_collection.skip_linkage_validation).to be true
       end
     end
   end

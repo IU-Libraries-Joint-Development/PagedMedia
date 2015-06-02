@@ -263,7 +263,7 @@ module PMP
             (0...page_count).each do |index|
               #TODO: create/find sections, set association
               #TODO: require unique section name within parent scope?
-              page_attributes = { parent: paged.pid, skip_sibling_validation: true }
+              page_attributes = { parent: paged.pid, skip_linkage_validation: true }
               #TODO: blank prev_sib if in new section
               page_attributes[:prev_sib] = prev_sib.pid if prev_sib
               pages_yaml[index]["descMetadata"].each_pair do |key, value|

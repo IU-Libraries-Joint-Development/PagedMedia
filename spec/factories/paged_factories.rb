@@ -23,7 +23,7 @@ FactoryGirl.define do
     end
 
     trait :unchecked do
-      skip_sibling_validation true
+      skip_linkage_validation true
       skip_linkage_update true
     end
 
@@ -69,7 +69,7 @@ FactoryGirl.define do
         (0...pages.size).each do |i|
           score_page = 'spec/fixtures/scores/bhr9405/bhr9405-1-' + (i + 1).to_s + '.jpg'
           pages[i].pageImage.content = File.open(Rails.root + score_page)
-          pages[i].skip_sibling_validation = true
+          pages[i].skip_linkage_validation = true
           pages[i].skip_linkage_update = true
           pages[i].save!
           #FIXME: helpful?
@@ -98,7 +98,7 @@ FactoryGirl.define do
         next_page = nil
         pages.reverse_each do |page|
           page.next_sib = next_page.pid if next_page
-          page.skip_sibling_validation = true
+          page.skip_linkage_validation = true
           page.skip_linkage_update = true
           page.save
           next_page = page

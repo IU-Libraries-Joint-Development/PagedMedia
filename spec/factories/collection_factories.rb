@@ -10,7 +10,7 @@ FactoryGirl.define do
     end
 
     trait :unchecked do
-      skip_sibling_validation true
+      skip_linkage_validation true
     end
 
   end

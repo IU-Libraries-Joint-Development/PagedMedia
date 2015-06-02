@@ -40,14 +40,17 @@ module Node
       # PIDs of my child Nodes
       has_attributes :children, datastream: 'nodeMetadata', multiple: true
 
-      # skip_sibling_validation skips the custom validation
-      attr_accessor :skip_sibling_validation
+      # skip_linkage_validation skips the custom validation
+      attr_accessor :skip_linkage_validation
+      attr_accessor :skip_children_validation
       attr_accessor :skip_linkage_update
+      attr_accessor :skip_link_update
+      attr_accessor :skip_unlink_update
 
-      validate :validate_linkage, unless: :skip_sibling_validation
-      validate :validate_children, unless: :skip_sibling_validation
-      before_save :update_unlink, unless: :skip_linkage_update
-      after_save :update_linkage, unless: :skip_linkage_update
+      validate :validate_linkage, unless: :skip_linkage_validation
+      validate :validate_children, unless: :skip_linkage_validation || :skip_children_validation
+      before_save :update_unlink, unless: :skip_linkage_update || :skip_unlink_update
+      after_save :update_linkage, unless: :skip_linkage_update || :skip_link_update
 
       def self.valid_parent_classes
         const_get(:VALID_PARENT_CLASSES)
@@ -183,7 +186,7 @@ module Node
     unless prev_sib == prev_sib_was || prev_sib_was.blank?
       old_prev_sib = ActiveFedora::Base.find(prev_sib_was, cast: true)
       old_prev_sib.next_sib = next_sib_was
-      old_prev_sib.skip_sibling_validation = true
+      old_prev_sib.skip_linkage_validation = true
       old_prev_sib.skip_linkage_update = true
       old_prev_sib.save
     end
@@ -191,7 +194,7 @@ module Node
     unless next_sib == next_sib_was || next_sib_was.blank?
       old_next_sib = ActiveFedora::Base.find(next_sib_was, cast: true)
       old_next_sib.prev_sib = prev_sib_was
-      old_next_sib.skip_sibling_validation = true
+      old_next_sib.skip_linkage_validation = true
       old_next_sib.skip_linkage_update = true
       old_next_sib.save
     end
@@ -201,7 +204,7 @@ module Node
       old_sibs = old_parent.children
       old_sibs.delete(pid)
       old_parent.children = old_sibs
-      old_parent.skip_sibling_validation = true
+      old_parent.skip_linkage_validation = true
       old_parent.skip_linkage_update = true
       old_parent.save
     end
@@ -214,7 +217,7 @@ module Node
       prev_sibling = ActiveFedora::Base.find(prev_sib, cast: true)
       if (prev_sibling.pid != pid)
         prev_sibling.next_sib = pid
-        prev_sibling.skip_sibling_validation = true
+        prev_sibling.skip_linkage_validation = true
         prev_sibling.skip_linkage_update = true
         prev_sibling.save
         logger.debug("Saving #{self.class.name} #{pid}:  prev_sib is #{prev_sib}")
@@ -225,7 +228,7 @@ module Node
       next_sibling = ActiveFedora::Base.find(next_sib, cast: true)
       if (next_sibling.pid != pid)
         next_sibling.prev_sib = pid
-        next_sibling.skip_sibling_validation = true
+        next_sibling.skip_linkage_validation = true
         next_sibling.skip_linkage_update = true
         next_sibling.save
         logger.debug("Saving #{self.class.name} #{pid}:  next_sib is #{next_sib}")
@@ -239,7 +242,7 @@ module Node
         # operators but some of them do nothing.  The only way to augment one is
         # to augment a copy and assign the result back.  ?!?!
         my_parent.children = my_parent.children << pid
-        my_parent.skip_sibling_validation = true
+        my_parent.skip_linkage_validation = true
         my_parent.skip_linkage_update = true
         my_parent.save
       end
@@ -253,7 +256,7 @@ module Node
       end
       if (my_child && my_child.parent.blank? && (my_child.parent != pid))
         my_child.parent = pid
-        my_child.skip_sibling_validation = true
+        my_child.skip_linkage_validation = true
         my_child.skip_linkage_update = true
         my_child.save
       end
@@ -327,7 +330,7 @@ module Node
     # Unlink from previous sibling.
     if (prev_sibling)
       prev_sibling.next_sib = next_sibling ? next_sibling.pid : nil
-      prev_sibling.skip_sibling_validation = true
+      prev_sibling.skip_linkage_validation = true
       prev_sibling.skip_linkage_update = true
       prev_sibling.save     
     end
@@ -335,7 +338,7 @@ module Node
     # Unlink from next sibling.
     if (next_sibling)
       next_sibling.prev_sib = prev_sibling ? prev_sibling.pid : nil
-      next_sibling.skip_sibling_validation = true
+      next_sibling.skip_linkage_validation = true
       next_sibling.skip_linkage_update = true
       next_sibling.save
     end
@@ -352,7 +355,7 @@ module Node
       my_sibs = my_parent.children
       my_sibs.delete(pid)
       my_parent.children = my_sibs
-      my_parent.skip_sibling_validation = true
+      my_parent.skip_linkage_validation = true
       my_parent.skip_linkage_update = true
       my_parent.save
     end
@@ -536,7 +539,7 @@ module Node
     new_child_objects = new_children.map { |pid| ActiveFedora::Base.find(pid, cast: true) }
     if self.children != new_children
       self.children = new_children
-      self.skip_sibling_validation = true
+      self.skip_linkage_validation = true
       self.skip_linkage_update = true
       self.save
       prev_child = nil
@@ -548,7 +551,7 @@ module Node
         prev_child = child
       end
       new_child_objects.each do |child|
-        child.skip_sibling_validation = true
+        child.skip_linkage_validation = true
         child.skip_linkage_update = true
         child.save
       end

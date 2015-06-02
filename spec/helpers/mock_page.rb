@@ -21,7 +21,7 @@ module ModelMocks
       @next_sib = nil
     end
 
-    def skip_sibling_validation=(s); end
+    def skip_linkage_validation=(s); end
 
     def pid; id; end
   

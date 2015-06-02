@@ -18,7 +18,7 @@ describe 'Pageds features' do
     before(:each) do
       # Remove page 3's prev_sib
       page3.prev_sib = ''
-      page3.skip_sibling_validation = true
+      page3.skip_linkage_validation = true
       page3.skip_linkage_update = true
       page3.save
     end
@@ -32,7 +32,7 @@ describe 'Pageds features' do
     before(:each) do
       # Point page 3's next_sib to itself
       page3.next_sib = page3.pid
-      page3.skip_sibling_validation = true
+      page3.skip_linkage_validation = true
       page3.skip_linkage_update = true
       page3.save
     end
@@ -46,7 +46,7 @@ describe 'Pageds features' do
     before(:each) do
       # Point page 3's next_sib to nothing
       page3.next_sib = ''
-      page3.skip_sibling_validation = true
+      page3.skip_linkage_validation = true
       page3.skip_linkage_update = true
       page3.save
     end

@@ -15,8 +15,8 @@ describe Section do
       expect(invalid_section).to be_invalid
     end
     describe "with :unchecked trait" do
-      it "has skip_sibling_validation" do
-        expect(unchecked_section.skip_sibling_validation).to eq true
+      it "has skip_linkage_validation" do
+        expect(unchecked_section.skip_linkage_validation).to eq true
       end
     end
     describe "with :with_pages trait:" do

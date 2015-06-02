@@ -16,7 +16,7 @@ module FactoryHelpers
 	next_child = child
       end
       parent.children = children.map { |c| c.pid }
-      parent.skip_sibling_validation = true
+      parent.skip_linkage_validation = true
       parent.skip_linkage_update = true
       parent.save
       parent.update_index

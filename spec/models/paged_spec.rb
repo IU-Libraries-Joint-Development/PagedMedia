@@ -11,8 +11,8 @@ describe Paged do
       expect(valid_paged).to be_valid
     end
     describe "with :unchecked trait" do
-      it "has skip_sibling_validation" do
-        expect(unchecked_paged.skip_sibling_validation).to eq true
+      it "has skip_linkage_validation" do
+        expect(unchecked_paged.skip_linkage_validation).to eq true
       end
     end
     describe "with :with_pages trait:" do
