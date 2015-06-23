@@ -143,6 +143,7 @@ class CatalogController < ApplicationController
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
     # since we aren't specifying it otherwise.
 
+=begin
     config.add_search_field 'all_fields', :label => 'All Fields'
 
 
@@ -174,6 +175,7 @@ class CatalogController < ApplicationController
         :pf => '$type_pf'
       }
     end
+=end
 
     
 =begin
