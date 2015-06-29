@@ -32,3 +32,7 @@ en:
     header_links:
       login: Sign in
       logout: Sign out
+
+    search:
+      facets:
+        title: Browse by
