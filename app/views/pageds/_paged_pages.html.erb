@@ -1,55 +1,43 @@
-<div id="paged_pages">
-  <h3><%= paged.title %></h3>
-  <p><strong>Number of pages : </strong><%= paged.children.size %></p>
+<div id="paged_pages" style="padding-bottom:25px;">
+  <h3>Manage Pages</h3>
+  <!-- <p><strong>Number of pages : </strong><%= paged.children.size %></p> -->
   <% session[:came_from] = :paged %>
-  <div id="pages">
-    <table border="1">
+  <div  id="pages">
+    <table id="paged-pages-table">
       <tr>
-        <td></td>
-        <th>Logical Number</th>
-        <th>Page ID</th>
-        <th>Links</th>
+        <th></th>
+        <th class="paged-pages-table-triple">Page Number</th>
+        <th class="paged-pages-table-triple">Identifier</th>
+        <th>View Page</th>
+        <th>Edit</th>
+        <th>Delete</th>
       </tr>
       <% ordered.each do |page| %>
         <% my_page = Page.find(page['id']) %>
         <tr>
-          <td>
-            <%= link_to image_tag(
-                    page["ds_url"],
-                    height: "64",
-                    width: "64"
-                  ),
-                  page_path(page["id"])
-            %>
-          </td>
+          <td></td>
           <td class='logical_numbers'><%= page['logical_number'] %></td>
           <td><%= my_page.pid %></td>
-          <td><%= my_page.prev_sib %></td>
-          <td><%= my_page.next_sib %></td>
           <td>
-            <div style="float:left;">
-              <%= button_to 'View', page_path(page["id"]), :method => :get, :style => "display:inline;" %>
-            </div>
-            <div style="float:left;">
-              <%= button_to 'Edit', edit_page_path(page["id"]), :method => :get, :style => "display:inline;" %>
-            </div>
-            <div style="float:left;">
-              <%= button_to 'Delete', page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } %>
-            </div>
+            <%= link_to page_path(page["id"]) do %>
+              <i class="fa fa-file-text-o fa-2x"></i>
+            <% end %>
           </td>
-
+          <td>
+            <%= link_to edit_page_path(page["id"]) do %>
+              <i class="fa fa-pencil fa-2x"></i>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to page_path(page["id"]), method: :delete, data: { confirm: 'Are you sure?' } do %>
+              <span class="fa-stack ">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-times fa-stack-1x fa-inverse"></i>
+              </span>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </table>
   </div>
-  <div id="add_page_form" style="margin-top:10px; display:none; border:solid 1px #000000">    
-    <%= render :partial=>'pages/add_page_form', :local => {:paged => @paged} %>
-  </div>
-  <div id="add_page">
-    <%= button_to "Add Page", "#", class: "show_add_page_form", :method => :get %>
-  </div>
-  <div id="cancel_add_page" style="display:none">
-    <%= button_to "Cancel", "#", class: "show_add_page_form", :method => :get %>
-  </div>
-
 </div>

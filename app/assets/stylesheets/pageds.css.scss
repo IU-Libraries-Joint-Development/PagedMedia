@@ -84,3 +84,35 @@ form.edit_paged span.form_field{
   padding-top:25px;
   padding-left:150px;
 }
+
+/*
+ * Tables in paged show
+ */
+
+#paged-show-table, #paged-pages-table{
+  width:100%;
+  text-align:center;
+}
+#paged-show-table a .fa:hover, #paged-pages-table  a .fa:hover,
+#paged-show-table i.fa:hover, #paged-pages-table  i.fa:hover{
+  color:#7d110c;
+  text-decoration: none;
+  background-color: #fff;
+}
+
+#paged-show-table tr, #paged-pages-table tr{
+  vertical-align: top;
+}
+
+#paged-show-table th, #paged-pages-table th{
+  width:10%
+}
+
+#paged-show-table tr:first-child td:first-child{
+  width:60%;
+  text-align:left;
+}
+
+#paged-pages-table .paged-pages-table-triple{
+  width:30%;
+}
