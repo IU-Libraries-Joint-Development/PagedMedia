@@ -14,7 +14,7 @@
       </tr>
       <% ordered.each do |page| %>
         <% my_page = Page.find(page['id']) %>
-        <tr>
+        <tr class="<%= cycle('odd', 'even') %>">
           <td></td>
           <td class='logical_numbers'><%= page['logical_number'] %></td>
           <td><%= my_page.pid %></td>
