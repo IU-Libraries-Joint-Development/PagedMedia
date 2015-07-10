@@ -6,41 +6,73 @@
   <%= render_breadcrumbs %>
   <p id="notice"><%= notice %></p>
   
-  <h2><%= @paged.title %></h2>
-  
-  <div class="pmp_paged_info">
-    <ul>
-
-      <% if i18n_set? 'pagedmedia.' + @paged.type + '.fields' %>
-        <% vocabs =  I18n.t 'pagedmedia.' + @paged.type + '.fields' %>
-      <% else %>
-        <% vocabs =  I18n.t 'pagedmedia.default.fields' %>
-      <% end %>
-      <% vocabs.each do |vocab, fields| %>
-        <% fields.each do |key, value| %>
-          <% if (@paged.respond_to? key) && (@paged.send(key) != NIL) %>
-           <li><%= t(value)%>: <%= @paged.send(key) %></li>
-          <% end %>
-        <% end %>
-      <% end %>    
-    
-      <li>XML file:
-        <% if @paged.xml_file.has_content? %>
-          <%= link_to @paged.xml_datastream.label,
-                      ActiveFedora.fedora_config.credentials[:url] +
-                        '/' + @paged.xml_datastream.url %>
-        <% else %>
-          none.
-        <% end %>
-      </li>
-    </ul>
-    <%= render 'nodes/node_display_fields', node: @paged %>
+  <h3><%= @paged.title %></h3>
     <div>
-      <%= button_to 'Update', edit_paged_path(@paged), :method => :get %>
+      <table id="paged-show-table">
+        <tr>
+          <td rowspan=2>
+            <div class="pmp_paged_info">
+              <ul>
+                <% if i18n_set? 'pagedmedia.' + @paged.type + '.fields' %>
+                  <% vocabs =  I18n.t 'pagedmedia.' + @paged.type + '.fields' %>
+                <% else %>
+                  <% vocabs =  I18n.t 'pagedmedia.default.fields' %>
+                <% end %>
+                <% vocabs.each do |vocab, fields| %>
+                  <% fields.each do |key, value| %>
+                    <% if (@paged.respond_to? key) && (@paged.send(key) != NIL) %>
+                     <li><%= t(value)%>: <%= @paged.send(key) %></li>
+                    <% end %>
+                  <% end %>
+                <% end %>    
+              
+                <li>XML file:
+                  <% if @paged.xml_file.has_content? %>
+                    <%= link_to @paged.xml_datastream.label,
+                                ActiveFedora.fedora_config.credentials[:url] +
+                                  '/' + @paged.xml_datastream.url %>
+                  <% else %>
+                    none.
+                  <% end %>
+                </li>
+              </ul>
+            </div>            
+          </td>
+          <th>Add Page</th>
+          <th>View</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+        <tr>
+          <td>
+            <%= link_to new_page_path(:page => {:parent => @paged}) do %>
+              <i class="fa fa-plus-circle fa-2x"></i>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"  do %>
+              <i class="fa fa-file-text-o fa-2x"></i>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to edit_paged_path(@paged) do %>
+              <i class="fa fa-pencil fa-2x"></i>
+            <% end %>          
+          </td>
+          <td>
+            <%= link_to @paged, method: :delete, data: { confirm: 'Are you sure?' }  do %>
+              <span class="fa-stack ">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-times fa-stack-1x fa-inverse"></i>
+              </span>
+            <% end %>         
+          </td>
+        </tr>
+      </table>
     </div>
-  </div>
-  
+
   <!-- Cover Image -->
+  <!--
   <div style="float:left; padding-left:50px; text-align:center;">
     <% if @ordered[0] %>
       <%= image_tag(@ordered[0]["ds_url"], height: "100", width: "100" ) %>
@@ -50,6 +82,7 @@
       <%= link_to "<button>View in BookReader</button>".html_safe, bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank", class: "button_link" %>
     </div>
   </div>
+  -->
   
   <div style="clear:both;"></div>
   

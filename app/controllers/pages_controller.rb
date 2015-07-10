@@ -24,6 +24,7 @@ class PagesController < ApplicationController
   def new
     @page = Page.new
     session[:came_from] = :page
+    @page = Page.new(params[:page])
     add_breadcrumb "Create Page"
   end
 
