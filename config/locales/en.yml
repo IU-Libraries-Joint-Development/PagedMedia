@@ -24,15 +24,15 @@ en:
   pmp:
     document:
       untitled:
-        title: 'Untitled'
+        title: Untitled
         
-en:
   blacklight:
-    application_name: 'Paged Media Project'
+    application_name: Paged Media Project
     
-en:
-  blacklight:
     header_links:
-      login: 'Sign in'
-      logout: 'Sign out'
-      
+      login: Sign in
+      logout: Sign out
+
+    search:
+      facets:
+        title: Browse by

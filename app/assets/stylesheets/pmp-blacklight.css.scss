@@ -12,6 +12,12 @@
   padding:0 5px !important;
 }
 
+a.pmp-util-links{
+  font-size: 20px;
+  padding-top: 17px;
+  padding-bottom:17px;
+}
+
 
 #user-wide{
   display:none;
@@ -67,6 +73,10 @@
 }
 
 /* Aditional sidebar styles */
+
+.sidenav h4 {
+  background-color: rgb(68, 105, 125);
+}
 
 .pmp-sidenav h5{
   cursor:pointer;

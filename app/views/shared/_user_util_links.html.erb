@@ -1,4 +1,5 @@
   <div class="util-links-other pmp-util-links">
+    <!--
     <% if render_bookmarks_control? %>
       <%= link_to image_tag("icons/bookmark_32.png"), bookmarks_path %>
     <% end %>
@@ -6,6 +7,7 @@
       <%= link_to image_tag("icons/saved_search_32.png"), saved_searches_path %>
     <% end %>
     <%= link_to image_tag("icons/history_32.png"), search_history_path %>
+    -->
     <% if has_user_authentication_provider? %>
       <% if current_user %>
         <span id="user-base">
@@ -15,14 +17,16 @@
         <span id="user-wide">
           <%= "#{ link_to current_user, edit_user_registration_path }".html_safe unless current_user.to_s.blank? %>
           |
-          <%= link_to t('blacklight.header_links.logout'), destroy_user_session_path %>
+          <%= link_to t('blacklight.header_links.logout'), destroy_user_session_path,
+            class: 'pull-right pmp-util-links' %>
         </span>
       <% else %>
         <span id="user-base">
           <%= link_to image_tag("icons/logon_32.png"), new_user_session_path %>
         </span>
         <span id="user-wide">
-          <%= link_to t('blacklight.header_links.login'), new_user_session_path %>
+          <%= link_to t('blacklight.header_links.login'), new_user_session_path,
+            class: 'pull-right pmp-util-links' %>
         </span>
       <% end %>
     <% end %>

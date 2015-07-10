@@ -20,12 +20,15 @@ pre {
 
 a {
   color: #000;
-  &:visited {
-    color: #666;
-  }
   &:hover {
-    color: #fff;
-    background-color: #000;
+    text-decoration: underline;
+  }
+}
+
+a.inline {
+  color: rgb(125, 17, 12);
+  &:hover {
+    text-decoration: underline;
   }
 }
 
