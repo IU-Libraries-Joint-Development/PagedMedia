@@ -4,11 +4,11 @@
 
 <div id="content" class="span9">
   <%= render_breadcrumbs %>
-  <h1>Paged Media: Edit</h1>
+  <h3>Description</h3>
   
   <%= render 'form' %>
   <%= render partial: 'reorder_pages', locals: { paged: @paged, ordered: @ordered } %>
   
-  <%= link_to 'Show', @paged %> |
-  <%= link_to 'Back', pageds_path %>
+  
+  
 </div>
