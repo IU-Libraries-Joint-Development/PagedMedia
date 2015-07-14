@@ -22,3 +22,8 @@
 
 # Ignore Aptana (Eclipse) stuff
 /.project
+
+# Ignore Ruby Version Management stuff
+/.rvmrc
+/.ruby-version
+/.ruby-gemset

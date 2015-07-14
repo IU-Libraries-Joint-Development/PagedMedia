@@ -51,33 +51,30 @@
       <%= f.label "Date of Publication" %>
       <%= f.text_field :issued, placeholder: 'yyyy-mm-dd' %>
     </li>
-  
-    <% if !@paged.new? %>
-      <li class='field'>
-        <span class="form_label">Current XML File</span>
-        <span class="form_field">
-        <% if @paged.xml_datastream.has_content? %>
-          <%= link_to @paged.xml_datastream.label, ActiveFedora.fedora_config.credentials[:url] + '/' + @paged.xml_datastream.url %>
-        <% else %>
-          none.
-        <% end %>
-        </span>
-      </li>
-    <% end %>
-    
     <li class='field'>
-      <%= f.label 'Select new XML File' %>
-      <%= f.file_field :xml_file %>
+      <%= f.label 'XML File' %>
+      <div class="custom-upload">
+        <%= f.file_field :xml_file %>
+        <div class="fake-file">
+          <input disabled="disabled" placeholder="<%= @paged.xml_datastream.label %>">
+        </div>
+      </div>
     </li>
+    <li class="field">
+      <label/>
+      <div class="actions paged_submit">
+      <% if !@paged.new? %>
+        <%= f.submit "Save", :class => 'save_submit' %>
+      <% else %>
+        <%= f.submit "Create"%>
+      <% end %>
+      </div>
+    </li>
+
   </ol>
+  
+  <div style="clear:both;"></div>
 
-  <%= render 'nodes/node_form_fields', f: f %>
+  <%#= render 'nodes/node_form_fields', f: f %>
 
-  <div class="actions paged_submit">
-    <% if !@paged.new? %>
-      <%= f.submit "Update"%>
-    <% else %>
-      <%= f.submit "Create"%>
-    <% end %>
-  </div>
 <% end %>
