@@ -18,20 +18,37 @@
     </ol>
   </div>
   <div class="span4">
-    <div class='field'>
-      <%= f.label 'Page image file:' %><br />
-      <%= f.file_field :image_file %>
-    </div>
-    <div class='field'>
-      <%= f.label 'New OCR file:' %>
-      <%= f.file_field :ocr_file %>
-    </div>
-    <div class='field'>
-      <%= f.label 'XML file:' %>
-      <%= f.file_field :xml_file %>
-    </div>
-    <div class="actions">
-      <%= f.submit %>
-    </div>
+    <ol>
+      <li class='field'>
+        <%= f.label 'Page image file:' %>
+        <div class="custom-upload">
+          <%= f.file_field :imagel_file %>
+          <div class="fake-file">
+            <input disabled="disabled">
+          </div>
+        </div>
+      </li>
+      <li class='field'>
+        <%= f.label 'New OCR file:' %>
+        <div class="custom-upload">
+          <%= f.file_field :ocr_file %>
+          <div class="fake-file">
+            <input disabled="disabled">
+          </div>
+        </div>        
+      </li>
+      <li class='field'>
+        <%= f.label 'XML file:' %>
+        <div class="custom-upload">
+          <%= f.file_field :xml_file %>
+          <div class="fake-file">
+            <input disabled="disabled">
+          </div>
+        </div>        
+      </li>
+    </ol>
+  </div>
+  <div>
+    <%= f.submit "Save", :class => 'save_submit' %>
   </div>
 <% end %>
