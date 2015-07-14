@@ -2,23 +2,38 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#sortable_pages {
+#sortable_labels {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  width: 20%;
 }
 
-#sortable_pages li {
-  margin: 0 3px 3px 3px;
-  padding: 0.4em;
-  padding-left: 1.5em;
+#sortable_pages{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  /*width: 20%;*/
+  background:none;
+  border:none;
+}
+
+#sortable_pages ol{
+  padding-left: 0;
+  margin-left:0;
+  clear: right;
+}
+
+#sortable_pages li{
+  margin: 0 0px 3px 0px;
+  padding: 0.4em 0;
+  margin: 0;
 }
 
 #sortable_pages li span {
   position: absolute;
-  margin-left: -1.3em;
+  /*margin-left: -1.3em;*/
 }
+
 
 body.dragging, body.dragging * {
   cursor: move !important;
@@ -28,6 +43,21 @@ body.dragging, body.dragging * {
   position: absolute;
   opacity: 0.5;
   z-index: 2000;
+}
+
+.sortable_label_section{
+  float:right;
+  padding-right:50%;
+}
+.sortable_save{
+  float:right;
+  padding-right:60%;
+}
+
+.sortable_label_file{
+  float:right;
+  width:25%;
+  margin-left:-25%;
 }
 
 /*
@@ -64,10 +94,12 @@ form#new_paged label,
 form.edit_paged label,
 form#add_page label,
 span.form_label{
+  text-align:right;
+  padding-right:15px;
   float: left;
   font-size: 13px;
-  font-weight: bold;
-  width: 175px;
+  font-weight: normal;
+  width: 160px;
 }
 
 form#new_paged input[type="file"],
@@ -85,8 +117,7 @@ form.edit_paged span.form_field{
 }
 
 .paged_submit{
-  padding-top:25px;
-  padding-left:150px;
+  padding-top:50px;
 }
 
 /*
@@ -124,3 +155,70 @@ form.edit_paged span.form_field{
 #paged-pages-table tr.even{
   background-color: #E1D8B7
 }
+
+.save_submit{
+  background:image-url("buttons/save_button.png");
+  background-size: 90px 30px;
+  background-repeat: no-repeat;
+  height: 30px;
+  width: 100px !important;
+  color: transparent;
+  text-decoration: none;
+  border:none;
+}
+
+/*
+ * Custom File Upload
+ */
+
+.custom-upload {
+    position: relative;
+    height: 20px;
+    width: 325px;
+    display: inline-block
+}
+
+.custom-upload input[type=file]
+{
+    outline:none;
+    position: relative;
+    text-align: right;    
+    -moz-opacity:0 ;
+    /*filter:alpha(opacity:0);*/
+    opacity: 0;
+    z-index: 2;
+    width:100%;
+    height:100%;
+   
+    
+}
+
+.custom-upload .fake-file
+{
+    background: image-url("buttons/update_button.png") center right no-repeat;
+    background-size: 90px 30px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 325px;
+    padding: 0;
+    margin: 0;
+    z-index: 1;
+    line-height: 100%;
+}
+
+.custom-upload .fake-file input
+{
+    font-size:14px;
+    height:20px;
+    line-height:20px;
+    width:210px;
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+

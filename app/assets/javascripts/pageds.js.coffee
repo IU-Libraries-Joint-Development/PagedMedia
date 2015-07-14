@@ -2,6 +2,8 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+
+
 $(document).on "click", ".show_add_page_form", ->
   if $("#add_page_form").css("display") is "none"
     $("#add_page_form").slideDown "slow", ->
@@ -25,3 +27,9 @@ $ ->
       return
   )
   return
+
+# Source : http://jsfiddle.net/fengelz/28x7Y/
+$ ->
+  $('.custom-upload input[type=file]').change ->
+      $(this).next().find('input').val($(this).val())
+
