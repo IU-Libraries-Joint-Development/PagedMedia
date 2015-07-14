@@ -55,12 +55,14 @@ div.pmp_paged_info ul li{
  */
 
 form#new_paged ol li,
-form.edit_paged ol li{
+form.edit_paged ol li,
+form#add_page ol li{
   list-style: none;
 }
 
 form#new_paged label,
 form.edit_paged label,
+form#add_page label,
 span.form_label{
   float: left;
   font-size: 13px;
@@ -69,12 +71,14 @@ span.form_label{
 }
 
 form#new_paged input[type="file"],
-form.edit_paged input[type="file"]{
+form.edit_paged input[type="file"],
+form#add_page input[type="file"]{
   height:inherit;
   line-height:inherit;
 }
 
 form#new_paged span.form_field,
+form#add_page span.form_field,
 form.edit_paged span.form_field{
   display:block;
   padding-bottom: 15px;
