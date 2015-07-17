@@ -12,7 +12,7 @@
         <th>Logical number</th>
         <th>Previous page</th>
         <th>Next page</th>
-        <th>Details</th>
+        <th>Show</th>
         <th>Edit</th>
         <th>Destroy</th>
       </tr>
@@ -25,7 +25,7 @@
           <td><%= page.prev_sib %></td>
           <td><%= page.next_sib %>
           <td>
-            <%= link_to 'Details', href: page_path(page) do %>
+            <%= link_to 'Show', href: page_path(page) do %>
               <i class='fa fa-eye fa-2x'></i>
             <% end %>
           </td>
