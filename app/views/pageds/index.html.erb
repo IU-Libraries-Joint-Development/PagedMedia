@@ -1,14 +1,19 @@
 <div id="sidebar" class="span3">
-  <%#= render partial: 'shared/side_navbar' %>
+  <%= render partial: 'shared/side_navbar' %>
 </div>
-
+ 
+<% i = 0 %>
+ 
 <div id="content" class="span9">
   <%= render_breadcrumbs %>
+<!--
   <h1>Listing pageds</h1>
-  
+-->
   <table id='listPageds'>
+    <!--
     <thead>
       <tr>
+        <th>#</th>
         <th>Type</th>
         <th>Title</th>
         <th>Creator</th>
@@ -18,10 +23,72 @@
         <th colspan="4">Actions</th>
       </tr>
     </thead>
-  
+  -->
     <tbody>
-      <% @pageds.each do |paged| %>
+      
+      
+<!-- Cover Image: using pageds -->
+<div>
+  <%= @page %>
+</div>
+ 
+
+<div style="float:left; padding-left:50px; text-align:center;">
+  <a href="<%#  ActiveFedora.fedora_config.credentials[:url] %>/<%#  @page.image_datastream.url %>">
+    <img alt='<%#  @page.image_datastream.label %>'
+         src='<%#  ActiveFedora.fedora_config.credentials[:url] %>/<%#  @page.image_datastream.url %>'
+         width='128' height='128'
+         style='margin-right: 10px; float: left;'/>
+  </a>
+</div> 
+
+ 
+ 
+      <% @pageds.each do |paged| %>  
+      
+        <tr style="font-weight: bold;">
+          <td><%= i += 1 %>.</td>
+          <td><%= link_to paged.title, paged %></td>
+        </tr>
         <tr>
+          <td>Creator:</td>
+          <td><%= paged.creator %></td>
+        </tr>
+        <tr>
+          <td>Publisher:</td>
+          <td><%= paged.publisher %></td>
+        </tr>
+        <tr>
+          <td>Publisher Place:</td>
+          <td><%= paged.publisher_place %></td>
+        </tr>
+        <tr>
+          <td>Type:</td>
+          <td><%= paged.type %></td>
+        </tr>
+        <tr>
+          <td>Issued:</td>
+          <td><%= paged.issued %></td>
+        </tr>
+        <tr>
+          <td>
+            Image:
+            <%= image_tag(@image_urls[paged.pid], height: "100", width: "100" ) %>
+          </td>
+        </tr>
+<!-- Removed: No longer needed on the browse page
+          <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up', target: "_blank" %></td>
+          <td><%= link_to 'Show', paged %></td>
+          <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
+          <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+-->
+      <% end %>
+<!-- Removed: No longer needed on the browse page   
+      <% @pageds.each do |paged| %>
+      
+        <tr>
+          <td><%= i += 1 %></td>
           <td><%= paged.type %></td>
           <td><%= paged.title %></td>
           <td><%= paged.creator %></td>
@@ -34,11 +101,13 @@
           <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>
         </tr>
       <% end %>
+-->
     </tbody>
   </table>
-  
+ 
   <br>
-  
+ 
+  <!-- Removed: No longer needed on the browse page
   <%= button_to 'New Paged', new_paged_path, :class=> "button", :method=> :get %>
-
+  -->
 </div>
