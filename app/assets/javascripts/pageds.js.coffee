@@ -32,4 +32,4 @@ $ ->
 $ ->
   $('.custom-upload input[type=file]').change ->
       $(this).next().find('input').val($(this).val())
-
+ 
