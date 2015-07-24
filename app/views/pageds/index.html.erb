@@ -9,9 +9,7 @@
   
   <table id='listPageds'>
     <tbody>
-      
       <% @pageds.each do |paged| %>  
-      
         <tr style="font-weight: bold;">
           <td><%= i += 1 %>.</td>
           <td><%= link_to paged.title, paged %></td>
@@ -39,17 +37,10 @@
           <td>Issued:</td>
           <td><%= paged.issued %></td>
         </tr>
-        <tr>
-
-        </tr>
-
       <% end %>
     </tbody>
   </table>
  
-  <br>
- 
-  <!-- Removed: No longer needed on the browse page
-  <%= button_to 'New Paged', new_paged_path, :class=> "button", :method=> :get %>
-  -->
+  <br/><br/>
+
 </div>
