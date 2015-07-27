@@ -1,30 +1,56 @@
-<%= form_for :page, url: { action: "create", controller: "pages" } do |f| %>
+<h3><a name="add-page" />Add Page</a></h3>
+<%= form_for :page, url: { action: "create", controller: "pages" }, html: {id: "add_page"} do |f| %>
   <%= f.hidden_field(:parent, value: @paged.id) %>
-  <div class="field">
-    <%= f.label :logical_number %><br>
-    <%= f.text_field :logical_number %>
+  <div class="span4 add_page">
+    <ol>
+    <li class="field">
+      <%= f.label :logical_number %>
+      <%= f.text_field :logical_number %>
+    </li>
+    <li class="field">
+      <%= f.label 'Previous page' %>
+      <%= f.text_field :prev_sib %>
+    </li>
+    <li class="field">
+      <%= f.label 'Next page' %>
+      <%= f.text_field :next_sib %>
+    </li>
+    </ol>
   </div>
-  <div class="field">
-    <%= f.label 'Previous page' %><br>
-    <%= f.text_field :prev_sib %>
+  <div class="span4 add_page">
+    <ol>
+      <li class='field'>
+        <%= f.label 'Page image file:' %>
+        <div class="custom-upload custom-upload-small">
+          <%= f.file_field :image_file %>
+          <div class="fake-file">
+            <input disabled="disabled">
+          </div>
+        </div>
+      </li>
+      <br/>
+      <li class='field'>
+        <%= f.label 'New OCR file:' %>
+        <div class="custom-upload custom-upload-small">
+          <%= f.file_field :ocr_file %>
+          <div class="fake-file">
+            <input disabled="disabled">
+          </div>
+        </div>        
+      </li>
+      <br/>
+      <li class='field'>
+        <%= f.label 'XML file:' %>
+        <div class="custom-upload custom-upload-small">
+          <%= f.file_field :xml_file %>
+          <div class="fake-file">
+            <input disabled="disabled">
+          </div>
+        </div>        
+      </li>
+    </ol>
   </div>
-  <div class="field">
-    <%= f.label 'Next page' %><br>
-    <%= f.text_field :next_sib %>
-  </div>
-  <div class='field'>
-    <%= f.label 'Page image file:' %><br />
-    <%= f.file_field :image_file %>
-  </div>
-  <div class='field'>
-    <%= f.label 'New OCR file:' %>
-    <%= f.file_field :ocr_file %>
-  </div>
-  <div class='field'>
-    <%= f.label 'XML file:' %>
-    <%= f.file_field :xml_file %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
+  <div class="add-page-save">
+    <%= f.submit "Save", :class => 'save_submit' %>
   </div>
 <% end %>

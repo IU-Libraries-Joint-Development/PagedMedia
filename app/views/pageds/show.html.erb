@@ -45,9 +45,7 @@
         </tr>
         <tr>
           <td>
-            <%= link_to new_page_path(:page => {:parent => @paged}) do %>
-              <i class="fa fa-plus-circle fa-2x"></i>
-            <% end %>
+            <%= link_to '<i class="fa fa-plus-circle fa-2x"></i>'.html_safe, paged_path(@paged, :add => 'page', :anchor => 'add_page')  %>
           </td>
           <td>
             <%= link_to bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"  do %>
@@ -90,6 +88,9 @@
     <%= render :partial=>'paged_pages', :locals => { :paged => @paged, :ordered => @ordered } %>
   </div>
   
+  <% if params.has_key?(:add) %>
+    <%= render :partial=>'pages/add_page_form' %>
+  <% end %>
   
-
+  
 </div>
