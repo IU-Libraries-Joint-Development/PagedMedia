@@ -5,7 +5,8 @@
 <div id="content" class="span9">
   <%= render_breadcrumbs %>
   <p id="notice"><%= notice %></p>
-  
+
+  <h1>Page <%= @page.id %></h1>
 
   <!-- FIXME if our Fedora instance is inaccessible then we need another way to do this -->
   
@@ -63,7 +64,11 @@
       
   <div style="clear:both"></div>    
   
-  <%= link_to 'Edit', edit_page_path(@page) %> |
-  <%= link_to 'Back', pages_path %>
+  <%= link_to 'Edit', href: edit_page_path(@page), title: 'Edit' do %>
+    <i class='fa fa-pencil fa-2x'></i>
+  <% end %> |
+  <%= link_to 'Back', href: pages_path(), title: 'Back' do %>
+    <i class='fa fa-hand-o-left fa-2x'></i>
+  <% end %>
 
 </div>
