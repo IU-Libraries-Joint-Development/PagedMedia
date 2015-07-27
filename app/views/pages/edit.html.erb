@@ -8,6 +8,10 @@
   
   <%= render 'form' %>
 
-  <%= link_to 'Show', @page %> |
-  <%= link_to 'Back', pages_path %>
+  <%= link_to 'Show', href: page_path(@page), title: 'Show' do %>
+    <i class='fa fa-eye fa-2x'></i>
+  <% end %> |
+  <%= link_to 'Back', href: pages_path(), title: 'Back' do %>
+    <i class='fa fa-hand-o-left fa-2x'></i>
+  <% end %>
 </div>
