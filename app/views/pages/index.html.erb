@@ -6,15 +6,15 @@
   <%= render_breadcrumbs %>
   <h1>Listing pages</h1>
   
-  <table>
+  <table class='list_pages'>
     <thead>
       <tr>
         <th>Logical number</th>
         <th>Previous page</th>
         <th>Next page</th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th>Show</th>
+        <th>Edit</th>
+        <th>Destroy</th>
       </tr>
     </thead>
   
@@ -24,9 +24,24 @@
           <td><%= page.logical_number %></td>
           <td><%= page.prev_sib %></td>
           <td><%= page.next_sib %>
-          <td><%= link_to 'Show', page %></td>
-          <td><%= link_to 'Edit', edit_page_path(page) %></td>
-          <td><%= link_to 'Destroy', page, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td>
+            <%= link_to 'Show', href: page_path(page) do %>
+              <i class='fa fa-eye fa-2x'></i>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to 'Edit',  href: edit_page_path(page) do %>
+              <i class='fa fa-pencil fa-2x'></i>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to 'Destroy', href: page_path(page), method: :delete, data: { confirm: 'Are you sure?' } do %>
+              <span class='fa-stack'>
+                <i class='fa fa-circle fa-stack-2x'></i>
+                <i class='fa fa-times fa-stack-1x fa-inverse'></i>
+              </span>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
@@ -34,6 +49,6 @@
   
   <br>
   
-  <%= link_to 'New Page', new_page_path %>
+  <%= button_to 'New Page', new_page_path %>
 
 </div>

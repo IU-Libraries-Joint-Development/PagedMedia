@@ -38,3 +38,20 @@ form.edit_page span.form_field{
   padding-top:25px;
   padding-left:150px;
 }
+
+table.list_pages {
+  //border-collapse: separate;
+  //border-spacing: 3em 2px;
+}
+
+table.list_pages thead {
+  text-align: left;
+}
+
+table.list_pages td,th {
+  padding: 0 2em;
+}
+
+table.list_pages tr:nth-child(even) {
+  background-color: #E1D8B7
+}
