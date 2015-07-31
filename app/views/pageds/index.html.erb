@@ -14,7 +14,9 @@
           <td><%= i += 1 %>.</td>
           <td><%= link_to paged.title, paged %></td>
           <td rowspan=6>
-            <%= image_tag(@image_urls[paged.pid], height: "100", width: "100" ) %>
+            <% if @image_urls[paged.pid] %>
+              <%= image_tag(@image_urls[paged.pid], height: "100", width: "100" ) %>
+            <% end %>
           </td>
         </tr>
         <tr>

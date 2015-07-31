@@ -7,9 +7,13 @@ class PagedsController < ApplicationController
     @pageds = Paged.all
     @image_urls = {}
     @pageds.each do |paged|
-      ordered = JSON.parse(find_pages(paged.pid))
-      @image_urls = {paged.pid => ordered[0]['ds_url']}
+      pages = find_pages(paged.pid)
+      ordered = JSON.parse(pages) rescue false
+      if ordered && ordered.count > 0 
+        @image_urls = {paged.pid => ordered[0]['ds_url']}
+      end
     end
+
     add_breadcrumb "Browse", pageds_path
   end
 
