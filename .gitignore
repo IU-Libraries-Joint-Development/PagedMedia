@@ -27,3 +27,6 @@
 /.rvmrc
 /.ruby-version
 /.ruby-gemset
+
+# Ignore test coverage results
+/coverage
