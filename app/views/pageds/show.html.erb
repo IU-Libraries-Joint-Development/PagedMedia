@@ -39,13 +39,17 @@
             </div>            
           </td>
           <th>Add Page</th>
+          <th>Add Section</th>
           <th>View</th>
           <th>Edit</th>
           <th>Delete</th>
         </tr>
         <tr>
           <td>
-            <%= link_to '<i class="fa fa-plus-circle fa-2x"></i>'.html_safe, paged_path(@paged, :add => 'page', :anchor => 'add_page')  %>
+            <%= link_to '<i class="fa fa-plus-circle fa-2x"></i>'.html_safe, paged_path(@paged, :add => 'page', :anchor => 'add-page')  %>
+          </td>
+          <td>
+            <%= link_to '<i class="fa fa-plus-circle fa-2x"></i>'.html_safe, paged_path(@paged, :add => 'section', :anchor => 'add-section')  %>
           </td>
           <td>
             <%= link_to bookreader_paged_path(@paged) + '#page/1/mode/2up', target: "_blank"  do %>
@@ -89,7 +93,11 @@
   </div>
   
   <% if params.has_key?(:add) %>
-    <%= render :partial=>'pages/add_page_form' %>
+    <% if params[:add] == 'page' %>
+      <%= render :partial=>'pages/add_page_form' %>
+    <% elsif params[:add] == 'section' %>
+      <%= render :partial=>'sections/add_section_form' %>
+    <% end %>
   <% end %>
   
   
