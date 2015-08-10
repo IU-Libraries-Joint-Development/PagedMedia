@@ -5,6 +5,15 @@ class PagedsController < ApplicationController
   # GET /pageds.json
   def index
     @pageds = Paged.all
+    @image_urls = {}
+    @pageds.each do |paged|
+      pages = find_pages(paged.pid)
+      ordered = JSON.parse(pages) rescue false
+      if ordered && ordered.count > 0 
+        @image_urls = {paged.pid => ordered[0]['ds_url']}
+      end
+    end
+
     add_breadcrumb "Browse", pageds_path
   end
 
@@ -123,7 +132,10 @@ class PagedsController < ApplicationController
 
   private
 
-  def find_pages
+  def find_pages(*args) 
+    if args.size > 0
+      params[:id] = args[0]
+    end
     pages = {}
     search = ActiveFedora::SolrService.instance.conn.select :params => { :q => params[:id], :fl => "pages_ss" }
     unless search['response']['numFound'].to_i == 0
@@ -135,7 +147,6 @@ class PagedsController < ApplicationController
     pages ||= "[]"
     return pages
   end
-
 
     # Use callbacks to share common setup or constraints between actions.
     def set_paged

@@ -1,44 +1,48 @@
 <div id="sidebar" class="span3">
-  <%#= render partial: 'shared/side_navbar' %>
+  <%= render partial: 'shared/side_navbar' %>
 </div>
-
+ 
+<% i = 0 %>
+ 
 <div id="content" class="span9">
   <%= render_breadcrumbs %>
-  <h1>Listing pageds</h1>
   
   <table id='listPageds'>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Title</th>
-        <th>Creator</th>
-        <th>Publisher</th>
-        <th>Place of Publication</th>
-        <th>Date of Publication</th>
-        <th colspan="4">Actions</th>
-      </tr>
-    </thead>
-  
     <tbody>
-      <% @pageds.each do |paged| %>
+      <% @pageds.each do |paged| %>  
+        <tr style="font-weight: bold;">
+          <td><%= i += 1 %>.</td>
+          <td><%= link_to paged.title, paged %></td>
+          <td rowspan=6>
+            <% if @image_urls[paged.pid] %>
+              <%= image_tag(@image_urls[paged.pid], height: "100", width: "100" ) %>
+            <% end %>
+          </td>
+        </tr>
         <tr>
-          <td><%= paged.type %></td>
-          <td><%= paged.title %></td>
+          <td>Creator:</td>
           <td><%= paged.creator %></td>
+        </tr>
+        <tr>
+          <td>Publisher:</td>
           <td><%= paged.publisher %></td>
+        </tr>
+        <tr>
+          <td>Publisher Place:</td>
           <td><%= paged.publisher_place %></td>
+        </tr>
+        <tr>
+          <td>Type:</td>
+          <td><%= paged.type %></td>
+        </tr>
+        <tr>
+          <td>Issued:</td>
           <td><%= paged.issued %></td>
-          <td><%= link_to 'View in BookReader', bookreader_paged_path(paged) + '#page/1/mode/2up', target: "_blank" %></td>
-          <td><%= link_to 'Show', paged %></td>
-          <td><%= link_to 'Edit', edit_paged_path(paged) %></td>
-          <td><%= link_to 'Destroy', paged, method: :delete, data: { confirm: 'Are you sure?' } %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
-  
-  <br>
-  
-  <%= button_to 'New Paged', new_paged_path, :class=> "button", :method=> :get %>
+ 
+  <br/><br/>
 
 </div>
