@@ -25,12 +25,20 @@ class SectionsController < ApplicationController
   end
 
   def create
+
+    @paged = Paged.find(params[:section][:paged_id]) if params[:section][:paged_id]
+    params[:section].delete :paged_id if params[:section][:paged_id]
+    
     @section = Section.new(section_params)
 
     respond_to do |format|
       if @section.save
-        format.html { redirect_to @section, notice: 'Section was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @section }
+        if @paged
+          format.html { redirect_to @paged, notice: 'Section was successfully created.'}
+        else
+          format.html { redirect_to @section, notice: 'Section was successfully created.' }
+          format.json { render action: 'show', status: :created, location: @section }
+        end
       else
         format.html { render action: 'new' }
         format.json { render json: @section.errors, status: :unprocessable_entity }
@@ -68,6 +76,7 @@ class SectionsController < ApplicationController
     end
 
     def section_params
-      params.require(:section).permit(:name, :prev_sib, :next_sib, :parent, :children, :paged_id)
+      
+      params.require(:section).permit(:name, :prev_sib, :next_sib, :parent, :children, :paged_id )
     end
 end

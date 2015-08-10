@@ -62,10 +62,6 @@ class PagesController < ApplicationController
       end
     end
     
-    #if @paged
-    #  redirect_to @paged
-    #end
-    
   end
 
   # PATCH/PUT /pages/1

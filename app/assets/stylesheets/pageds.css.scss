@@ -86,13 +86,15 @@ div.pmp_paged_info ul li{
 
 form#new_paged ol li,
 form.edit_paged ol li,
-form#add_page ol li{
+form#add_page ol li,
+form#add_section ol li{
   list-style: none;
 }
 
 form#new_paged label,
 form.edit_paged label,
 form#add_page label,
+form#add_section label,
 span.form_label{
   text-align:right;
   padding-right:15px;
@@ -121,10 +123,11 @@ form.edit_paged span.form_field{
 }
 
 /*
- * Add Page partial styles
+ * Add Page and Section partial styles
  */
 
-form#add_page label{
+form#add_page label,
+form#add_section label{
   text-align:right;
   padding-right:15px;
   float: left;
@@ -133,11 +136,13 @@ form#add_page label{
   width: 100px;
 }
 
-form#add_page input{
+form#add_page input,
+form#add_section input{
   width:100px;
 }
 
-.add-page-save{
+.add-page-save,
+.add-section-save{
   clear:both;
   padding-left:20%;
   margin-top:25px;

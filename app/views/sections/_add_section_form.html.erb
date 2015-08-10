@@ -1,1 +1,28 @@
 <h3><a name="add-section" />Add Section</a></h3>
+<%= form_for :section, url: { action: "create", controller: "sections" }, html: {id: "add_section"} do |f| %>
+  <%= f.hidden_field(:parent, value: @paged.id) %>
+  <%= f.hidden_field(:paged_id, value: @paged.id) %>
+  <div class="span4 add_section">
+    <ol>
+      <li class='field'>
+        <%= f.label :name %>
+        <%= f.text_field :name %>
+      </li>
+    </ol>
+  </div>
+  <div class="span4 add_section">
+    <ol>
+      <li>
+        <%= f.label 'Previous node:' %>
+        <%= f.text_field :prev_sib %>
+      </li>
+      <li>
+        <%= f.label 'Next node:' %>
+        <%= f.text_field :next_sib %>
+      </li>
+    </ol>
+  </div>
+  <div class="add-section-save">
+    <%= f.submit "Save", :class => 'save_submit' %>
+  </div>
+<% end %>
