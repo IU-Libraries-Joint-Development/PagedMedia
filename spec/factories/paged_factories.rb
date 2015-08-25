@@ -124,15 +124,19 @@ FactoryGirl.define do
     trait :package do
       # TODO The manifest file is set here but should be discovered by walking tree of package dirs
       manifest_file = "spec/fixtures/ingest/pmp/package1/manifest.yml"
-      file_content = YAML.load_file(Rails.root + manifest_file)
-      # TODO The pageds position of 0 is set here but an iterator would be processing across all instances
-      #   of pageds found in the manifest file
-      title file_content["pageds"][0]["descMetadata"]["title"]
-      creator file_content["pageds"][0]["descMetadata"]["creator"]
-      type file_content["pageds"][0]["descMetadata"]["type"]
-      publisher file_content["pageds"][0]["descMetadata"]["publisher"]
-      publisher_place file_content["pageds"][0]["descMetadata"]["publisher_place"]
-      paged_struct file_content["pageds"][0]["descMetadata"]["paged_struct"]
+      begin
+        file_content = YAML.load_file(Rails.root + manifest_file)
+        # TODO The pageds position of 0 is set here but an iterator would be processing across all instances
+        #   of pageds found in the manifest file
+        title file_content["pageds"][0]["descMetadata"]["title"]
+        creator file_content["pageds"][0]["descMetadata"]["creator"]
+        type file_content["pageds"][0]["descMetadata"]["type"]
+        publisher file_content["pageds"][0]["descMetadata"]["publisher"]
+        publisher_place file_content["pageds"][0]["descMetadata"]["publisher_place"]
+        paged_struct file_content["pageds"][0]["descMetadata"]["paged_struct"]
+      rescue
+        puts "Error, probably opening the file?"
+      end
     end
 
   end

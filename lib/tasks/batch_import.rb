@@ -92,7 +92,7 @@ module PMP
       end
       
       def Helpers.structure_array(struct_string, delimiter = '--')
-        result = struct_string.split(delimiter)
+        result = struct_string.to_s.split(delimiter)
         result.each_with_index do |value, index|
           result[index] = result[index - 1] + delimiter + value unless index == 0
         end
@@ -101,10 +101,10 @@ module PMP
 
       def Helpers.array_from_struct(struct, delimiter = '--')
         result = []
-	if struct.any?
-	  result = struct.last.split(delimiter)
-	end
-	result
+        if struct.any?
+          result = struct.last.split(delimiter)
+        end
+        result
       end
       
       def Helpers.convert_manifest(subdir, manifest)
@@ -168,6 +168,23 @@ module PMP
           end
         end
       end
+
+      def Helpers.pretty_reorder_print(reorder_hash_array, indentation = "")
+        output_string = indentation + "["
+        reorder_hash_array.each_with_index do |hash, index|
+          output_string += indentation + " " if index > 0
+          if hash["name"]
+            output_string += "{\"id\"=>\"#{hash["id"]}\", \"name\"=\"#{hash["name"]}\", \"children\"=>\n#{pretty_reorder_print(hash["children"], indentation + "    ")}#{indentation}  }"
+          else
+            output_string += hash.inspect
+          end
+          if index < reorder_hash_array.length - 1
+            output_string += ",\n"
+	  end
+        end
+	output_string += "]\n"
+        output_string
+      end
       
       def Helpers.import_paged(subdir, paged_yaml)
         paged_attributes = {}
@@ -210,35 +227,34 @@ module PMP
             return
           end
 
-	  # Process Collections
-	  # TODO: require uniue names for collections, at least within scope of parent.  If only unique in parent scope, non-unique names will need fully qualified collection path to assure proper ingest.
-	  # TODO: refactor paged_struct to undo redundancy with unpacking, reconsolidating structure
-	  paged_struct = paged_yaml["descMetadata"]["paged_struct"]
-	  if paged_struct.any?
-	    parent_collection = nil
-	    print "Processing Collections: "
-	    array_from_struct(paged_struct).each do |name|
-	      search_existing = Collection.where(name: name, parent: (parent_collection ? parent_collection.pid : nil)).to_a
-	      if search_existing.any?
-	        collection = search_existing.first
-		print "\"#{name}\" found.  "
-	      else
-	        collection = Collection.new(name: name, parent: (parent_collection ? parent_collection.pid : nil))
-		collection.prev_sib = parent_collection.children.last if parent_collection && parent_collection.children.any?
-	        if collection.save
-	          print "\"#{name}\" created.  "
-  
+          # Process Collections
+          # TODO: require uniue names for collections, at least within scope of parent.  If only unique in parent scope, non-unique names will need fully qualified collection path to assure proper ingest.
+          # TODO: refactor paged_struct to undo redundancy with unpacking, reconsolidating structure
+          paged_struct = paged_yaml["descMetadata"]["paged_struct"]
+          if paged_struct.any?
+            parent_node = nil
+            print "Processing Collections: "
+            array_from_struct(paged_struct).each do |name|
+              search_existing = Collection.where(name: name, parent: (parent_node ? parent_node.pid : nil)).to_a
+              if search_existing.any?
+                collection = search_existing.first
+                print "\"#{name}\" found.  "
+              else
+                collection = Collection.new(name: name, parent: (parent_node ? parent_node.pid : nil))
+                collection.prev_sib = parent_node.children.last if parent_node && parent_node.children.any?
+                if collection.save
+                  print "\"#{name}\" created.  "
                 else
-	          puts "ABORTING: problem saving Collection"
-		  puts collection.errors.messages
-		  return
-		end
-	      end
-	      parent_collection = collection
-	    end
-	    print "\n"
-	    paged.parent = parent_collection.pid
-	    paged.prev_sib = parent_collection.children.last
+                  puts "ABORTING: problem saving Collection"
+                  puts collection.errors.messages
+                  return
+                end
+              end
+              parent_node = collection
+            end
+            print "\n"
+	    paged.parent = parent_node.pid
+	    paged.prev_sib = parent_node.children.last
 	    if paged.save
 	      print "Paged object updated with Collection association.\n"
 	    else
@@ -246,9 +262,9 @@ module PMP
 	      puts paged.errors.messages
 	      return
 	    end
-	  else
-	    print "No Collections to process.\n"
-	  end
+          else
+            print "No Collections to process.\n"
+          end
       
           pages_yaml = paged_yaml["pages"]
           if pages_yaml.nil? or pages_yaml.empty?
@@ -256,18 +272,17 @@ module PMP
           else
             #TODO: check page count exists?
             page_count = pages_yaml.count
-            print "Processing #{page_count.to_s} pages:"
+            print "Processing #{page_count.to_s} pages:\n"
             #TODO: check page count matches pages provided?
-            pages = []
-            prev_sib = nil
+            reorder_hash_array = []
+            prev_page_struct = nil
             (0...page_count).each do |index|
-              #TODO: create/find sections, set association
+              print "#{index +1}: "
               #TODO: require unique section name within parent scope?
-              page_attributes = { parent: paged.pid, skip_linkage_validation: true }
-              #TODO: blank prev_sib if in new section
-              page_attributes[:prev_sib] = prev_sib.pid if prev_sib
+              page_attributes = { skip_linkage_validation: true, skip_linkage_update: true }
               pages_yaml[index]["descMetadata"].each_pair do |key, value|
                 page_attributes[key.to_sym] = value
+                page_attributes[key.to_sym] ||= ""
               end
               begin
                 page = Page.new(page_attributes)
@@ -299,76 +314,53 @@ module PMP
                   break
                 end
               end
-              if page.save(unchecked: true)
-
+              if page.save
                 # Process Sections
                 # TODO: require uniue names for sections, at least within scope of parent.  If only unique in parent scope, non-unique names will need fully qualified section path to assure proper ingest.
                 # TODO: refactor page_struct to undo redundancy with unpacking, reconsolidating structure
                 page_struct = pages_yaml[index]["descMetadata"]["page_struct"]
                 if page_struct.any?
-                  parent_section = paged
+                  parent_node = paged
                   print "Processing Sections: "
+                  current_hash_array = reorder_hash_array
                   array_from_struct(page_struct).each do |name|
-                    search_existing = Section.where(name: name, parent: parent_section.pid).to_a
-                    if search_existing.any?
-                      section = search_existing.first
-                      print "\"#{name}\" found.  "
+                    if current_hash_array.map { |e| e["name"]}.include? name
+                      current_hash_array.each do |e|
+                        if e["name"] == name
+                          current_hash_array = e["children"]
+                          break
+                        end
+                      end
+                      print "\"#{name}\" re-used.  "
                     else
-                      section = Section.new(name: name, parent: parent_section.pid, prev_sib: prev_sib ? prev_sib.pid : nil)
-                      section.prev_sib = parent_section.children.last if parent_section && parent_section.children.any?
+                      section = Section.new(name: name, parent: parent_node.pid, skip_linkage_validation: true, skip_linkage_update: true)
                       if section.save
                         print "\"#{name}\" created.  "
-      
                       else
                         puts "ABORTING: problem saving Section"
                         puts section.errors.messages
                         return
                       end
+                      current_hash_array << { "id" => section.pid, "name" => name, "children" => [] }
+                      current_hash_array = current_hash_array.last["children"]
                     end
-                    parent_section = section
-		    prev_sib = section
                   end
+                  current_hash_array << { "id" => page.pid, "logical_number" => page.logical_number }
                   print "\n"
-                  page.parent = parent_section.pid
-                  page.prev_sib = parent_section.children.last
-                  if page.save
-                    print "Page updated with Section association.\n"
-                  else
-                    puts "ABORTING: problem saving Section association on Page"
-                    puts page.errors.messages
-                    return
-                  end
                 else
+                  reorder_hash_array << { "id" => page.pid, "logical_number" => page.logical_number }
                   print "No Sections to process.\n"
-
-                  #TODO: FIXME: don't set next sib if section change
-                  unless page.save
-                    puts "ABORT: problems saving page"
-                    puts page.errors.messages
-                    pages = []
-                    break
-                  end
-                  prev_sib = page
                 end
-                page.reload
-		page.update_index
-		page.save
-                pages << page
-                print "."
               else
                 puts "ABORT: problems saving page"
                 puts page.errors.messages
                 #TODO: destroy pages, paged?
-                pages = []
                 break
               end
             end
-            print "\nUpdating paged index.\n"
-            # TODO: FIXME: change to page/section mix; same for sections?
-            #paged.children = pages.map { |page| page.pid }
-            #paged.save(unchecked: true)
-            paged.reload
-            paged.update_index
+            print "\nUpdating structure index:\n"
+	    print pretty_reorder_print(reorder_hash_array)
+            paged.restructure_children(reorder_hash_array)
             print "Done.\n\n"
           end
         end
