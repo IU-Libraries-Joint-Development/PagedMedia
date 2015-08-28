@@ -10,7 +10,7 @@ class PagedsController < ApplicationController
       pages = find_pages(paged.pid)
       ordered = JSON.parse(pages) rescue false
       if ordered && ordered.count > 0 
-        @image_urls = {paged.pid => ordered[0]['ds_url']}
+        @image_urls[paged.pid] = ordered[0]['ds_url']
       end
     end
 
