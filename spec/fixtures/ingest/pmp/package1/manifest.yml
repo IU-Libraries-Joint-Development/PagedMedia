@@ -17,17 +17,16 @@ pageds:
     pagedXML: score_xml.xml
   pages:
   - descMetadata:
-      logical_number: Page A1
-      text: Some text about Page A1
-      page_struct:
-      - Section A
+      logical_number: First Page
+      text: Some text about First Page
+      page_struct: []
     content:
       pageImage: bhr9405-1-1.jpg
       pageOCR: bhr9405-1-1.txt
       pageXML: bhr9405-1-1.xml
   - descMetadata:
-      logical_number: Page A2
-      text: Some text about Page A2
+      logical_number: Page A1
+      text: Some text about Page A1
       page_struct:
       - Section A
     content:
@@ -75,6 +74,7 @@ pageds:
       text: Some text about Page C2
       page_struct:
       - Section C
+      - Section C--Subsection C.1
     content:
       pageImage: bhr9405-1-7.jpg
       pageOCR: bhr9405-1-7.txt
@@ -93,6 +93,7 @@ pageds:
       text: Some text about Page C4
       page_struct:
       - Section C
+      - Section C--Subsection C.2
     content:
       pageImage: bhr9405-1-9.jpg
       pageOCR: bhr9405-1-9.txt
