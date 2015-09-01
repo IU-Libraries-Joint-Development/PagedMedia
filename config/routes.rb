@@ -1,4 +1,6 @@
 PagedMedia::Application.routes.draw do
+  get 'sibling_popup/show'
+
   resources :pages
   resources :collections
   resources :sections
