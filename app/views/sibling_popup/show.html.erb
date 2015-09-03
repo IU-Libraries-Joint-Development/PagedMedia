@@ -1,5 +1,5 @@
-<h1>SiblingPopup#show</h1>
-<p>Find me in app/views/sibling_popup/show.html.erb</p>
+<% @title = 'Create a new sibling'%>
+<h1><%= @title%></h1>
 
 <form>
   Add a
@@ -10,10 +10,10 @@
     <% end %>
   </select>
   sibling.
-  <!--
-    render `something`/_form
-    -->
-    <input type='submit' value='before'>Add before this</input>
-    <input type='submit' value='after'>Add after this</input>
-    <input type='submit' value='cancel' onclick='window.close()'>Cancel</button>
+  <!-- render `something`/_form -->
+  <div>
+    <input type='submit' name='before' value='Add before this'/>
+    <input type='submit' name='after'  value='Add after this'/>
+    <input type='submit' name='cancel' value='Cancel' onclick='window.close()'/>
+  </div>
 </form>
