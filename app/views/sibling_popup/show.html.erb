@@ -3,17 +3,31 @@
 
 <form>
   Add a
-  <select>
+  <select onchange='show_form(this.value)'>
     <option disabled='disabled' selected='selected'>Select</option>
     <% ObjectProfile.each do |name, profile| %>
       <option value='<%= name %>'><%= name %></option>
     <% end %>
   </select>
   sibling.
-  <!-- render `something`/_form -->
+
   <div>
     <input type='submit' name='before' value='Add before this'/>
     <input type='submit' name='after'  value='Add after this'/>
     <input type='submit' name='cancel' value='Cancel' onclick='window.close()'/>
   </div>
+
 </form>
+
+<% objects = {} %>
+<% ObjectProfile.each do |p_name, profile| %>
+  <% next if p_name.eql?('section') %> <!-- DEBUG Section doesn't work right -->
+  <div id='form_for_<%=p_name%>' class='popup_alternate_div' style='display: none;'>
+    <%
+      objects[p_name] = p_name.capitalize.constantize.new
+      instance_variable_set "@#{p_name}", objects[p_name]
+      instance_variable_set "@#{p_name}_id", objects[p_name].pid # DEBUG
+     %>
+    <%= render partial: "#{p_name}s/form", object: objects[p_name] %>
+  </div>
+<% end %>
