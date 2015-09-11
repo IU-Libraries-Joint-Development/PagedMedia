@@ -6,3 +6,8 @@ function show_form(type) {
 
     document.getElementById('form_for_' + type).style.display = 'inherit';
 };
+
+function show_sibling_popup() {
+    window.open("/sibling_popup/show", "_blank",
+                "location=no,menubar=no,status=no,toolbar=no,height=300,width=400");
+}

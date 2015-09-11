@@ -4,10 +4,12 @@
 
 <div id="content" class="span9">
   <%= render_breadcrumbs %>
+  <i class='fa fa-cog fa-2x'
+     onclick='show_sibling_popup()'
+     style='cursor: pointer; float: right;'></i>
   <p id="notice"><%= notice %></p>
 
   <h1>Page <%= @page.id %></h1>
-  <button onclick='window.open("/sibling_popup/show", "_blank", "location=no,menubar=no,status=no,toolbar=no,height=300,width=400")'>another</button>
 
   <!-- FIXME if our Fedora instance is inaccessible then we need another way to do this -->
   
