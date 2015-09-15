@@ -3,7 +3,7 @@
 
 <form>
   Add a
-  <select onchange='show_form(this.value)'>
+  <select id='objectType'>
     <option disabled='disabled' selected='selected'>Select</option>
     <% ObjectProfile.each do |name, profile| %>
       <option value='<%= name %>'><%= name %></option>
@@ -12,22 +12,11 @@
   sibling.
 
   <div>
-    <input type='submit' name='before' value='Add before this'/>
-    <input type='submit' name='after'  value='Add after this'/>
-    <input type='submit' name='cancel' value='Cancel' onclick='window.close()'/>
+    <input type='submit' value='Add before this'
+           onclick='redirect_parent(selected, this.parent, this.prev_sib, this); window.close();'/> // What's "this"? "selected"?
+    <input type='submit' value='Add after this'
+           onclick='redirect_parent(selected, this.parent, this, this.next_sib); window.close();'/>
+    <input type='submit' value='Cancel' onclick='window.close();'/>
   </div>
 
 </form>
-
-<% objects = {} %>
-<% ObjectProfile.each do |p_name, profile| %>
-  <% next if p_name.eql?('section') %> <!-- DEBUG Section doesn't work right -->
-  <div id='form_for_<%=p_name%>' class='popup_alternate_div' style='display: none;'>
-    <%
-      objects[p_name] = p_name.capitalize.constantize.new
-      instance_variable_set "@#{p_name}", objects[p_name]
-      instance_variable_set "@#{p_name}_id", objects[p_name].pid # DEBUG
-     %>
-    <%= render partial: "#{p_name}s/form", object: objects[p_name] %>
-  </div>
-<% end %>
