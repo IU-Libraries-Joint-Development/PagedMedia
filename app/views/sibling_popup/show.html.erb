@@ -3,7 +3,9 @@
 
 <form>
   Add a
-  <select id='objectType'>
+  <select id='objectType'
+          onchange='document.getElementById("before").disabled=false; document.getElementById("after").disabled=false;'
+          onsubmit='window.close();'>
     <option disabled='disabled' selected='selected'>Select</option>
     <% ObjectProfile.each do |name, profile| %>
       <option value='<%= name %>'><%= name %></option>
@@ -12,13 +14,18 @@
   sibling.
 
   <div>
-    <input type='submit' value='Add before this'
-           onclick='redirect_parent(get_select_value("objectType"), this.parent, this.prev_sib, this); // What is "this"?
-           	window.close();'/>
-    <input type='submit' value='Add after this'
-           onclick='redirect_parent(get_select_value("objectType"), this.parent, this, this.next_sib);
-           window.close();'/>
-    <input type='submit' value='Cancel' onclick='window.close();'/>
+    <% p params %> <!-- DEBUG -->
+    <input id='before' type='submit' value='Add before this' disabled='true'
+           onclick="redirect_parent(get_select_value('objectType'),
+              '<%=params[%q/parent/]%>',
+              '<%=params[%q/prev_sib/]%>',
+              '<%=params[%q/old_sib/]%>');"/>
+    <input id='after' type='submit' value='Add after this' disabled='true'
+           onclick="redirect_parent(get_select_value('objectType'),
+              '<%=params[%q/parent/]%>',
+              '<%=params[%q/old_sib/]%>',
+              '<%=params[%q/next_sib/]%>');"/>
+    <input type='submit' value='Cancel'/>
   </div>
 
 </form>

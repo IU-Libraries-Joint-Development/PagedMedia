@@ -5,7 +5,7 @@
 <div id="content" class="span9">
   <%= render_breadcrumbs %>
   <i class='fa fa-cog fa-2x'
-     onclick='show_sibling_popup("<%= @page.parent %>","<%= @page.prev_sib %>", "<%= @page.next_sib %>");'
+     onclick="show_sibling_popup('<%= @page.parent %>', '<%= @page.prev_sib %>', '<%= @page.next_sib %>', '<%= @page.id %>');"
      style='cursor: pointer; float: right;'></i>
   <p id="notice"><%= notice %></p>
 

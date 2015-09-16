@@ -25,6 +25,9 @@ class PagesController < ApplicationController
     @page = Page.new
     session[:came_from] = :page
     @page = Page.new(params[:page])
+    @page.parent = params[:parent] if params[:parent]
+    @page.prev_sib = params[:prev_sib] if params[:prev_sib]
+    @page.next_sib = params[:next_sib] if params[:next_sib]
     add_breadcrumb "Create Page"
   end
 
