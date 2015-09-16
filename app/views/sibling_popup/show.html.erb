@@ -13,9 +13,11 @@
 
   <div>
     <input type='submit' value='Add before this'
-           onclick='redirect_parent(selected, this.parent, this.prev_sib, this); window.close();'/> // What's "this"? "selected"?
+           onclick='redirect_parent(get_select_value("objectType"), this.parent, this.prev_sib, this); // What is "this"?
+           	window.close();'/>
     <input type='submit' value='Add after this'
-           onclick='redirect_parent(selected, this.parent, this, this.next_sib); window.close();'/>
+           onclick='redirect_parent(get_select_value("objectType"), this.parent, this, this.next_sib);
+           window.close();'/>
     <input type='submit' value='Cancel' onclick='window.close();'/>
   </div>
 

@@ -23,3 +23,12 @@ function redirect_parent(type, parent, prev_sib, next_sib) {
         + "&prev_sib=" + prev_sib
         + "&next_sib=" + next_sib);
 }
+
+// Extract value of a Select element.
+function get_select_value(id) {
+	selector = Document.getElementById(id);
+	// TODO check null selector
+	index = selector.selectedIndex;
+	// TODO check no selection
+	return selector.options[index].value;
+}
