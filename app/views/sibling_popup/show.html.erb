@@ -1,11 +1,10 @@
 <% @title = 'Create a new sibling'%>
 <h1><%= @title%></h1>
 
-<form>
+<form onsubmit='window.close();'>
   Add a
   <select id='objectType'
-          onchange='document.getElementById("before").disabled=false; document.getElementById("after").disabled=false;'
-          onsubmit='window.close();'>
+          onchange='document.getElementById("before").disabled=false; document.getElementById("after").disabled=false;'>
     <option disabled='disabled' selected='selected'>Select</option>
     <% ObjectProfile.each do |name, profile| %>
       <option value='<%= name %>'><%= name %></option>
@@ -14,7 +13,6 @@
   sibling.
 
   <div>
-    <% p params %> <!-- DEBUG -->
     <input id='before' type='submit' value='Add before this' disabled='true'
            onclick="redirect_parent(get_select_value('objectType'),
               '<%=params[%q/parent/]%>',
