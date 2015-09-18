@@ -2,38 +2,10 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#sortable_labels {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
 
-#sortable_pages{
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  /*width: 20%;*/
-  background:none;
-  border:none;
-}
-
-#sortable_pages ol{
-  padding-left: 0;
-  margin-left:0;
-  clear: right;
-}
-
-#sortable_pages li{
-  margin: 0 0px 3px 0px;
-  padding: 0.4em 0;
-  margin: 0;
-}
-
-#sortable_pages li span {
-  position: absolute;
-  /*margin-left: -1.3em;*/
-}
-
+/*
+ * Drag and Drop Reorder styles
+ */
 
 body.dragging, body.dragging * {
   cursor: move !important;
@@ -45,19 +17,30 @@ body.dragging, body.dragging * {
   z-index: 2000;
 }
 
-.sortable_label_section{
-  float:right;
-  padding-right:50%;
-}
-.sortable_save{
-  float:right;
-  padding-right:60%;
+ol.ol_drag li.li_drag {
+  /*position: relative;*/
+  cursor: pointer;
+  background: #eeeeee none repeat scroll 0 0;
+  border: 1px solid #cccccc;
+  color: #0088cc;
+  display: block;
+  margin: 5px;
+  padding: 5px;
 }
 
-.sortable_label_file{
-  float:right;
-  width:25%;
-  margin-left:-25%;
+ol.ol_drag li.placeholder{
+  background-color: red;
+  height:5px;
+  margin-bottom: -5px;
+  margin-top: -5px;
+}
+
+ol.ol_drag li.li_drag:before {
+  position: absolute;
+}
+
+ol.ol_drag li:first-child{
+  margin-top:10px;
 }
 
 /*
