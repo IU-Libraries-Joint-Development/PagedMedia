@@ -1,18 +1,10 @@
 <div id="reorder_pages_container">
   <p><strong>Structure</strong><p>
   <p>Drag pages to reorder them.</p>
-  <div>
-    <ol id="sortable_labels">
-      <li>
-        <p class="sortable_label_file">Title/File Name</p>
-        <p class="sortable_label_file">Section</p>
-      </li>
-    </ol>
-  </div>
   <div style="clear:right"></div>
   <div id="reorder_pages">
     <%= form_for(@paged, url: { action: :reorder }) do |f| %>
-      <ol id="sortable_pages" class="sortable_pages">
+      <ol id="sortable_pages" class="sortable_pages ol_drag">
         <% @paged.order_child_objects[0].each do |child| %>
           <%= render partial: 'reorder_section', locals: { child: child } %>
         <% end %>

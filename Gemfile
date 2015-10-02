@@ -25,7 +25,6 @@ gem 'therubyracer', platforms: :ruby
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'jquery-sortable-rails'
 
 # Used for icons.
 gem 'font-awesome-rails'

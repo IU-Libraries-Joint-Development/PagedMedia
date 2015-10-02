@@ -535,7 +535,9 @@ module Node
   # Takes a nested array of hashes with id, children values
   # Recursively changes relationships
   def restructure_children(child_hash_array)
-    new_children = child_hash_array.map { |e| e["id"] }
+    
+    kids = (child_hash_array[0].is_a?(Array) ? child_hash_array[0] : child_hash_array)
+    new_children = kids.map { |e| e["id"] }
     new_child_objects = new_children.map { |pid| ActiveFedora::Base.find(pid, cast: true) }
     if self.children != new_children
       self.children = new_children
@@ -557,7 +559,7 @@ module Node
       end
     end
     new_child_objects.each_with_index do |child, index|
-      nested_array = child_hash_array[index]["children"]
+      nested_array = kids[index]["children"]
       child.restructure_children(nested_array) if nested_array
     end
     self.update_index

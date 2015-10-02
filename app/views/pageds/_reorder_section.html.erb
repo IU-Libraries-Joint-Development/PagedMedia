@@ -1,19 +1,19 @@
-<li id="<%= child.pid %>" class="" data-id="<%= child.pid %>">
+<li id="<%= child.pid %>" class="li_drag" data-id="<%= child.pid %>">
 
-  <i class="fa fa-bars fa-2x"></i>
+  <!-- <i class="fa fa-bars fa-2x"></i> -->
   <!--
   <%= child.class.to_s %>: <%= child.class == Page ? child.logical_number : child.name %> (<%= child.pid %>)
   -->
   <% if child.class == Section %>
-    <p style="float:right; padding-right:50%;"><%= child.class == Page ? child.logical_number : child.name %></p>
-    <ol>
+    <%= child.class == Page ? child.logical_number : child.name %>
+    <ol class="ol_drag">
       <%# FIXME: handle empty section %>
       <% child.order_child_objects[0].each do |grandchild| %>
         <%= render partial: 'reorder_section', locals: { child: grandchild } %>
       <% end %>
     </ol>
   <% else %>
-    <p style="float: right; width:25%; margin-left:-25%;"><%= child.class == Page ? child.logical_number : child.name %></p>
+    <%= child.class == Page ? child.logical_number : child.name %>
   <% end %>
   
 </li>
