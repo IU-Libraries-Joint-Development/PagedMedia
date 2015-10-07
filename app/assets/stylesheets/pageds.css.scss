@@ -49,13 +49,7 @@ ol.ol_drag li:first-child{
  */
 
 div#holding_pen{
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-  background: #eeeeee none repeat scroll 0 0;
-  border: 1px solid #cccccc;
-  padding: 0 10px;
-  z-index: 1000;
+  display: none;
 }
 
 @media only screen and (min-width: 769px){
