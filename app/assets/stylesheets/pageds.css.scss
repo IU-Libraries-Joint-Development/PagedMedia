@@ -44,6 +44,37 @@ ol.ol_drag li:first-child{
 }
 
 /*
+ * Holding Pen
+ * for Drag and Drop ordering
+ */
+
+div#holding_pen{
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  background: #eeeeee none repeat scroll 0 0;
+  border: 1px solid #cccccc;
+  padding: 0 10px;
+  z-index: 1000;
+}
+
+@media only screen and (min-width: 769px){
+  div#holding_pen{
+    width: auto;
+    bottom: auto;
+    display: block;
+    position: fixed;
+    background: #eeeeee none repeat scroll 0 0;
+    border: 1px solid #cccccc;
+    padding: 0 10px;
+  }
+}
+
+div#holding_pen ol li{
+  list-style: none;
+}
+
+/*
  * Paged Show view
  */
 
@@ -167,6 +198,10 @@ form#add_section input{
   background-color: #E1D8B7
 }
 
+/*
+ * Button styles
+ */
+
 .save_submit{
   background:image-url("buttons/save_button.png");
   background-size: 90px 30px;
@@ -176,6 +211,19 @@ form#add_section input{
   color: transparent;
   text-decoration: none;
   border:none;
+}
+
+.move_button, .reorder_button{
+  background-color: #44697D;
+  border: 1px solid #000;
+  border-radius: 15px;
+  padding:5px;
+  margin:5px;
+}
+
+.reorder_button{
+  padding-left:20px;
+  padding-right:20px;
 }
 
 /*
