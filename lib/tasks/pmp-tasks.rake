@@ -46,8 +46,9 @@ task :deploy_devel do
 
   system_with_command_output("rm -rf /srv/rails/#{pmp_instance}/.git")
 
-  system_with_command_output("FHOST=poplar.dlib.indiana.edu FPORT=8245 rails r app/script/purge-all.rb")
-  system_with_command_output('curl http://poplar.dlib.indiana.edu:8245/solr/hydra-test/update?commit=true -H "Content-Type: text/xml" --data-binary \'<delete><query>*:*</query></delete>\'')
+#  Disabling complete cleaning of Fedora and Solr, but leaving uncommented commands for reference
+#  system_with_command_output("FHOST=poplar.dlib.indiana.edu FPORT=8245 rails r app/script/purge-all.rb")
+#  system_with_command_output('curl http://poplar.dlib.indiana.edu:8245/solr/hydra-test/update?commit=true -H "Content-Type: text/xml" --data-binary \'<delete><query>*:*</query></delete>\'')
   
   system_with_command_output("rails_control #{pmp_instance} start")
 

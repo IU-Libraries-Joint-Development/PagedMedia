@@ -33,6 +33,7 @@ This generator deploys to a running server environment and makes the following c
 
     system("cp /srv/deployments/pmp/config/* ./config")    
     system("cp /srv/deployments/pmp/.ruby* .")    
+    system("cp /srv/deployments/pmp/config/.app* .")    
 
     git add: "."
     git commit: "-m 'Preparing to deploy PMP to integration environment' --quiet"
