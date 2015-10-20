@@ -1,5 +1,19 @@
 <div id="sidebar" class="span3">
   <%#= render partial: 'shared/side_navbar' %>
+  
+   <div id="holding_pen">
+    <h3>Holding Pen</h3>
+    <ol class="holding_pages ol_drag">
+      
+    </ol>
+    <!--
+    <a id="moveItemsStart">Move Items to Start</a> <br/>
+    <a id="moveItemsEnd">Move Items to End</a>
+    -->
+    <%= button_tag('Move to Front', id: 'move_to_front', class: 'move_button') %> <br/>
+    <%= button_tag('Move to Back', id: 'move_to_back', class: 'move_button') %>
+  </div> 
+  
 </div>
 
 <div id="content" class="span9">

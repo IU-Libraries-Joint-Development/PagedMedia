@@ -2,6 +2,7 @@
   <p><strong>Structure</strong><p>
   <p>Drag pages to reorder them.</p>
   <div style="clear:right"></div>
+
   <div id="reorder_pages">
     <%= form_for(@paged, url: { action: :reorder }) do |f| %>
       <ol id="sortable_pages" class="sortable_pages ol_drag">
@@ -10,7 +11,7 @@
         <% end %>
       </ol>
       <input id="reorder_submission" name="reorder_submission" type="hidden" value="">
-      <%= f.submit "Save", :class => 'save_submit sortable_save' %> 
+      <%= f.submit "Reorder", :class => 'reorder_button sortable_save' %> 
     <% end %>
   </div>
 </div>

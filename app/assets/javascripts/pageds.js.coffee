@@ -28,6 +28,39 @@ $ ->
   )
   return
 
+$ ->
+  group = $('ol.holding_pages').sortable(
+    group: 'sortable_pages'
+  )
+  return
+
+$ ->
+  $('#move_to_back').click ->
+    $('ol.holding_pages > li').appendTo('ol#sortable_pages')
+    group = $('ol.sortable_pages')
+    data = group.sortable('serialize').get()
+    jsonString = JSON.stringify(data, null, ' ')
+    document.getElementById('reorder_submission').value = jsonString
+    return false
+  
+$ ->
+  $('#move_to_front').click ->
+    $('ol.holding_pages > li').prependTo('ol#sortable_pages')
+    group = $('ol.sortable_pages')
+    data = group.sortable('serialize').get()
+    jsonString = JSON.stringify(data, null, ' ')
+    document.getElementById('reorder_submission').value = jsonString
+    return false
+
+$ ->
+  $('.sortable_save').click ->
+    items = $("ol.holding_pages li").length
+    if (items > 0)
+      alert("Holding Pen must be empty before reordering.")
+      return false
+    else
+      return true
+
 # Source : http://jsfiddle.net/fengelz/28x7Y/
 $ ->
   $('.custom-upload input[type=file]').change ->
