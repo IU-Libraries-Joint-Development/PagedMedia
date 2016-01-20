@@ -1,0 +1,38 @@
+<script type='application/javascript'>
+  function new_before() {
+      redirect_parent(get_select_value('objectType'),
+                      '<%=params[%q/parent/]%>',
+                      '<%=params[%q/prev_sib/]%>',
+                      '<%=params[%q/old_sib/]%>');
+  }
+
+  function new_after() {
+      redirect_parent(get_select_value('objectType'),
+                      '<%=params[%q/parent/]%>',
+                      '<%=params[%q/old_sib/]%>',
+                      '<%=params[%q/next_sib/]%>');
+  }
+</script>
+
+<% @title = 'Create a new sibling'%>
+<h1><%= @title%></h1>
+
+<form onsubmit='window.close();'>
+  Add a
+  <select id='objectType'
+          onchange='document.getElementById("before").disabled=false;
+                    document.getElementById("after").disabled=false;'>
+    <option disabled='disabled' selected='selected'>Select</option>
+    <% ObjectProfile.each do |name, profile| %>
+      <option value='<%= name %>'><%= name %></option>
+    <% end %>
+  </select>
+  sibling.
+
+  <div>
+    <input id='before' type='submit' value='Add before this' disabled='true' onclick="new_before();"/>
+    <input id='after' type='submit' value='Add after this' disabled='true' onclick="new_after();"/>
+    <input type='submit' value='Cancel'/>
+  </div>
+
+</form>
