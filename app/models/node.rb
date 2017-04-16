@@ -563,6 +563,9 @@ module Node
       child.restructure_children(nested_array) if nested_array
     end
     self.update_index
+    self.list_ancestor_objects.each do |ancestor|
+      ancestor.update_index
+    end
   end
 
 end
